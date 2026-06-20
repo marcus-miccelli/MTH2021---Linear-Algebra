@@ -1,0 +1,294 @@
+\chapter{Linear Transformations}
+\label{ch:linear-transformations}
+
+\begin{roadmap}
+\noindent\textbf{What this chapter is about.}\;
+A \emph{linear transformation} is a function between vector spaces that respects the two operations --- it sends sums to sums and scalar multiples to scalar multiples. Matrices were our first examples; now we treat the idea abstractly, so that differentiation, transposition, and evaluation all become instances of one concept. Two subspaces measure a transformation: its \emph{kernel} (what collapses to zero) and its \emph{range} (what it can reach). The \emph{Rank--Nullity Theorem} ties their dimensions together, and from it flows the theory of \emph{isomorphism} --- the precise sense in which every $n$-dimensional real space is ``the same as'' $\R^n$. Finally, fixing bases turns any linear transformation back into a matrix.
+\medskip
+
+\noindent\textbf{Reference.}\; A\&R \S\S8.1--8.4 (and \S4.9 for matrix representations).
+\end{roadmap}
+
+\section{Functions Between Sets}
+\label{sec:4.1}
+
+We first recall vocabulary for functions in general. A \emph{transformation} (or \emph{function}, or \emph{map}) $T:D\to C$ from a set $D$ to a set $C$ assigns to each $x\in D$ a unique element $T(x)\in C$. The set $D$ is the \emph{domain}, $C$ the \emph{codomain}, and $T(x)$ the \emph{image} of $x$. The \emph{range} is the set of all images,
+\[
+\ran(T)=\{T(x):x\in D\}\subseteq C.
+\]
+
+\begin{defns}{4.1.1}{Injective, surjective, bijective}
+A transformation $T:D\to C$ is \emph{surjective} (\emph{onto}) if $\ran(T)=C$; \emph{injective} (\emph{one-to-one}) if $x\neq y$ implies $T(x)\neq T(y)$; and \emph{bijective} if it is both.
+\end{defns}
+
+\section{Linear Transformations}
+\label{sec:4.2}
+
+\begin{defns}{4.2.1}{Linear transformation}
+Let $V,W$ be vector spaces. A function $T:V\to W$ is a \emph{linear transformation} if
+\[
+T(\vu+k\vv)=T(\vu)+kT(\vv)
+\]
+for all $\vu,\vv\in V$ and all scalars $k$. A linear transformation with $W=V$ is a \emph{linear operator}.
+\end{defns}
+
+Taking $k=1$ recovers additivity $T(\vu+\vv)=T(\vu)+T(\vv)$, and taking $\vu=\vze$ recovers homogeneity $T(k\vv)=kT(\vv)$; the single condition above packages both.
+
+\begin{lems}{4.2.2}{}
+If $T:V\to W$ is linear, then $T(\vze)=\vze$.
+\end{lems}
+
+\begin{prf}
+Using homogeneity with scalar $0$ and \Thm{3.1.6}(a): $T(\vze)=T(0\cdot\vze)=0\cdot T(\vze)=\vze$.
+\end{prf}
+
+\Lem{4.2.2} gives a quick test: any map with $T(\vze)\neq\vze$ cannot be linear.
+
+\begin{defns}{4.2.3}{Matrix transformation}
+For an $m\times n$ matrix $A$, the map $T_A:\R^n\to\R^m$ defined by $T_A(\vx)=A\vx$ is a \emph{matrix transformation}, and $A$ is its \emph{standard matrix}.
+\end{defns}
+
+\begin{exmp}{4.2.4}{Matrix transformations are linear}
+For $T_A(\vx)=A\vx$, the distributive and scalar laws of matrix multiplication (\Thm{1.4.1}) give $T_A(\vu+k\vv)=A(\vu+k\vv)=A\vu+kA\vv=T_A(\vu)+kT_A(\vv)$. So every matrix transformation is linear.
+\end{exmp}
+
+\begin{exmp}{4.2.5}{Transposition is linear}
+Define $T:\R^{n\times m}\to\R^{m\times n}$ by $T(A)=A\trans$. By \Lem{1.4.4}, $T(A+kB)=(A+kB)\trans=A\trans+kB\trans=T(A)+kT(B)$, so $T$ is linear.
+\end{exmp}
+
+\begin{exmp}{4.2.6}{Differentiation is linear}
+Let $V=C^1(-1,1)$ and $W=F(-1,1)$ (all real functions), and define $D:V\to W$ by $D[f]=f'$. By the sum and constant-multiple rules of calculus, $D[f+kg]=(f+kg)'=f'+kg'=D[f]+kD[g]$, so $D$ is linear. For $f(x)=x^2$, $D[f](x)=2x$.
+\end{exmp}
+
+\begin{thms}{4.2.7}{Linear maps preserve combinations}
+If $T:V\to W$ is linear, then for all $\vu_1,\dots,\vu_r\in V$ and scalars $k_1,\dots,k_r$,
+\[
+T(k_1\vu_1+k_2\vu_2+\cdots+k_r\vu_r)=k_1T(\vu_1)+\cdots+k_rT(\vu_r).
+\]
+\end{thms}
+
+\begin{prf}
+By induction on $r$, applying the defining property repeatedly. The base $r=1$ is homogeneity. For the step, $T\bigl(\sum_{i=1}^{r}k_i\vu_i\bigr)=T\bigl(\sum_{i=1}^{r-1}k_i\vu_i+k_r\vu_r\bigr)=T\bigl(\sum_{i=1}^{r-1}k_i\vu_i\bigr)+k_rT(\vu_r)$ by the defining property, then apply the inductive hypothesis to the first term.
+\end{prf}
+
+\begin{rmks}{4.2.8}
+\Thm{4.2.7} has a powerful consequence: a linear transformation is \emph{completely determined} by its values on a basis. If $S$ is a basis of $V$ and we know $T(\vv)$ for each $\vv\in S$, then $T$ is known everywhere, since every input is a combination of basis vectors.
+\end{rmks}
+
+\begin{exmp}{4.2.9}{Determining $T$ from its values on a basis}
+Let $S=\{\vv_1,\vv_2\}$ with $\vv_1=(-2,1)$, $\vv_2=(1,3)$ be a basis of $\R^2$, and let $T:\R^2\to\R^3$ be linear with $T(\vv_1)=(-1,2,0)$ and $T(\vv_2)=(0,3,5)$. Find $T(-5,1)$.
+
+\smallskip
+\noindent\textit{Solution.} Express $(-5,1)$ in the basis: solving $(-5,1)=c_1(-2,1)+c_2(1,3)$ gives $c_1=2$, $c_2=-1$. By linearity,
+\[
+T(-5,1)=2T(\vv_1)-T(\vv_2)=2(-1,2,0)-(0,3,5)=(-2,1,-5).
+\]
+\end{exmp}
+
+\begin{thms}{4.2.10}{Composition of linear maps}
+If $T_1:U\to V$ and $T_2:V\to W$ are linear, then $T_2\circ T_1:U\to W$ is linear.
+\end{thms}
+
+\begin{prf}
+For $\vu,\vu'\in U$ and scalar $k$:
+\begin{steps}
+\st{(T_2\circ T_1)(\vu+k\vu')=T_2\bigl(T_1(\vu+k\vu')\bigr)=T_2\bigl(T_1(\vu)+kT_1(\vu')\bigr)}{$T_1$ linear}
+\st{\phantom{(T_2\circ T_1)(\vu+k\vu')}=T_2(T_1(\vu))+kT_2(T_1(\vu'))}{$T_2$ linear}
+\st{\phantom{(T_2\circ T_1)(\vu+k\vu')}=(T_2\circ T_1)(\vu)+k(T_2\circ T_1)(\vu').}{definition of $\circ$}
+\end{steps}
+\end{prf}
+
+\section{Kernel and Range}
+\label{sec:4.3}
+
+\begin{defns}{4.3.1}{Kernel and range}
+For a linear transformation $T:V\to W$,
+\[
+\ker(T)=\{\vx\in V:T(\vx)=\vze\},\qquad \ran(T)=\{\vy\in W:\vy=T(\vx)\text{ for some }\vx\in V\}.
+\]
+\end{defns}
+
+\begin{exmp}{4.3.2}{For a matrix transformation}
+If $T_A:\R^n\to\R^m$ is the matrix transformation of $A$, then $\ker(T_A)=\ker(A)$ (the solutions of $A\vx=\vze$) and $\ran(T_A)=\colsp(A)$ (by \Thm{1.3.10}, the images $A\vx$ are exactly the combinations of the columns).
+\end{exmp}
+
+\begin{thms}{4.3.3}{}
+If $T:V\to W$ is linear, then
+\textup{(a)} $\ker(T)$ is a subspace of $V$, and
+\textup{(b)} $\ran(T)$ is a subspace of $W$.
+\end{thms}
+
+\begin{prf}
+\case{(a)} $\ker(T)\neq\varnothing$ since $T(\vze)=\vze$ (\Lem{4.2.2}). If $\vu,\vv\in\ker(T)$ then $T(\vu+k\vv)=T(\vu)+kT(\vv)=\vze+k\vze=\vze$, so $\vu+k\vv\in\ker(T)$; closure under both operations follows (take $k=1$ for addition, $\vu=\vze$ for scalars). By the Subspace Test, $\ker(T)$ is a subspace.
+
+\case{(b)} $\ran(T)\neq\varnothing$ since $\vze=T(\vze)\in\ran(T)$. If $\vy_1=T(\vx_1)$ and $\vy_2=T(\vx_2)$ lie in $\ran(T)$, then $\vy_1+k\vy_2=T(\vx_1)+kT(\vx_2)=T(\vx_1+k\vx_2)\in\ran(T)$. By the Subspace Test, $\ran(T)$ is a subspace.
+\end{prf}
+
+\begin{defns}{4.3.4}{Rank and nullity}
+If $\ran(T)$ is finite-dimensional, its dimension is the \emph{rank} of $T$, $\rank(T)$. If $\ker(T)$ is finite-dimensional, its dimension is the \emph{nullity} of $T$, $\nullity(T)$.
+\end{defns}
+
+\begin{thms}{4.3.5}{Rank--Nullity Theorem}
+If $T:V\to W$ is linear and $V$ is $n$-dimensional, then
+\[
+\rank(T)+\nullity(T)=n.
+\]
+\end{thms}
+
+\begin{prf}
+Let $k=\nullity(T)$. If $k=n$ then $\ker(T)=V$, so $T$ is the zero map, $\ran(T)=\{\vze\}$, $\rank(T)=0$, and the identity holds. Otherwise $0\le k<n$. Choose a basis $\{\vv_1,\dots,\vv_k\}$ of $\ker(T)$ and extend it to a basis $\{\vv_1,\dots,\vv_k,\vv_{k+1},\dots,\vv_n\}$ of $V$ (\Thm{3.3.15}). We claim $\{T(\vv_{k+1}),\dots,T(\vv_n)\}$ is a basis of $\ran(T)$; granting this, $\rank(T)=n-k$ and the identity follows.
+
+\emph{Spanning.} Any $\vy\in\ran(T)$ is $\vy=T(\vx)$ for some $\vx=\sum_{i=1}^n c_i\vv_i$. Since $T(\vv_i)=\vze$ for $i\le k$,
+\[
+\vy=T(\vx)=\sum_{i=1}^n c_iT(\vv_i)=\sum_{i=k+1}^n c_iT(\vv_i),
+\]
+a combination of $T(\vv_{k+1}),\dots,T(\vv_n)$. \emph{Independence.} Suppose $\sum_{i=k+1}^n d_iT(\vv_i)=\vze$. Then $T\bigl(\sum_{i=k+1}^n d_i\vv_i\bigr)=\vze$, so $\sum_{i=k+1}^n d_i\vv_i\in\ker(T)$, and is therefore a combination $\sum_{i=1}^k e_i\vv_i$ of the kernel basis. This gives a relation $\sum_{i=1}^k e_i\vv_i-\sum_{i=k+1}^n d_i\vv_i=\vze$ among the basis $\{\vv_1,\dots,\vv_n\}$ of $V$, forcing all coefficients to vanish; in particular every $d_i=0$. Hence the images are independent.
+\end{prf}
+
+\begin{thms}{4.3.6}{Injectivity via the kernel}
+A linear transformation $T:V\to W$ is one-to-one if and only if $\ker(T)=\{\vze\}$.
+\end{thms}
+
+\begin{prf}
+($\Rightarrow$) If $T$ is injective and $\vx\in\ker(T)$, then $T(\vx)=\vze=T(\vze)$ (\Lem{4.2.2}), so $\vx=\vze$; thus $\ker(T)=\{\vze\}$. ($\Leftarrow$) Suppose $\ker(T)=\{\vze\}$ and $T(\vu)=T(\vv)$. Then $T(\vu-\vv)=T(\vu)-T(\vv)=\vze$, so $\vu-\vv\in\ker(T)=\{\vze\}$, giving $\vu=\vv$. Hence $T$ is injective.
+\end{prf}
+
+\begin{thms}{4.3.7}{For equal dimensions, one-to-one $=$ onto}
+Let $V,W$ be $n$-dimensional and $T:V\to W$ linear. Then $T$ is one-to-one if and only if $T$ is onto.
+\end{thms}
+
+\begin{prf}
+By Rank--Nullity, $\rank(T)=n-\nullity(T)$. Now $T$ is onto $\iff\ran(T)=W\iff\rank(T)=n$ (\Thm{3.3.14}(b)) $\iff\nullity(T)=0\iff\ker(T)=\{\vze\}\iff T$ one-to-one (\Thm{4.3.6}).
+\end{prf}
+
+\section{Isomorphism}
+\label{sec:4.4}
+
+\begin{defns}{4.4.1--4.4.2}{Isomorphism}
+A linear transformation $T:V\to W$ that is both one-to-one and onto is an \emph{isomorphism}. If an isomorphism $V\to W$ exists, $V$ and $W$ are \emph{isomorphic}, written $V\cong W$.
+\end{defns}
+
+\begin{thms}{4.4.3}{$\cong$ is an equivalence relation}
+For all vector spaces $U,V,W$: \textup{(i)} $U\cong U$; \textup{(ii)} if $U\cong V$ then $V\cong U$; \textup{(iii)} if $U\cong V$ and $V\cong W$ then $U\cong W$.
+\end{thms}
+
+\begin{prf}
+\case{(i)} The identity map $\mathrm{id}_U$ is a linear bijection.
+
+\case{(ii)} If $T:U\to V$ is an isomorphism, its inverse $T\inv:V\to U$ is a bijection, and is linear: for $\vy_1=T(\vx_1),\vy_2=T(\vx_2)$, $T\inv(\vy_1+k\vy_2)=T\inv(T(\vx_1+k\vx_2))=\vx_1+k\vx_2=T\inv(\vy_1)+kT\inv(\vy_2)$.
+
+\case{(iii)} The composite of isomorphisms is an isomorphism: it is linear by \Thm{4.2.10} and a bijection as a composite of bijections.
+\end{prf}
+
+\begin{rmks}{4.4.4}
+``Isomorphic'' is from the Greek \emph{iso} (same) and \emph{morphe} (form): isomorphic spaces have identical linear-algebraic structure and differ only in the names of their elements.
+\end{rmks}
+
+\begin{exmp}{4.4.5--4.4.6}{Coordinate isomorphisms}
+The coordinate map $T:P_2\to\R^3$, $T(a_0+a_1x+a_2x^2)=(a_0,a_1,a_2)$, is linear, one-to-one, and onto, so $P_2\cong\R^3$. Likewise $T:\R^{2\times2}\to\R^4$ sending a matrix to its list of entries is an isomorphism, so $\R^{2\times2}\cong\R^4$. In general, taking coordinates relative to a basis gives an isomorphism of any $n$-dimensional real space with $\R^n$.
+\end{exmp}
+
+\begin{thms}{4.4.7}{Classification by dimension}
+Let $U,V$ be finite-dimensional. If $\dim(U)=\dim(V)$, then $U\cong V$.
+\end{thms}
+
+\begin{prf}
+Let $\{\vu_1,\dots,\vu_n\}$ be a basis of $U$ and $\{\vv_1,\dots,\vv_n\}$ a basis of $V$ (equal sizes since the dimensions agree). Define $T:U\to V$ on the basis by $T(\vu_i)=\vv_i$ and extend linearly (\Rmk{4.2.8}). Then $\ran(T)\supseteq\spn\{\vv_i\}=V$, so $T$ is onto; by \Thm{4.3.7}, $T$ is also one-to-one. Hence $T$ is an isomorphism and $U\cong V$.
+\end{prf}
+
+\begin{rmknote}
+\textbf{Remark.}\; Combined with $\dim(\R^n)=n$, \Thm{4.4.7} says \emph{every} $n$-dimensional real vector space is isomorphic to $\R^n$. This is why studying $\R^n$ loses no generality: $P_n$, $\R^{m\times n}$, and any other finite-dimensional space is a relabelled copy of some $\R^k$.
+\end{rmknote}
+
+\section{Matrix Representations}
+\label{sec:4.5}
+
+Once bases are fixed for the domain and codomain, a linear transformation becomes a matrix acting on coordinate vectors --- closing the loop back to Chapter~\ref{ch:linear-systems}.
+
+\begin{defns}{4.5.1}{Matrix of a transformation}
+Let $T:V\to W$ be linear, $B=\{\vv_1,\dots,\vv_n\}$ a basis of $V$, and $B'=\{\vw_1,\dots,\vw_m\}$ a basis of $W$. The \emph{matrix for $T$ relative to $B$ and $B'$} is the $m\times n$ matrix
+\[
+[T]_{B',B}=\bigl[\,[T(\vv_1)]_{B'}\;\;[T(\vv_2)]_{B'}\;\;\cdots\;\;[T(\vv_n)]_{B'}\,\bigr],
+\]
+whose columns are the coordinate vectors of the images of the domain basis.
+\end{defns}
+
+\begin{thms}{4.5.2}{The representation acts on coordinates}
+With notation as above, for every $\vx\in V$,
+\[
+[T]_{B',B}\,[\vx]_B=[T(\vx)]_{B'}.
+\]
+\end{thms}
+
+\begin{prf}
+Write $[\vx]_B=(c_1,\dots,c_n)$, so $\vx=\sum_j c_j\vv_j$ and, by linearity, $T(\vx)=\sum_j c_jT(\vv_j)$. Taking $B'$-coordinates (which respect linear combinations) and using the column interpretation of the product (\Thm{1.3.10}),
+\[
+[T(\vx)]_{B'}=\sum_j c_j[T(\vv_j)]_{B'}=\sum_j c_j\,(\text{$j$th column of }[T]_{B',B})=[T]_{B',B}\,[\vx]_B.
+\]
+\end{prf}
+
+\begin{algs}{4.5.3}{Computing $T(\vx)$ via its matrix}
+Given $T:V\to W$ with bases $B,B'$, and $\vx\in V$:
+\begin{enumerate}[label=\textup{(\roman*)},leftmargin=2.4em,itemsep=1pt]
+\item compute the coordinate vector $[\vx]_B$;
+\item compute the matrix $[T]_{B',B}$ (columns $=$ coordinates of the $T(\vv_j)$);
+\item form the product $[T]_{B',B}[\vx]_B$, which equals $[T(\vx)]_{B'}$;
+\item read $T(\vx)$ off from its coordinate vector $[T(\vx)]_{B'}$.
+\end{enumerate}
+\end{algs}
+
+\begin{exmp}{4.5.4}{A representation between polynomial spaces}
+Let $T:P_2\to P_1$ be $T(p)=p'$ (differentiation), with bases $B=\{1,x,x^2\}$ for $P_2$ and $B'=\{1,x\}$ for $P_1$. Then $T(1)=0$, $T(x)=1$, $T(x^2)=2x$, with $B'$-coordinates $(0,0)$, $(1,0)$, $(0,2)$. Hence
+\[
+[T]_{B',B}=\begin{bmatrix}0&1&0\\0&0&2\end{bmatrix}.
+\]
+Check on $p(x)=3+4x+5x^2$: $[p]_B=(3,4,5)$, and $[T]_{B',B}[p]_B=(4,10)$, i.e. $T(p)=4+10x=p'$, as expected.
+\end{exmp}
+
+% ===================================================================
+\section*{Chapter 4 Summary}
+\addcontentsline{toc}{section}{Chapter 4 Summary}
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+\item $T$ is linear iff $T(\vu+k\vv)=T(\vu)+kT(\vv)$ (\Defn{4.2.1}); necessarily $T(\vze)=\vze$ (\Lem{4.2.2}), and $T$ is determined by its values on a basis (\Rmk{4.2.8}).
+\item Kernel and range are subspaces (\Thm{4.3.3}); $\ker(T_A)=\ker(A)$ and $\ran(T_A)=\colsp(A)$.
+\item \textbf{Rank--Nullity:} $\rank(T)+\nullity(T)=\dim(V)$ (\Thm{4.3.5}).
+\item $T$ is one-to-one iff $\ker(T)=\{\vze\}$ (\Thm{4.3.6}); for equal finite dimensions, one-to-one $\iff$ onto (\Thm{4.3.7}).
+\item An \emph{isomorphism} is a linear bijection; $\cong$ is an equivalence relation (\Thm{4.4.3}), and equal dimension implies isomorphic (\Thm{4.4.7}). Every $n$-dimensional real space is isomorphic to $\R^n$.
+\item Relative to bases $B,B'$, $T$ is represented by $[T]_{B',B}$, and $[T]_{B',B}[\vx]_B=[T(\vx)]_{B'}$ (\Thm{4.5.2}).
+\end{itemize}
+
+% ===================================================================
+\section*{Chapter 4 Exercises}
+\addcontentsline{toc}{section}{Chapter 4 Exercises}
+
+\begin{enumerate}[label=\textbf{4.\arabic*},leftmargin=2.6em,itemsep=6pt]
+\item Decide whether $T:\R^2\to\R^2$, $T(x,y)=(x+1,y)$, is linear. Justify.
+
+\item Let $T:\R^3\to\R^2$ be $T(x,y,z)=(x-y,\,y-z)$. Find bases for $\ker(T)$ and $\ran(T)$, and verify Rank--Nullity.
+
+\item Let $T:P_2\to P_2$ be $T(p)=p+p'$. Show $T$ is an isomorphism (Hint: find $\ker(T)$, then use \Thm{4.3.7}).
+
+\item Let $T:\R^2\to\R^2$ rotate by $90^\circ$ counterclockwise. Find $[T]_{B,B}$ relative to the standard basis $B=\{\ve_1,\ve_2\}$.
+
+\item Prove that if $T:V\to W$ is linear and one-to-one, and $\{\vv_1,\dots,\vv_r\}$ is independent in $V$, then $\{T(\vv_1),\dots,T(\vv_r)\}$ is independent in $W$.
+
+\item Let $T:P_1\to P_1$ be $T(a+bx)=(2a+b)+(a+2b)x$, with $B=\{1,x\}$. Find $[T]_{B,B}$ and use it to compute $T(3-x)$ via \Alg{4.5.3}.
+\end{enumerate}
+
+\subsection*{Solutions to Chapter 4 Exercises}
+
+\begin{enumerate}[label=\textbf{4.\arabic*},leftmargin=2.6em,itemsep=8pt]
+
+\item Not linear: $T(0,0)=(1,0)\neq(0,0)$, violating \Lem{4.2.2}.
+
+\item $\ker(T)$: $x-y=0$ and $y-z=0$ give $x=y=z$, so $\ker(T)=\{t(1,1,1)\}$, basis $\{(1,1,1)\}$, $\nullity=1$. $\ran(T)$: the standard matrix is $\left[\begin{smallmatrix}1&-1&0\\0&1&-1\end{smallmatrix}\right]$, whose columns span $\R^2$ (the first two are independent), so $\ran(T)=\R^2$, basis $\{(1,0),(0,1)\}$, $\rank=2$. Check: $2+1=3=\dim(\R^3)$. \checkmark
+
+\item $T(p)=p+p'$. If $T(p)=0$ with $p=a+bx+cx^2$, then $p'=b+2cx$ and $p+p'=(a+b)+(b+2c)x+cx^2=0$ forces $c=0$, $b+2c=0\Rightarrow b=0$, $a+b=0\Rightarrow a=0$. So $\ker(T)=\{0\}$, and $T$ is one-to-one (\Thm{4.3.6}); since $\dim P_2=\dim P_2$, $T$ is onto (\Thm{4.3.7}), hence an isomorphism. $\blacksquare$
+
+\item Rotation by $90^\circ$ sends $\ve_1=(1,0)\mapsto(0,1)$ and $\ve_2=(0,1)\mapsto(-1,0)$. The columns are these images: $[T]_{B,B}=\left[\begin{smallmatrix}0&-1\\1&0\end{smallmatrix}\right]$.
+
+\item Suppose $\sum_{i}c_iT(\vv_i)=\vze$. By linearity $T\bigl(\sum_i c_i\vv_i\bigr)=\vze$, so $\sum_i c_i\vv_i\in\ker(T)=\{\vze\}$ (using \Thm{4.3.6}). Thus $\sum_i c_i\vv_i=\vze$, and independence of $\{\vv_i\}$ forces all $c_i=0$. Hence $\{T(\vv_i)\}$ is independent. $\blacksquare$
+
+\item $T(1)=2+x$, $T(x)=1+2x$, with $B$-coordinates $(2,1)$ and $(1,2)$, so $[T]_{B,B}=\left[\begin{smallmatrix}2&1\\1&2\end{smallmatrix}\right]$. For $3-x$: $[3-x]_B=(3,-1)$, and $[T]_{B,B}(3,-1)\trans=(6-1,\,3-2)\trans=(5,1)$, so $T(3-x)=5+x$. (Direct check: $T(3-x)=(2\cdot3+(-1))+(3+2(-1))x=5+x$.) \checkmark
+
+\end{enumerate}

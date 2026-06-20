@@ -1,0 +1,396 @@
+\chapter{Orthogonal Matrices, the Spectral Theorem, and the SVD}
+\label{ch:orthogonalization}
+
+\begin{roadmap}
+\noindent\textbf{What this chapter is about.}\;
+We combine the orthogonality of Chapter~\ref{ch:inner-products} with the diagonalization of Chapter~\ref{ch:eigenvalues}. An \emph{orthogonal matrix} is one whose columns form an orthonormal basis; equivalently $A\inv=A\trans$. Such matrices preserve lengths and angles. The \emph{Spectral Theorem} is the crowning result for symmetric matrices: a matrix is orthogonally diagonalizable if and only if it is symmetric. Finally, the \emph{Singular Value Decomposition} extends diagonalization to \emph{every} matrix --- rectangular, singular, anything --- factoring $A=U\Sigma V\trans$ with $U,V$ orthogonal and $\Sigma$ diagonal. The SVD yields the \emph{pseudoinverse}, which solves least-squares problems and inverts what cannot truly be inverted.
+\medskip
+
+\noindent\textbf{Reference.}\; A\&R \S\S7.1--7.4.
+
+\noindent\textbf{Proof convention.}\; Following the seminar notes, the existence of the SVD (\Thm{7.3.8}) and the spectral decomposition (\Thm{7.2.6}) are stated with proofs deferred (MTH2025 / Problem Set); the structural results are proved in full.
+\end{roadmap}
+
+\section{Orthogonal Matrices}
+\label{sec:7.1}
+
+\begin{defns}{7.1.1}{Orthogonal matrix}
+A square matrix $A$ is \emph{orthogonal} if $A\inv=A\trans$, equivalently $A\trans A=AA\trans=I$.
+\end{defns}
+
+\begin{exmp}{7.1.2}{}
+The matrix $A=\tfrac13\left[\begin{smallmatrix}1&2&2\\2&1&-2\\2&-2&1\end{smallmatrix}\right]$ is orthogonal: each column has length $\tfrac13\sqrt{1+4+4}=1$, and distinct columns are orthogonal, so $A\trans A=I$.
+\end{exmp}
+
+\begin{exmp}{7.1.3}{Rotation matrices}
+For any $\theta$, the rotation $R_\theta=\left[\begin{smallmatrix}\cos\theta&-\sin\theta\\\sin\theta&\cos\theta\end{smallmatrix}\right]$ is orthogonal: $R_\theta\trans R_\theta=I$ by the identity $\cos^2\theta+\sin^2\theta=1$.
+\end{exmp}
+
+\begin{thms}{7.1.4}{Characterisation by orthonormal rows/columns}
+For an $n\times n$ matrix $A$, the following are equivalent:
+\textup{(a)} $A$ is orthogonal;
+\textup{(b)} the rows of $A$ form an orthonormal basis of $\R^n$;
+\textup{(c)} the columns of $A$ form an orthonormal basis of $\R^n$.
+\end{thms}
+
+\begin{prf}
+The $(i,j)$ entry of $A\trans A$ is the dot product of columns $i$ and $j$ of $A$. So $A\trans A=I$ --- meaning those dot products are $\delta_{ij}$ --- says exactly that the columns are orthonormal, which for $n$ vectors in $\R^n$ means an orthonormal basis (\Thm{5.4.3}, \Thm{3.3.13}). This is (a)$\iff$(c). Applying the same to $AA\trans=I$ gives (a)$\iff$(b) for the rows.
+\end{prf}
+
+\begin{lems}{7.1.5}{Product of orthogonal matrices}
+If $A,B$ are orthogonal $n\times n$ matrices, then $AB$ is orthogonal.
+\end{lems}
+
+\begin{prf}
+$(AB)\trans(AB)=B\trans A\trans AB=B\trans IB=B\trans B=I$, using $A\trans A=I$ and $B\trans B=I$.
+\end{prf}
+
+\begin{lems}{7.1.6}{Determinant of an orthogonal matrix}
+If $A$ is orthogonal, then $\det(A)=\pm1$.
+\end{lems}
+
+\begin{prf}
+From $A\trans A=I$ and \Thm{2.2.10}, \Thm{2.2.2}, $\det(A\trans)\det(A)=\det(A)^2=\det(I)=1$, so $\det(A)=\pm1$.
+\end{prf}
+
+\begin{thms}{7.1.7}{Orthogonal matrices preserve geometry}
+For an $n\times n$ matrix $A$, the following are equivalent:
+\textup{(a)} $A$ is orthogonal;
+\textup{(b)} $\norm{A\vx}=\norm{\vx}$ for all $\vx\in\R^n$;
+\textup{(c)} $A\vx\cdot A\vy=\vx\cdot\vy$ for all $\vx,\vy\in\R^n$.
+\end{thms}
+
+\begin{prf}
+(a)$\Rightarrow$(c): $A\vx\cdot A\vy=(A\vx)\trans(A\vy)=\vx\trans A\trans A\vy=\vx\trans\vy=\vx\cdot\vy$. (c)$\Rightarrow$(b): take $\vy=\vx$ to get $\norm{A\vx}^2=\norm{\vx}^2$. (b)$\Rightarrow$(a) is left as an exercise (polarise (b) to recover (c), then $\vx\trans(A\trans A-I)\vy=0$ for all $\vx,\vy$ forces $A\trans A=I$).
+\end{prf}
+
+\begin{exmp}{7.1.8}{}
+The rotation $R_\theta$ of Example 7.1.3 satisfies $\norm{R_\theta\vx}=\norm{\vx}$: rotation preserves length, as direct multiplication confirms.
+\end{exmp}
+
+\begin{thms}{7.1.9}{Change between orthonormal bases}
+Let $V$ be a finite-dimensional inner product space. If $P$ is the change-of-basis matrix from one orthonormal basis to another, then $P$ is orthogonal.
+\end{thms}
+
+\begin{prf}[Idea]
+The columns of $P$ are the coordinate vectors of one orthonormal basis relative to the other. By \Thm{5.4.5}, coordinates relative to an orthonormal basis preserve inner products, so these columns are themselves orthonormal in $\R^n$; by \Thm{7.1.4}, $P$ is orthogonal.
+\end{prf}
+
+\section{Orthogonal Diagonalization and the Spectral Theorem}
+\label{sec:7.2}
+
+\begin{defns}{7.2.1}{Orthogonally diagonalizable}
+Square matrices $A,B$ are \emph{orthogonally similar} if $P\trans AP=B$ for some orthogonal $P$. If $A$ is orthogonally similar to a diagonal matrix, $A$ is \emph{orthogonally diagonalizable}.
+\end{defns}
+
+Note that for orthogonal $P$, $P\trans=P\inv$, so orthogonal similarity is a special case of ordinary similarity --- but with the bonus that the change of basis preserves all lengths and angles.
+
+\begin{thms}{7.2.2}{Spectral Theorem}
+For an $n\times n$ matrix $A$, the following are equivalent:
+\textup{(a)} $A$ is orthogonally diagonalizable;
+\textup{(b)} $A$ has an orthonormal set of $n$ eigenvectors;
+\textup{(c)} $A$ is symmetric.
+\end{thms}
+
+\begin{prf}
+(a)$\iff$(b): if $P\trans AP=D$ with $P$ orthogonal, then $AP=PD$ and (reading columns) the columns of $P$ are eigenvectors; orthogonality of $P$ makes them orthonormal (\Thm{7.1.4}). Conversely $n$ orthonormal eigenvectors assembled as columns give an orthogonal $P$ with $P\trans AP$ diagonal.
+
+(a)$\Rightarrow$(c): if $A=PDP\trans$ with $D$ diagonal and $P$ orthogonal, then $A\trans=(PDP\trans)\trans=PD\trans P\trans=PDP\trans=A$, so $A$ is symmetric. (c)$\Rightarrow$(a) is the substantive direction: a symmetric matrix has real eigenvalues, and (using \Thm{7.2.3} and the existence of orthonormal eigenbases, \Thm{5.4.10}) one can build an orthonormal eigenbasis; the full argument is developed in MTH2025.
+\end{prf}
+
+\begin{thms}{7.2.3}{Symmetric matrices: distinct eigenvalues give orthogonal eigenvectors}
+If $A$ is symmetric, then eigenvectors corresponding to distinct eigenvalues are orthogonal.
+\end{thms}
+
+\begin{prf}
+Let $A\vu=\lambda\vu$ and $A\vv=\mu\vv$ with $\lambda\neq\mu$. Using $A\trans=A$,
+\[
+\lambda(\vu\cdot\vv)=(A\vu)\cdot\vv=(A\vu)\trans\vv=\vu\trans A\trans\vv=\vu\trans A\vv=\vu\cdot(A\vv)=\mu(\vu\cdot\vv).
+\]
+Thus $(\lambda-\mu)(\vu\cdot\vv)=0$; since $\lambda\neq\mu$, $\vu\cdot\vv=0$.
+\end{prf}
+
+\begin{algs}{7.2.4}{Orthogonal diagonalization}
+Let $A$ be symmetric.
+\begin{enumerate}[label=\textup{(\roman*)},leftmargin=2.4em,itemsep=1pt]
+\item Find a basis for each eigenspace of $A$.
+\item Apply Gram--Schmidt within each eigenspace to obtain an orthonormal basis of it (eigenvectors from different eigenspaces are already orthogonal by \Thm{7.2.3}).
+\item Form $P$ with columns the union of all these orthonormal vectors. Then $P$ is orthogonal and $D=P\trans AP$ is diagonal, with eigenvalues ordered to match the columns of $P$.
+\end{enumerate}
+\end{algs}
+
+\begin{exmp}{7.2.5}{Orthogonally diagonalize a symmetric matrix}
+Let $A=\left[\begin{smallmatrix}3&1\\1&3\end{smallmatrix}\right]$ (symmetric, hence orthogonally diagonalizable). The characteristic polynomial is $(\lambda-3)^2-1=(\lambda-2)(\lambda-4)$, so eigenvalues are $2,4$. For $\lambda=4$: $(4I-A)\vx=\left[\begin{smallmatrix}1&-1\\-1&1\end{smallmatrix}\right]\vx=\vze\Rightarrow$ eigenvector $(1,1)$. For $\lambda=2$: eigenvector $(1,-1)$. These are orthogonal (\Thm{7.2.3}); normalising,
+\[
+P=\frac{1}{\sqrt2}\begin{bmatrix}1&1\\1&-1\end{bmatrix},\qquad D=\begin{bmatrix}4&0\\0&2\end{bmatrix},\qquad P\trans AP=D.
+\]
+\end{exmp}
+
+\begin{thms}{7.2.6}{Spectral decomposition}
+Let $A$ be symmetric $n\times n$, with orthonormal eigenbasis $\vu_1,\dots,\vu_n$ and corresponding eigenvalues $\lambda_1,\dots,\lambda_n$. Then
+\[
+A=\sum_{i=1}^n\lambda_i\,\vu_i\vu_i\trans.
+\]
+\end{thms}
+
+\begin{prf}[Idea]
+Writing $A=PDP\trans$ with $P=[\vu_1\;\cdots\;\vu_n]$ and $D=\diag(\lambda_i)$, expanding the product $PDP\trans$ column-by-column gives exactly $\sum_i\lambda_i\vu_i\vu_i\trans$. Each $\vu_i\vu_i\trans$ is the (rank-one) orthogonal projection onto the eigenline $\spn\{\vu_i\}$, so $A$ acts as $\lambda_i$ along each eigendirection.
+\end{prf}
+
+\begin{exmp}{7.2.7}{Building a symmetric matrix from a spectrum}
+Find a $2\times2$ symmetric matrix with eigenvalues $\lambda_1=3$, $\lambda_2=-2$ and corresponding orthonormal eigenvectors $\vu_1=\tfrac{1}{\sqrt2}(1,1)$, $\vu_2=\tfrac{1}{\sqrt2}(1,-1)$. By spectral decomposition,
+\[
+A=3\,\vu_1\vu_1\trans-2\,\vu_2\vu_2\trans=\tfrac32\begin{bmatrix}1&1\\1&1\end{bmatrix}-1\begin{bmatrix}1&-1\\-1&1\end{bmatrix}=\begin{bmatrix}\tfrac12&\tfrac52\\\tfrac52&\tfrac12\end{bmatrix}.
+\]
+\end{exmp}
+
+\section{The Singular Value Decomposition}
+\label{sec:7.3}
+
+Only symmetric matrices are orthogonally diagonalizable, and only square matrices have eigenvalues at all. The SVD removes both restrictions: \emph{every} matrix, of any shape, factors through orthogonal matrices and a diagonal one. The key is that while $A$ itself may be unmanageable, $A\trans A$ is always symmetric and well-behaved.
+
+\begin{thms}{7.3.1}{$A\trans A$ is well-behaved}
+For any $m\times n$ matrix $A$:
+\textup{(a)} $A\trans A$ is orthogonally diagonalizable; and
+\textup{(b)} the eigenvalues of $A\trans A$ are nonnegative.
+\end{thms}
+
+\begin{prf}
+\case{(a)} $A\trans A$ is symmetric, since $(A\trans A)\trans=A\trans(A\trans)\trans=A\trans A$; by the Spectral Theorem (\Thm{7.2.2}) it is orthogonally diagonalizable.
+
+\case{(b)} If $A\trans A\vx=\lambda\vx$ with $\vx\neq\vze$, then $\norm{A\vx}^2=(A\vx)\trans(A\vx)=\vx\trans A\trans A\vx=\lambda\vx\trans\vx=\lambda\norm{\vx}^2$. The left side is $\ge0$ and $\norm{\vx}^2>0$, so $\lambda\ge0$.
+\end{prf}
+
+\begin{defns}{7.3.2}{Singular values}
+If $\lambda_1,\dots,\lambda_n$ are the eigenvalues of $A\trans A$, the \emph{singular values} of $A$ are $\sigma_i=\sqrt{\lambda_i}$ (real and nonnegative by \Thm{7.3.1}(b)).
+\end{defns}
+
+\begin{thms}{7.3.3}{Number of positive singular values}
+If $A$ has rank $r$, then $A$ has exactly $r$ positive singular values.
+\end{thms}
+
+\begin{prf}
+The number of positive singular values is the number of nonzero eigenvalues of $A\trans A$, i.e. $n-\dim\ker(A\trans A)$. By \Thm{5.6.8}(a), $\ker(A\trans A)=\ker(A)$, so this is $n-\nullity(A)=\rank(A)=r$ by Rank--Nullity.
+\end{prf}
+
+\begin{exmp}{7.3.4}{Singular values}
+For $A=\left[\begin{smallmatrix}1&1\\0&1\\1&0\end{smallmatrix}\right]$, $A\trans A=\left[\begin{smallmatrix}2&1\\1&2\end{smallmatrix}\right]$ with eigenvalues $3,1$. The singular values are $\sigma_1=\sqrt3$, $\sigma_2=1$. Since $\rank(A)=2$, both are positive, matching \Thm{7.3.3}.
+\end{exmp}
+
+\begin{defns}{7.3.5}{Singular Value Decomposition}
+A \emph{Singular Value Decomposition} (SVD) of an $m\times n$ matrix $A$ is a factorisation $A=U\Sigma V\trans$, where $U$ is $m\times m$ orthogonal, $V$ is $n\times n$ orthogonal, and $\Sigma$ is an $m\times n$ ``diagonal'' matrix (entries off the main diagonal are zero) with nonnegative entries.
+\end{defns}
+
+\begin{thms}{7.3.6}{Structure of an SVD}
+Let $A$ be $m\times n$ of rank $r>0$, with SVD $A=U\Sigma V\trans$. Then:
+\begin{enumerate}[label=\textup{(\alph*)},leftmargin=2.2em,itemsep=1pt]
+\item the nonzero entries are $(\Sigma)_{ii}=\sigma_i$ for $1\le i\le r$, where $\sigma_1\ge\cdots\ge\sigma_r>0$ are the nonzero singular values;
+\item the $i$th column $\vv_i$ of $V$ is an eigenvector of $A\trans A$ with eigenvalue $\sigma_i^2$;
+\item for $1\le i\le r$, the $i$th column of $U$ is $\vu_i=\tfrac{1}{\sigma_i}A\vv_i$.
+\end{enumerate}
+\end{thms}
+
+\begin{prf}
+From $A=U\Sigma V\trans$ and orthogonality of $U$, $A\trans A=V\Sigma\trans U\trans U\Sigma V\trans=V(\Sigma\trans\Sigma)V\trans$. Since $\Sigma\trans\Sigma$ is the $n\times n$ diagonal matrix with entries $\sigma_i^2$, this exhibits $V$ as orthogonally diagonalizing $A\trans A$: its columns $\vv_i$ are eigenvectors with eigenvalues $\sigma_i^2$, proving (b), and the $\sigma_i^2$ are the eigenvalues so the $\sigma_i$ are the singular values, proving (a). For (c), comparing columns of $AV=U\Sigma$ gives $A\vv_i=\sigma_i\vu_i$ for $i\le r$, i.e. $\vu_i=\tfrac{1}{\sigma_i}A\vv_i$.
+\end{prf}
+
+\begin{rmks}{7.3.7}
+A consequence of \Thm{7.3.6} is that the singular values, and the singular value $\sigma_i$ together with the directions $\vv_i,\vu_i$, are determined by $A$ (up to the usual choices within eigenspaces); the SVD packages the action of $A$ as: rotate by $V\trans$, scale the axes by the $\sigma_i$, rotate by $U$.
+\end{rmks}
+
+\begin{thms}{7.3.8}{Existence of the SVD}
+Every matrix has a singular value decomposition.
+\end{thms}
+
+\begin{proofomit}[MTH2025]The construction is exactly \Alg{7.3.10}: orthonormal eigenvectors of $A\trans A$ furnish $V$, the singular values furnish $\Sigma$, and the normalised images $A\vv_i/\sigma_i$ (extended to an orthonormal basis) furnish $U$.
+\end{proofomit}
+
+\begin{thms}{7.3.9}{The SVD as a matrix representation}
+Let $T:\R^n\to\R^m$ be $T(\vx)=A\vx$, and let $A=U\Sigma V\trans$. If $B$ is the basis of columns of $V$ and $B'$ the basis of columns of $U$, then $[T]_{B',B}=\Sigma$.
+\end{thms}
+
+\begin{prf}
+By \Thm{7.3.6}(c), $T(\vv_i)=A\vv_i=\sigma_i\vu_i$ for $i\le r$ and $A\vv_i=\vze$ for $i>r$. The $B'$-coordinate vector of $\sigma_i\vu_i$ is $\sigma_i\ve_i$, so the $i$th column of $[T]_{B',B}$ is $\sigma_i\ve_i$ (or $\vze$), which is exactly column $i$ of $\Sigma$. Hence $[T]_{B',B}=\Sigma$ --- relative to the singular bases, $T$ is pure scaling.
+\end{prf}
+
+\begin{algs}{7.3.10}{Computing an SVD}
+For an $m\times n$ matrix $A$:
+\begin{enumerate}[label=\textup{(\roman*)},leftmargin=2.4em,itemsep=1pt]
+\item find the eigenvalues $\lambda_i$ and an orthonormal eigenbasis $\vv_i$ of $A\trans A$, ordered so $\lambda_1\ge\cdots\ge\lambda_r>0$ and $\lambda_i=0$ for $i>r$;
+\item set $V=[\vv_1\;\cdots\;\vv_n]$;
+\item the nonzero diagonal entries of $\Sigma$ are $\sigma_i=\sqrt{\lambda_i}$ for $i\le r$ (rest zero);
+\item for $i\le r$ set $\vu_i=\tfrac{1}{\sigma_i}A\vv_i$; extend $\{\vu_1,\dots,\vu_r\}$ to an orthonormal basis $\vu_1,\dots,\vu_m$ of $\R^m$ and set $U=[\vu_1\;\cdots\;\vu_m]$.
+\end{enumerate}
+Then $A=U\Sigma V\trans$.
+\end{algs}
+
+\begin{exmp}{7.3.11ex}{A worked SVD}
+Find an SVD of $A=\left[\begin{smallmatrix}1&1\\0&1\\1&0\end{smallmatrix}\right]$ (from Example 7.3.4).
+
+\smallskip
+\noindent\textit{Solution.} We found $A\trans A=\left[\begin{smallmatrix}2&1\\1&2\end{smallmatrix}\right]$ with eigenvalues $\lambda_1=3,\lambda_2=1$ and orthonormal eigenvectors $\vv_1=\tfrac{1}{\sqrt2}(1,1)$, $\vv_2=\tfrac{1}{\sqrt2}(1,-1)$. So
+\[
+V=\frac1{\sqrt2}\begin{bmatrix}1&1\\1&-1\end{bmatrix},\qquad \sigma_1=\sqrt3,\;\sigma_2=1,\qquad \Sigma=\begin{bmatrix}\sqrt3&0\\0&1\\0&0\end{bmatrix}.
+\]
+Then $\vu_1=\tfrac{1}{\sqrt3}A\vv_1=\tfrac{1}{\sqrt6}(2,1,1)$ and $\vu_2=\tfrac11 A\vv_2=\tfrac1{\sqrt2}(0,-1,1)$. Extending to an orthonormal basis with $\vu_3=\tfrac1{\sqrt3}(1,-1,-1)$ (a unit vector orthogonal to $\vu_1,\vu_2$),
+\[
+U=\begin{bmatrix}2/\sqrt6&0&1/\sqrt3\\1/\sqrt6&-1/\sqrt2&-1/\sqrt3\\1/\sqrt6&1/\sqrt2&-1/\sqrt3\end{bmatrix},
+\]
+and $A=U\Sigma V\trans$.
+\end{exmp}
+
+\begin{defns}{7.3.11}{Singular vectors}
+An eigenvector of $A\trans A$ is a \emph{right singular vector} of $A$; an eigenvector of $AA\trans$ is a \emph{left singular vector}.
+\end{defns}
+
+\begin{lems}{7.3.12}{}
+If $A=U\Sigma V\trans$, then the columns of $U$ are left singular vectors and the columns of $V$ are right singular vectors of $A$.
+\end{lems}
+
+\begin{prf}
+\Thm{7.3.6}(b) shows the columns of $V$ are eigenvectors of $A\trans A$ (right singular vectors). Symmetrically, $AA\trans=U\Sigma V\trans V\Sigma\trans U\trans=U(\Sigma\Sigma\trans)U\trans$, so the columns of $U$ are eigenvectors of $AA\trans$ (left singular vectors).
+\end{prf}
+
+\begin{thms}{7.3.14}{Singular value expansion}
+Let $A$ be $m\times n$ of rank $r>0$ with SVD $A=U\Sigma V\trans$, columns $\vu_i$ of $U$ and $\vv_i$ of $V$. Then
+\[
+A=\sigma_1\vu_1\vv_1\trans+\sigma_2\vu_2\vv_2\trans+\cdots+\sigma_r\vu_r\vv_r\trans. \tag{7.1}
+\]
+\end{thms}
+
+\begin{prf}
+Expanding the product $U\Sigma V\trans$, only the first $r$ diagonal entries of $\Sigma$ are nonzero, so the product collapses to the sum of rank-one terms $\sigma_i\vu_i\vv_i\trans$ for $i=1,\dots,r$, as in the spectral decomposition.
+\end{prf}
+
+\begin{defns}{7.3.15}{Singular value expansion}
+Equation \textup{(7.1)} is the \emph{singular value expansion} of $A$; its matrix form $A=\tilde U\tilde\Sigma\tilde V\trans$ (keeping only the first $r$ columns/rows) is the \emph{reduced SVD}. Truncating the sum after $k<r$ terms gives the best rank-$k$ approximation to $A$.
+\end{defns}
+
+\section{The Pseudoinverse}
+\label{sec:7.4}
+
+A non-square or singular matrix has no inverse, yet we often need to ``undo'' it as far as possible --- for instance to solve least-squares problems. The SVD provides the answer.
+
+\begin{defns}{7.4.1}{Pseudoinverse}
+Let $\Sigma$ be an $m\times n$ diagonal matrix with $(\Sigma)_{ii}=\sigma_i>0$ for $1\le i\le r$. Its \emph{pseudoinverse} $\Sigma^+$ is the $n\times m$ diagonal matrix with $(\Sigma^+)_{ii}=1/\sigma_i$ for $1\le i\le r$ (and zeros elsewhere). For any $m\times n$ matrix $A$ with SVD $A=U\Sigma V\trans$, the \emph{pseudoinverse} is
+\[
+A^+=V\Sigma^+U\trans.
+\]
+\end{defns}
+
+\begin{lems}{7.4.2}{}
+Every matrix has a unique pseudoinverse.
+\end{lems}
+
+\begin{proofomit}[Problem Set]Existence follows from existence of the SVD; uniqueness is shown by verifying $A^+$ satisfies the defining Moore--Penrose conditions, which pin it down independently of the chosen SVD.
+\end{proofomit}
+
+\begin{lems}{7.4.3}{Pseudoinverse from the reduced SVD}
+If $A=\tilde U\tilde\Sigma\tilde V\trans$ is a reduced SVD, then $A^+=\tilde V\tilde\Sigma\inv\tilde U\trans$.
+\end{lems}
+
+\begin{proofomit}[Problem Set]It follows by restricting the definition to the nonzero block, where $\tilde\Sigma$ is genuinely invertible.
+\end{proofomit}
+
+\begin{lems}{7.4.4}{}
+For any matrix $A$, $\rank(A)=\rank(A^+)$.
+\end{lems}
+
+\begin{prf}
+The rank of $A$ equals the number $r$ of nonzero singular values (\Thm{7.3.3}). Since $\Sigma^+$ has the same number $r$ of nonzero entries, and pre/post-multiplying by the invertible orthogonal $V,U\trans$ preserves rank, $\rank(A^+)=\rank(\Sigma^+)=r=\rank(A)$.
+\end{prf}
+
+\begin{lems}{7.4.5}{Pseudoinverse generalises the inverse}
+If $A$ is invertible, then $A^+=A\inv$.
+\end{lems}
+
+\begin{prf}
+If $A$ is invertible (square, full rank $n$), then $\Sigma$ is square invertible with $\Sigma^+=\Sigma\inv$. Hence $A^+=V\Sigma\inv U\trans=(U\Sigma V\trans)\inv=A\inv$, using that $U,V$ are orthogonal so $(V\trans)\inv=V$ and $U\inv=U\trans$.
+\end{prf}
+
+\begin{exmp}{7.4.6}{Computing a pseudoinverse}
+Let $A=\left[\begin{smallmatrix}1&0\\1&0\end{smallmatrix}\right]$ (rank $1$). Then $A\trans A=\left[\begin{smallmatrix}2&0\\0&0\end{smallmatrix}\right]$ with eigenvalues $2,0$, so $\sigma_1=\sqrt2$, and $\vv_1=(1,0)$, $\vv_2=(0,1)$. Here $\vu_1=\tfrac1{\sqrt2}A\vv_1=\tfrac1{\sqrt2}(1,1)$, $\vu_2=\tfrac1{\sqrt2}(1,-1)$. The reduced SVD gives
+\[
+A^+=\tilde V\tilde\Sigma\inv\tilde U\trans=\begin{bmatrix}1\\0\end{bmatrix}\cdot\tfrac1{\sqrt2}\cdot\tfrac1{\sqrt2}\begin{bmatrix}1&1\end{bmatrix}=\tfrac12\begin{bmatrix}1&1\\0&0\end{bmatrix}.
+\]
+Check: $A^+$ has rank $1=\rank(A)$, consistent with \Lem{7.4.4}.
+\end{exmp}
+
+\begin{thms}{7.4.7}{The four subspaces under the pseudoinverse}
+For any $m\times n$ matrix $A$:
+\textup{(a)} $\colsp(A^+)=\rowsp(A)$;
+\textup{(b)} $\rowsp(A^+)=\colsp(A)$;
+\textup{(c)} $\ker(A^+)=\coker(A)$;
+\textup{(d)} $\coker(A^+)=\ker(A)$.
+\end{thms}
+
+\begin{prf}[Idea]
+From $A^+=V\Sigma^+U\trans$ and \Thm{7.3.6}, the first $r$ columns of $V$ span $\rowsp(A)$ and the first $r$ columns of $U$ span $\colsp(A)$. The pseudoinverse maps $\colsp(A)$ back onto $\rowsp(A)$ via the reciprocal singular values, which gives (a) and (b);
+
+\case{(c)} and (d) follow from the orthogonal-complement relations $\colsp(A)^\perp=\coker(A)$ and $\rowsp(A)^\perp=\ker(A)$ of \Thm{5.5.1}.
+\end{prf}
+
+\begin{thms}{7.4.8}{The pseudoinverse inverts $A$ on the row space}
+Define $T_A:\rowsp(A)\to\colsp(A)$ by $T_A(\vx)=A\vx$, and $T_{A^+}:\colsp(A)\to\rowsp(A)$ by $T_{A^+}(\vx)=A^+\vx$. Then $T_A$ is an isomorphism with $T_A\inv=T_{A^+}$.
+\end{thms}
+
+\begin{proofomit}[Problem Set]Restricted to the row space, $A$ acts as scaling by the positive $\sigma_i$ along the right singular directions, an invertible map; $A^+$ scales back by $1/\sigma_i$.
+\end{proofomit}
+
+\begin{thms}{7.4.9}{Minimal-length least-squares solution}
+The system $A\vx=\vb$ has a unique least-squares solution of minimal length, given by
+\[
+\vx^*=A^+\vb.
+\]
+\end{thms}
+
+\begin{prf}[Idea]
+Among all least-squares solutions (solutions of the normal equations, \Thm{5.6.5}), those differ by elements of $\ker(A)$. The vector $A^+\vb$ lies in $\rowsp(A)=\ker(A)^\perp$ (\Thm{7.4.7}(a)), so it is the unique least-squares solution orthogonal to $\ker(A)$ --- and by Pythagoras (\Thm{5.2.6}) the one of smallest norm. When $A$ has independent columns this agrees with $(A\trans A)\inv A\trans\vb$ from \Rmk{5.6.9}.
+\end{prf}
+
+% ===================================================================
+\section*{Chapter 7 Summary}
+\addcontentsline{toc}{section}{Chapter 7 Summary}
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+\item An \emph{orthogonal matrix} has $A\inv=A\trans$ (\Defn{7.1.1}), equivalently orthonormal rows/columns (\Thm{7.1.4}); it preserves lengths and dot products (\Thm{7.1.7}) and has $\det=\pm1$ (\Lem{7.1.6}).
+\item \textbf{Spectral Theorem (\Thm{7.2.2}):} $A$ is orthogonally diagonalizable $\iff$ $A$ is symmetric. For symmetric $A$, eigenvectors from distinct eigenvalues are orthogonal (\Thm{7.2.3}); orthogonally diagonalize via \Alg{7.2.4}, and $A=\sum_i\lambda_i\vu_i\vu_i\trans$ (\Thm{7.2.6}).
+\item For \emph{any} matrix, $A\trans A$ is symmetric with nonnegative eigenvalues (\Thm{7.3.1}); the \emph{singular values} are $\sigma_i=\sqrt{\lambda_i}$ (\Defn{7.3.2}), with exactly $\rank(A)$ of them positive (\Thm{7.3.3}).
+\item \textbf{SVD (\Thm{7.3.8}):} every $A=U\Sigma V\trans$ with $U,V$ orthogonal and $\Sigma$ diagonal; columns of $V$ are eigenvectors of $A\trans A$, $\vu_i=A\vv_i/\sigma_i$ (\Thm{7.3.6}); singular value expansion $A=\sum_{i=1}^r\sigma_i\vu_i\vv_i\trans$ (\Thm{7.3.14}).
+\item The \emph{pseudoinverse} $A^+=V\Sigma^+U\trans$ (\Defn{7.4.1}) generalises the inverse (\Lem{7.4.5}), has the same rank (\Lem{7.4.4}), swaps the four subspaces (\Thm{7.4.7}), and delivers the minimal-length least-squares solution $\vx^*=A^+\vb$ (\Thm{7.4.9}).
+\end{itemize}
+
+% ===================================================================
+\section*{Chapter 7 Exercises}
+\addcontentsline{toc}{section}{Chapter 7 Exercises}
+
+\begin{enumerate}[label=\textbf{7.\arabic*},leftmargin=2.6em,itemsep=6pt]
+\item Verify that $A=\tfrac15\left[\begin{smallmatrix}3&-4\\4&3\end{smallmatrix}\right]$ is orthogonal, and find $\det(A)$.
+
+\item Orthogonally diagonalize $A=\left[\begin{smallmatrix}2&-2\\-2&5\end{smallmatrix}\right]$: find an orthogonal $P$ and diagonal $D$ with $P\trans AP=D$.
+
+\item Find the singular values of $A=\left[\begin{smallmatrix}2&0\\0&-3\\0&0\end{smallmatrix}\right]$.
+
+\item Compute a full SVD of $A=\left[\begin{smallmatrix}3&0\\0&-2\end{smallmatrix}\right]$. (Hint: it is already almost diagonal.)
+
+\item Prove that the eigenvalues of a symmetric matrix $A$ satisfy: $A$ is invertible iff all singular values are positive.
+
+\item For $A=\left[\begin{smallmatrix}1&1\end{smallmatrix}\right]$ (a $1\times2$ matrix), compute $A^+$ and verify that $\vx^*=A^+\,b$ solves the minimal-length least-squares problem for $A\vx=b$ (take $b=2$).
+\end{enumerate}
+
+\subsection*{Solutions to Chapter 7 Exercises}
+
+\begin{enumerate}[label=\textbf{7.\arabic*},leftmargin=2.6em,itemsep=8pt]
+
+\item Columns $\tfrac15(3,4)$ and $\tfrac15(-4,3)$ each have length $\tfrac15\sqrt{9+16}=1$ and dot product $\tfrac1{25}(-12+12)=0$, so $A\trans A=I$ and $A$ is orthogonal (\Thm{7.1.4}). $\det(A)=\tfrac1{25}(9+16)=1$ (consistent with \Lem{7.1.6}).
+
+\item Characteristic polynomial $(\lambda-2)(\lambda-5)-4=\lambda^2-7\lambda+6=(\lambda-1)(\lambda-6)$, eigenvalues $1,6$. For $\lambda=1$: $\left[\begin{smallmatrix}-1&-2\\-2&-4\end{smallmatrix}\right]\vx=\vze\Rightarrow x_1=-2x_2$, eigenvector $(2,-1)$ (note: solving $-x_1-2x_2=0$ gives $x_1=-2x_2$, so $(-2,1)$; take $(2,-1)$). For $\lambda=6$: $\left[\begin{smallmatrix}4&-2\\-2&1\end{smallmatrix}\right]\vx=\vze\Rightarrow x_2=2x_1$, eigenvector $(1,2)$. Orthogonal (\Thm{7.2.3}); normalise: $P=\tfrac1{\sqrt5}\left[\begin{smallmatrix}2&1\\-1&2\end{smallmatrix}\right]$, $D=\left[\begin{smallmatrix}1&0\\0&6\end{smallmatrix}\right]$.
+
+\item $A\trans A=\left[\begin{smallmatrix}4&0\\0&9\end{smallmatrix}\right]$, eigenvalues $4,9$, so singular values $\sigma_1=3$, $\sigma_2=2$. (The middle row of zeros does not affect $A\trans A$.)
+
+\item $A\trans A=\left[\begin{smallmatrix}9&0\\0&4\end{smallmatrix}\right]$, eigenvalues $9,4$, ordered: $\sigma_1=3$ (eigenvector $\ve_1$), $\sigma_2=2$ (eigenvector $\ve_2$). So $V=I$, $\Sigma=\left[\begin{smallmatrix}3&0\\0&2\end{smallmatrix}\right]$. Then $\vu_1=\tfrac13A\ve_1=(1,0)$, $\vu_2=\tfrac12A\ve_2=(0,-1)$, so $U=\left[\begin{smallmatrix}1&0\\0&-1\end{smallmatrix}\right]$. Check: $U\Sigma V\trans=\left[\begin{smallmatrix}1&0\\0&-1\end{smallmatrix}\right]\left[\begin{smallmatrix}3&0\\0&2\end{smallmatrix}\right]=\left[\begin{smallmatrix}3&0\\0&-2\end{smallmatrix}\right]=A$. \checkmark
+
+\item For symmetric $A$, the singular values are $\sigma_i=\sqrt{\lambda_i(A\trans A)}=\sqrt{\lambda_i(A^2)}=\abs{\lambda_i(A)}$ (since $A\trans A=A^2$ and eigenvalues of $A^2$ are squares of those of $A$, \Thm{6.1.14}). All $\sigma_i>0\iff$ no eigenvalue of $A$ is $0\iff A$ invertible (\Thm{6.1.16}). $\blacksquare$
+
+\item $A\trans A=\left[\begin{smallmatrix}1&1\\1&1\end{smallmatrix}\right]$, eigenvalues $2,0$; $\sigma_1=\sqrt2$, $\vv_1=\tfrac1{\sqrt2}(1,1)$. Then $\vu_1=\tfrac1{\sqrt2}A\vv_1=\tfrac1{\sqrt2}\cdot\tfrac1{\sqrt2}(1+1)=1$ (the $1\times1$ matrix $[1]$). Reduced SVD: $A=\tilde U\tilde\Sigma\tilde V\trans$ with $\tilde U=[1]$, $\tilde\Sigma=[\sqrt2]$, $\tilde V=\tfrac1{\sqrt2}(1,1)\trans$. So $A^+=\tilde V\tilde\Sigma\inv\tilde U\trans=\tfrac1{\sqrt2}(1,1)\trans\cdot\tfrac1{\sqrt2}=\tfrac12(1,1)\trans$. For $b=2$: $\vx^*=A^+b=(1,1)\trans$. Check: $A\vx^*=1+1=2=b$ exactly (so error is $0$), and $\vx^*\in\rowsp(A)=\spn\{(1,1)\}$, confirming minimal length. \checkmark
+
+\end{enumerate}

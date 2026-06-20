@@ -1,0 +1,279 @@
+\chapter{Determinants}
+\label{ch:determinants}
+
+\begin{roadmap}
+\noindent\textbf{What this chapter is about.}\;
+To every square matrix we attach a single number, its \emph{determinant}, which detects invertibility: a square matrix is invertible exactly when its determinant is nonzero. We define the determinant recursively through cofactor expansion, learn to compute it efficiently by row reduction, and establish its two structural pillars --- that it is multiplicative, $\det(AB)=\det(A)\det(B)$, and that it vanishes precisely for singular matrices. These facts let us extend the invertibility equivalences of Chapter~\ref{ch:linear-systems} with one more condition, $\det(A)\neq0$, and they prepare the characteristic polynomial of Chapter~\ref{ch:eigenvalues}.
+\medskip
+
+\noindent\textbf{Reference.}\; A\&R \S\S2.1--2.3.
+
+\noindent\textbf{A note on scope.}\; Two foundational results --- that $\det(A)=\det(A\trans)$ and the precise effect of row operations on the determinant --- are stated here without proof. Their proofs require the permutation (Leibniz) definition of the determinant developed in MTH2025 and are not examinable in MTH2021. Everything built on top of them \emph{is} proved here.
+\end{roadmap}
+
+\section{Definition}
+\label{sec:2.1}
+
+The determinant is defined by recursion on the size of the matrix: the $n\times n$ case is reduced to several $(n-1)\times(n-1)$ determinants.
+
+\begin{defns}{2.1.1}{Determinant, minor, cofactor}
+The \emph{determinant} function $\det$ assigns to each $n\times n$ matrix $A$ a real number $\det(A)$, defined recursively:
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+\item $n=1$: if $A=[a]$ then $\det(A)=a$.
+\item $n=2$: if $A=\left[\begin{smallmatrix}a&b\\c&d\end{smallmatrix}\right]$ then $\det(A)=ad-bc$.
+\item $n\ge2$: the \emph{$(i,j)$-minor} $M_{ij}(A)$ is the determinant of the $(n-1)\times(n-1)$ matrix obtained by deleting row $i$ and column $j$ of $A$; the \emph{$(i,j)$-cofactor} is
+\[
+C_{ij}(A)=(-1)^{i+j}M_{ij}(A).
+\]
+The determinant is then given by \emph{cofactor (Laplace) expansion along the first row}:
+\[
+\det(A)=(A)_{11}C_{11}(A)+(A)_{12}C_{12}(A)+\cdots+(A)_{1n}C_{1n}(A).
+\]
+\end{itemize}
+\end{defns}
+
+\begin{rmks}{2.1.2}
+The cofactor sign $(-1)^{i+j}$ produces the checkerboard pattern
+$\det(A)=+(A)_{11}M_{11}-(A)_{12}M_{12}+(A)_{13}M_{13}-\cdots$, so the signs alternate across the expansion row.
+\end{rmks}
+
+\begin{exmp}{2.1.3}{A $3\times3$ determinant by first-row expansion}
+For $A=\left[\begin{smallmatrix}1&2&3\\2&1&0\\4&1&1\end{smallmatrix}\right]$,
+\[
+\det(A)=1\!\det\!\begin{bmatrix}1&0\\1&1\end{bmatrix}-2\!\det\!\begin{bmatrix}2&0\\4&1\end{bmatrix}+3\!\det\!\begin{bmatrix}2&1\\4&1\end{bmatrix}
+=1(1)-2(2)+3(-2)=1-4-6=-9.
+\]
+\end{exmp}
+
+A great convenience is that the expansion may be taken along \emph{any} row or column, not just the first; one chooses the row or column with the most zeros to minimise work.
+
+\begin{thms}{2.1.4}{Cofactor expansion along any line}
+For any $n\times n$ matrix $A$ and any fixed $i$ or $j$,
+\[
+\det(A)=\sum_{k=1}^{n}(A)_{ik}C_{ik}(A)\quad(\text{row }i),\qquad
+\det(A)=\sum_{k=1}^{n}(A)_{kj}C_{kj}(A)\quad(\text{column }j).
+\]
+\end{thms}
+
+\begin{rmks}{2.1.5}
+If $A$ has a row of zeros or a column of zeros, then $\det(A)=0$ --- expand along that line, and every term carries a factor of $0$.
+\end{rmks}
+
+\begin{exmp}{2.1.6}{Choosing a convenient line}
+For the matrix $A$ of Example 2.1.3, column $3$ has entries $3,0,1$. Expanding along it,
+\[
+\det(A)=3\,C_{13}+0\cdot C_{23}+1\cdot C_{33}
+=3(+1)\!\det\!\begin{bmatrix}2&1\\4&1\end{bmatrix}+1(+1)\!\det\!\begin{bmatrix}1&2\\2&1\end{bmatrix}
+=3(-2)+(-3)=-9,
+\]
+agreeing with Example 2.1.3, but with one fewer $2\times2$ determinant to evaluate.
+\end{exmp}
+
+\section{Properties}
+\label{sec:2.2}
+
+Cofactor expansion is impractical for large matrices: an $n\times n$ determinant expands into $n!$ terms. The efficient route is row reduction, which rests on knowing how each elementary operation affects the determinant.
+
+\begin{lems}{2.2.1}{Determinant of a triangular matrix}
+If $A$ is upper-triangular or lower-triangular, then $\det(A)$ is the product of its diagonal entries:
+\[
+\det(A)=(A)_{11}(A)_{22}\cdots(A)_{nn}.
+\]
+\end{lems}
+
+\begin{prf}
+Induct on $n$, expanding along the first column (for upper-triangular) or first row (for lower-triangular). In the upper-triangular case, the first column is $((A)_{11},0,\dots,0)\trans$, so cofactor expansion down column $1$ leaves the single term $(A)_{11}C_{11}=(A)_{11}M_{11}$. The minor $M_{11}$ is the determinant of an $(n-1)\times(n-1)$ upper-triangular matrix with diagonal $(A)_{22},\dots,(A)_{nn}$; by the inductive hypothesis it equals their product. The base case $n=1$ is immediate.
+\end{prf}
+
+\begin{thms}{2.2.2}{Transpose invariance}
+$\det(A)=\det(A\trans)$.
+\end{thms}
+
+\begin{proofomit}[MTH2025]A consequence worth noting immediately: every statement about the rows of a determinant has an identical counterpart for columns, since transposing swaps rows and columns without changing the value.
+\end{proofomit}
+
+\begin{thms}{2.2.3}{Effect of row and column operations}
+Let $A$ be square.
+\begin{enumerate}[label=\textup{(\alph*)},leftmargin=2.2em,itemsep=1pt]
+\item If $B$ is obtained from $A$ by multiplying a single row (or column) by a scalar $k$, then $\det(B)=k\det(A)$.
+\item If $B$ is obtained by interchanging two rows (or two columns), then $\det(B)=-\det(A)$.
+\item If $B$ is obtained by adding a scalar multiple of one row to another row (or one column to another column), then $\det(B)=\det(A)$.
+\end{enumerate}
+\end{thms}
+
+\begin{proofomit}[MTH2025]The $2\times2$ case is an easy direct check (Exercise 2.1).
+\end{proofomit}
+
+\begin{exmp}{2.2.5}{Determinant by reduction to echelon form}
+Find $\det(A)$ for $A=\left[\begin{smallmatrix}0&3&3\\1&1&2\\3&2&4\end{smallmatrix}\right]$ by row-reducing and tracking the determinant.
+
+\smallskip
+\noindent\textit{Solution.} Swap $R_1\leftrightarrow R_2$ (this negates the determinant by \Thm{2.2.3}(b)):
+\[
+\det(A)=-\det\!\begin{bmatrix}1&1&2\\0&3&3\\3&2&4\end{bmatrix}.
+\]
+Now $R_3\mapsto R_3-3R_1$ leaves the determinant unchanged (\Thm{2.2.3}(c)):
+\[
+=-\det\!\begin{bmatrix}1&1&2\\0&3&3\\0&-1&-2\end{bmatrix}.
+\]
+Then $R_3\mapsto R_3+\tfrac13R_2$ (again unchanged):
+\[
+=-\det\!\begin{bmatrix}1&1&2\\0&3&3\\0&0&-1\end{bmatrix}=-\bigl(1\cdot3\cdot(-1)\bigr)=3,
+\]
+the last step by \Lem{2.2.1} (triangular determinant). Hence $\det(A)=3$.
+\end{exmp}
+
+The same operations applied to the identity give the determinants of the elementary matrices.
+
+\begin{thms}{2.2.6}{Determinants of elementary matrices}
+Let $E$ be an $n\times n$ elementary matrix.
+\begin{enumerate}[label=\textup{(\alph*)},leftmargin=2.2em,itemsep=1pt]
+\item If $E$ scales a row of $I_n$ by $k\neq0$, then $\det(E)=k$.
+\item If $E$ interchanges two rows of $I_n$, then $\det(E)=-1$.
+\item If $E$ adds a multiple of one row of $I_n$ to another, then $\det(E)=1$.
+\end{enumerate}
+\end{thms}
+
+\begin{prf}
+Each $E$ comes from $I_n$ by the named operation, and $\det(I_n)=1$ by \Lem{2.2.1}. Apply \Thm{2.2.3}:
+\begin{steps}
+\st{\text{(a) scaling a row by }k:\quad \det(E)=k\det(I_n)=k.}{\Thm{2.2.3}(a)}
+\st{\text{(b) interchanging two rows:}\quad \det(E)=-\det(I_n)=-1.}{\Thm{2.2.3}(b)}
+\st{\text{(c) adding a multiple of a row:}\quad \det(E)=\det(I_n)=1.}{\Thm{2.2.3}(c)}
+\end{steps}
+\end{prf}
+
+\begin{thms}{2.2.7}{Scaling the whole matrix}
+If $A$ is $n\times n$ and $k$ is a scalar, then $\det(kA)=k^{\,n}\det(A)$.
+\end{thms}
+
+\begin{prf}
+Multiplying $A$ by $k$ multiplies each of its $n$ rows by $k$. Applying \Thm{2.2.3}(a) once per row pulls out one factor of $k$ each time, for $n$ factors in total: $\det(kA)=k^n\det(A)$.
+\end{prf}
+
+\begin{thms}{2.2.8}{Determinant of $EA$}
+If $A$ is $n\times n$ and $E$ is an $n\times n$ elementary matrix, then $\det(EA)=\det(E)\det(A)$.
+\end{thms}
+
+\begin{prf}
+By \Thm{1.5.4}, $EA$ is the result of applying $E$'s row operation to $A$. We treat the scaling case; the other two are analogous. If $E$ scales row $i$ by $k$, then $\det(EA)=k\det(A)$ by \Thm{2.2.3}(a), while $\det(E)=k$ by \Thm{2.2.6}(a); hence $\det(EA)=k\det(A)=\det(E)\det(A)$.
+\end{prf}
+
+We can now characterise invertibility by the determinant --- the result that gives the chapter its purpose.
+
+\begin{thms}{2.2.9}{Invertible $\iff$ nonzero determinant}
+A square matrix $A$ is invertible if and only if $\det(A)\neq0$.
+\end{thms}
+
+\begin{prf}
+Let $R$ be the reduced echelon form of $A$, so $R=E_k\cdots E_1A$ for elementary matrices $E_i$ (\Thm{1.5.4}). Applying \Thm{2.2.8} repeatedly,
+\begin{steps}
+\st{\det(R)=\det(E_k)\cdots\det(E_1)\det(A).}{\Thm{2.2.8}, $k$ times}
+\end{steps}
+By \Thm{2.2.6}, each $\det(E_i)\neq0$, so $\det(R)\neq0\iff\det(A)\neq0$. It remains to relate $\det(R)$ to invertibility.
+
+\case{($A$ invertible)} Then $R=I_n$ (\Thm{1.5.7}), so $\det(R)=1\neq0$, forcing $\det(A)\neq0$.
+
+\case{($A$ singular)} Then $R\neq I_n$; being a square reduced echelon form, $R$ has a zero row, so $\det(R)=0$ (\Rmk{2.1.5}), forcing $\det(A)=0$.
+
+\noindent Taking contrapositives, $\det(A)\neq0$ if and only if $A$ is invertible.
+\end{prf}
+
+\begin{thms}{2.2.10}{Multiplicativity of the determinant}
+If $A,B$ are $n\times n$ matrices, then $\det(AB)=\det(A)\det(B)$.
+\end{thms}
+
+\begin{prf}
+\case{Case 1: $A$ invertible} Then $A=E_k\cdots E_1$ is a product of elementary matrices (\Thm{1.5.7}). Applying \Thm{2.2.8} $k$ times,
+\begin{steps}
+\st{\det(AB)=\det(E_k\cdots E_1B)=\det(E_k)\cdots\det(E_1)\det(B).}{\Thm{2.2.8}, $k$ times}
+\end{steps}
+Taking $B=I$ in this identity gives $\det(A)=\det(E_k)\cdots\det(E_1)$, so $\det(AB)=\det(A)\det(B)$.
+
+\case{Case 2: $A$ singular} Then $\det(A)=0$ (\Thm{2.2.9}), so the right side is $0$. By \Lem{1.5.12}, $AB$ is also singular, so $\det(AB)=0$ (\Thm{2.2.9}). Both sides vanish.
+\end{prf}
+
+\begin{thms}{2.2.11}{Determinant of an inverse}
+If $A$ is invertible, then $\det(A\inv)=\dfrac{1}{\det(A)}$.
+\end{thms}
+
+\begin{prf}
+From $AA\inv=I$ and \Thm{2.2.10}, $\det(A)\det(A\inv)=\det(I)=1$. Since $A$ is invertible, $\det(A)\neq0$ (\Thm{2.2.9}), so we may divide to get $\det(A\inv)=1/\det(A)$.
+\end{prf}
+
+These results extend the invertibility equivalences of Chapter~\ref{ch:linear-systems} with a determinant criterion.
+
+\begin{thms}{2.2.12}{Equivalent statements (with determinant)}
+For an $n\times n$ matrix $A$, the following are equivalent:
+\begin{multicols}{2}
+\begin{enumerate}[label=\textup{(\alph*)},leftmargin=1.6em,itemsep=1pt]
+\item $A$ is invertible;
+\item $A\vx=\vze$ has only the trivial solution;
+\item the reduced echelon form of $A$ is $I_n$;
+\item $A$ is a product of elementary matrices;
+\item $A\vx=\vb$ is consistent for every $\vb$;
+\item $A\vx=\vb$ has exactly one solution for every $\vb$;
+\item $\det(A)\neq0$.
+\end{enumerate}
+\end{multicols}
+\end{thms}
+
+\begin{prf}
+Conditions (a)--(f) are equivalent by \Thm{1.5.7} and \Thm{1.5.13}. The new condition (g) is equivalent to (a) by \Thm{2.2.9}.
+\end{prf}
+
+% ===================================================================
+\section*{Chapter 2 Summary}
+\addcontentsline{toc}{section}{Chapter 2 Summary}
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+\item The determinant is defined recursively by cofactor expansion (\Defn{2.1.1}); it may be expanded along any row or column (\Thm{2.1.4}), so choose the line with the most zeros.
+\item In practice, reduce to triangular form and track the operations: a swap negates (\Thm{2.2.3}(b)), scaling a row by $k$ multiplies by $k$ (\Thm{2.2.3}(a)), and adding a multiple of one row to another leaves it unchanged (\Thm{2.2.3}(c)); a triangular determinant is the product of the diagonal (\Lem{2.2.1}).
+\item Structural laws: $\det(kA)=k^n\det(A)$ (\Thm{2.2.7}), $\det(AB)=\det(A)\det(B)$ (\Thm{2.2.10}), $\det(A\inv)=1/\det(A)$ (\Thm{2.2.11}), and $\det(A)=\det(A\trans)$ (\Thm{2.2.2}).
+\item \textbf{The key fact:} $A$ is invertible $\iff\det(A)\neq0$ (\Thm{2.2.9}), adding condition (g) to the master equivalence list (\Thm{2.2.12}).
+\item Note $\det$ is \emph{not} additive: in general $\det(A+B)\neq\det(A)+\det(B)$.
+\end{itemize}
+
+% ===================================================================
+\section*{Chapter 2 Exercises}
+\addcontentsline{toc}{section}{Chapter 2 Exercises}
+
+\begin{enumerate}[label=\textbf{2.\arabic*},leftmargin=2.6em,itemsep=6pt]
+\item Prove \Thm{2.2.3} for $2\times2$ matrices: verify directly that scaling a row by $k$ multiplies the determinant by $k$, a swap negates it, and adding a multiple of one row to the other leaves it unchanged.
+
+\item Evaluate $\det\!\left[\begin{smallmatrix}2&0&1\\3&1&2\\1&0&3\end{smallmatrix}\right]$ by expanding along the column with the most zeros.
+
+\item Compute $\det\!\left[\begin{smallmatrix}1&2&3\\2&5&7\\3&7&11\end{smallmatrix}\right]$ by reduction to triangular form, recording the effect of each operation.
+
+\item Let $A$ be a $4\times4$ matrix with $\det(A)=5$. Find $\det(2A)$, $\det(A\trans)$, $\det(A\inv)$, and $\det(A^3)$.
+
+\item Suppose $A,B$ are $n\times n$ with $A$ invertible. Prove that $\det(A\inv BA)=\det(B)$.
+
+\item Show that if $A$ is an $n\times n$ matrix with $A^2=A$ (idempotent) and $A\neq I$, then $\det(A)=0$.
+\end{enumerate}
+
+\subsection*{Solutions to Chapter 2 Exercises}
+
+\begin{enumerate}[label=\textbf{2.\arabic*},leftmargin=2.6em,itemsep=8pt]
+
+\item Write $A=\left[\begin{smallmatrix}a&b\\c&d\end{smallmatrix}\right]$, so $\det(A)=ad-bc$.
+\emph{Scaling:} replacing row $1$ by $(ka,kb)$ gives $\det=kad-kbc=k(ad-bc)=k\det(A)$. \emph{Swap:} $\left[\begin{smallmatrix}c&d\\a&b\end{smallmatrix}\right]$ has determinant $cb-da=-(ad-bc)=-\det(A)$. \emph{Add:} replacing row $2$ by $(c+ka,\,d+kb)$ gives $a(d+kb)-b(c+ka)=ad+kab-bc-kab=ad-bc=\det(A)$. \;$\blacksquare$
+
+\item Column $2$ has entries $0,1,0$. Expanding along it: $\det=0\cdot C_{12}+1\cdot C_{22}+0\cdot C_{32}=(+1)\det\!\left[\begin{smallmatrix}2&1\\1&3\end{smallmatrix}\right]=6-1=5$.
+
+\item $R_2\mapsto R_2-2R_1$, $R_3\mapsto R_3-3R_1$ (determinant unchanged):
+\[
+\det\!\begin{bmatrix}1&2&3\\2&5&7\\3&7&11\end{bmatrix}=\det\!\begin{bmatrix}1&2&3\\0&1&1\\0&1&2\end{bmatrix}\xrightarrow{R_3\mapsto R_3-R_2}\det\!\begin{bmatrix}1&2&3\\0&1&1\\0&0&1\end{bmatrix}=1\cdot1\cdot1=1.
+\]
+None of these operations changes the value, so the determinant is $1$.
+
+\item Using \Thm{2.2.7}, \Thm{2.2.2}, \Thm{2.2.11}, \Thm{2.2.10}: $\det(2A)=2^4\cdot5=80$; $\det(A\trans)=5$; $\det(A\inv)=1/5$; $\det(A^3)=5^3=125$.
+
+\item By multiplicativity (\Thm{2.2.10}) and \Thm{2.2.11},
+\[
+\det(A\inv BA)=\det(A\inv)\det(B)\det(A)=\tfrac{1}{\det(A)}\det(B)\det(A)=\det(B).\quad\blacksquare
+\]
+(Determinant is invariant under similarity --- a fact used heavily in Chapter~\ref{ch:eigenvalues}.)
+
+\item From $A^2=A$ and \Thm{2.2.10}, $\det(A)^2=\det(A)$, so $\det(A)\in\{0,1\}$. Suppose $\det(A)=1$; then $A$ is invertible (\Thm{2.2.9}), and multiplying $A^2=A$ on the left by $A\inv$ gives $A=I$, contradicting $A\neq I$. Hence $\det(A)=0$. \;$\blacksquare$
+
+\end{enumerate}

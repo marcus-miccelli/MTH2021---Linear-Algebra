@@ -1,0 +1,284 @@
+\chapter{Eigenvalues and Eigenvectors}
+\label{ch:eigenvalues}
+
+\begin{roadmap}
+\noindent\textbf{What this chapter is about.}\;
+For most vectors, multiplying by a matrix $A$ changes both length and direction. But some special nonzero vectors are merely \emph{scaled} by $A$ --- these are its \emph{eigenvectors}, and the scaling factors are its \emph{eigenvalues}. They expose the intrinsic action of $A$: along each eigenvector, $A$ acts as simple multiplication. We find eigenvalues as roots of the \emph{characteristic polynomial} $\det(\lambda I-A)$, find eigenvectors by solving $(\lambda I-A)\vx=\vze$, and ask when a matrix is \emph{diagonalizable} --- similar to a diagonal matrix via a basis of eigenvectors. Diagonalization turns hard computations (like high powers $A^k$) into trivial ones, and sets up the spectral theory of Chapter~\ref{ch:orthogonalization}.
+\medskip
+
+\noindent\textbf{Reference.}\; A\&R \S\S5.1--5.2.
+
+\noindent\textbf{Proof convention.}\; As in the seminar notes, \Thm{6.2.6} (eigenvectors for distinct eigenvalues are independent) is stated without proof, belonging to MTH2025; all other results are proved in full.
+\end{roadmap}
+
+\section{Eigenvalues and Eigenvectors}
+\label{sec:6.1}
+
+\begin{defns}{6.1.1}{Eigenvector and eigenvalue}
+If $A$ is an $n\times n$ matrix, a \emph{nonzero} vector $\vx\in\R^n$ is an \emph{eigenvector} of $A$ (or of the operator $T_A$) if
+\[
+A\vx=\lambda\vx
+\]
+for some scalar $\lambda\in\R$. The scalar $\lambda$ is the corresponding \emph{eigenvalue}, and $\vx$ is \emph{an eigenvector corresponding to $\lambda$}.
+\end{defns}
+
+\begin{rmks}{6.1.2}
+``Eigenvalue'' blends the German \emph{eigen} (``own'', ``characteristic'') with ``value'': the eigenvalues are the characteristic scaling factors belonging to $A$.
+\end{rmks}
+
+\begin{rmks}{6.1.3}
+If $\vx$ is an eigenvector for $\lambda$, so is $c\vx$ for any $c\neq0$: $A(c\vx)=cA\vx=c\lambda\vx=\lambda(c\vx)$. Eigenvectors are never unique --- only their \emph{directions} are determined.
+\end{rmks}
+
+\begin{exmp}{6.1.4}{Verifying an eigenvector}
+Let $A=\left[\begin{smallmatrix}2&1\\1&2\end{smallmatrix}\right]$ and $\vx=(1,1)$. Then $A\vx=(2+1,\,1+2)=(3,3)=3(1,1)=3\vx$, so $\vx$ is an eigenvector with eigenvalue $\lambda=3$.
+\end{exmp}
+
+How do we \emph{find} eigenvalues without guessing? Rewrite $A\vx=\lambda\vx$ as $(\lambda I-A)\vx=\vze$. A nonzero solution $\vx$ exists exactly when $\lambda I-A$ is singular.
+
+\begin{thms}{6.1.5}{Characteristic equation}
+$\lambda\in\R$ is an eigenvalue of the $n\times n$ matrix $A$ if and only if
+\[
+\det(\lambda I-A)=0.
+\]
+\end{thms}
+
+\begin{prf}
+$\lambda$ is an eigenvalue $\iff$ there is a nonzero $\vx$ with $A\vx=\lambda\vx\iff(\lambda I-A)\vx=\vze$ has a nonzero solution $\iff(\lambda I-A)$ is not invertible (\Thm{1.5.7}) $\iff\det(\lambda I-A)=0$ (\Thm{2.2.9}).
+\end{prf}
+
+\begin{defns}{6.1.6}{Characteristic equation}
+The equation $\det(\lambda I-A)=0$ is the \emph{characteristic equation} of $A$.
+\end{defns}
+
+\begin{exmp}{6.1.7}{Finding eigenvalues}
+For $A=\left[\begin{smallmatrix}2&1\\1&2\end{smallmatrix}\right]$ of Example 6.1.4,
+\[
+\det(\lambda I-A)=\det\!\begin{bmatrix}\lambda-2&-1\\-1&\lambda-2\end{bmatrix}=(\lambda-2)^2-1=\lambda^2-4\lambda+3=(\lambda-1)(\lambda-3).
+\]
+The eigenvalues are $\lambda=1$ and $\lambda=3$ (the latter matching Example 6.1.4).
+\end{exmp}
+
+\begin{lems}{6.1.8}{Characteristic polynomial}
+For any $n\times n$ matrix $A$, the quantity $\det(\lambda I-A)$ is a monic polynomial in $\lambda$ of degree $n$, called the \emph{characteristic polynomial} of $A$.
+\end{lems}
+
+\begin{prf}[Idea]
+Expanding $\det(\lambda I-A)$ by cofactors, the product of diagonal entries $\prod_i(\lambda-a_{ii})$ contributes the top-degree term $\lambda^n$ with coefficient $1$; every other term in the expansion omits at least two diagonal factors and so has degree at most $n-2$ in $\lambda$. Hence the result is a monic degree-$n$ polynomial.
+\end{prf}
+
+\begin{exmp}{6.1.9}{The $2\times2$ case}
+For $A=\left[\begin{smallmatrix}a&b\\c&d\end{smallmatrix}\right]$,
+\[
+\det(\lambda I-A)=(\lambda-a)(\lambda-d)-bc=\lambda^2-(a+d)\lambda+(ad-bc)=\lambda^2-\tr(A)\lambda+\det(A),
+\]
+a monic quadratic, confirming \Lem{6.1.8} for $n=2$. Notice the coefficients are $\tr(A)$ and $\det(A)$.
+\end{exmp}
+
+\begin{thms}{6.1.10}{Eigenvalues of a triangular matrix}
+If $A$ is triangular, its eigenvalues are exactly its diagonal entries.
+\end{thms}
+
+\begin{prf}
+If $A$ is triangular, so is $\lambda I-A$, with diagonal entries $\lambda-a_{ii}$. By \Lem{2.2.1}, $\det(\lambda I-A)=\prod_{i}(\lambda-a_{ii})$, whose roots are the $a_{ii}$.
+\end{prf}
+
+\subsection{Eigenvectors and eigenspaces}
+
+Once an eigenvalue $\lambda$ is known, its eigenvectors are the nonzero solutions of $(\lambda I-A)\vx=\vze$.
+
+\begin{exmp}{6.1.11}{Finding eigenvectors}
+For $A=\left[\begin{smallmatrix}2&1\\1&2\end{smallmatrix}\right]$ (eigenvalues $1,3$): for $\lambda=3$, solve $(3I-A)\vx=\left[\begin{smallmatrix}1&-1\\-1&1\end{smallmatrix}\right]\vx=\vze$, giving $x_1=x_2$, so eigenvectors are multiples of $(1,1)$. For $\lambda=1$, $(I-A)\vx=\left[\begin{smallmatrix}-1&-1\\-1&-1\end{smallmatrix}\right]\vx=\vze$ gives $x_1=-x_2$, eigenvectors multiples of $(1,-1)$.
+\end{exmp}
+
+\begin{defns}{6.1.12}{Eigenspace}
+The \emph{eigenspace} of $A$ for the eigenvalue $\lambda$ is $\ker(\lambda I-A)$, the solution space of $(\lambda I-A)\vx=\vze$.
+\end{defns}
+
+\begin{rmknote}
+\textbf{Each eigenspace is a subspace} of $\R^n$, being the kernel of the matrix $\lambda I-A$ (every kernel is a subspace, \Thm{3.6.5}). In particular it always contains $\vze$, even though $\vze$ is never itself an eigenvector.
+\end{rmknote}
+
+\begin{exmp}{6.1.13}{Eigenspaces}
+For $A=\left[\begin{smallmatrix}2&1\\1&2\end{smallmatrix}\right]$: the eigenspace for $\lambda=3$ is $\spn\{(1,1)\}$ and for $\lambda=1$ is $\spn\{(1,-1)\}$, each of dimension $1$.
+\end{exmp}
+
+\subsection{Powers and invertibility}
+
+\begin{thms}{6.1.14}{Eigenvalues of powers}
+If $k$ is a positive integer, $\lambda$ an eigenvalue of $A$, and $\vx$ a corresponding eigenvector, then $\lambda^k$ is an eigenvalue of $A^k$ with the same eigenvector $\vx$.
+\end{thms}
+
+\begin{prf}
+By induction on $k$. The base $k=1$ is the hypothesis. Assuming $A^k\vx=\lambda^k\vx$,
+\[
+A^{k+1}\vx=A(A^k\vx)=A(\lambda^k\vx)=\lambda^k(A\vx)=\lambda^k(\lambda\vx)=\lambda^{k+1}\vx.
+\]
+\end{prf}
+
+\begin{exmp}{6.1.15}{Eigenvalues of $A^2$}
+Let $M=A^2$ where $A=\left[\begin{smallmatrix}2&1\\1&2\end{smallmatrix}\right]$, so $M=\left[\begin{smallmatrix}5&4\\4&5\end{smallmatrix}\right]$. By \Thm{6.1.14} and the eigenvalues $1,3$ of $A$, the eigenvalues of $M$ are $1^2=1$ and $3^2=9$.
+\end{exmp}
+
+\begin{thms}{6.1.16}{Invertibility via eigenvalues}
+A square matrix $A$ is invertible if and only if $\lambda=0$ is \emph{not} an eigenvalue.
+\end{thms}
+
+\begin{prf}
+$\lambda=0$ is an eigenvalue $\iff\det(0\cdot I-A)=0\iff\det(-A)=0\iff\det(A)=0$ (\Thm{2.2.7}) $\iff A$ is not invertible (\Thm{2.2.9}). Negating, $A$ invertible $\iff0$ is not an eigenvalue.
+\end{prf}
+
+\subsection{Multiplicities}
+
+\begin{defns}{6.1.17}{Algebraic and geometric multiplicity}
+Let $\alpha$ be an eigenvalue of $A$. The \emph{algebraic multiplicity} of $\alpha$ is the largest $k$ such that $(\lambda-\alpha)^k$ divides the characteristic polynomial. The \emph{geometric multiplicity} of $\alpha$ is the dimension of its eigenspace.
+\end{defns}
+
+\begin{thms}{6.1.18}{}
+For every eigenvalue of a square matrix, the geometric multiplicity is at most the algebraic multiplicity.
+\end{thms}
+
+\begin{prf}[Idea]
+Let $\alpha$ have geometric multiplicity $g$, with eigenspace basis $\{\vp_1,\dots,\vp_g\}$. Extend to a basis of $\R^n$ and let $P$ be the matrix of these columns; then $B=P\inv AP$ has the block form $\left[\begin{smallmatrix}\alpha I_g&*\\0&*\end{smallmatrix}\right]$, so $(\lambda-\alpha)^g$ divides $\det(\lambda I-B)$. Since similar matrices share characteristic polynomials (\Thm{6.2.3} below), $(\lambda-\alpha)^g$ divides that of $A$, giving algebraic multiplicity $\ge g$.
+\end{prf}
+
+\begin{exmp}{6.1.19}{A defective matrix}
+Let $A=\left[\begin{smallmatrix}4&-4\\1&0\end{smallmatrix}\right]$. The characteristic polynomial is $\lambda^2-4\lambda+4=(\lambda-2)^2$, so $\lambda=2$ has algebraic multiplicity $2$. The eigenspace solves $(2I-A)\vx=\left[\begin{smallmatrix}-2&4\\-1&2\end{smallmatrix}\right]\vx=\vze$, i.e. $x_1=2x_2$, spanned by $(2,1)$ --- geometric multiplicity $1$. Here geometric ($1$) $<$ algebraic ($2$): the matrix is \emph{defective} and, as we will see, not diagonalizable.
+\end{exmp}
+
+\section{Similarity and Diagonalization}
+\label{sec:6.2}
+
+Diagonal matrices are the easiest to work with --- powers, determinants, and eigenvalues are read off instantly. The central question of this chapter is when a given matrix can be transformed into a diagonal one by a change of basis.
+
+\begin{defns}{6.2.2}{Similar matrices}
+A square matrix $B$ is \emph{similar} to $A$, written $B\sim A$, if there is an invertible matrix $P$ with $B=P\inv AP$.
+\end{defns}
+
+\begin{thms}{6.2.3}{Similar matrices share invariants}
+Suppose $A\sim B$. Then
+\textup{(a)} $\det(A)=\det(B)$;
+\textup{(b)} $A$ and $B$ have the same characteristic polynomial;
+\textup{(c)} corresponding eigenvalues have the same geometric multiplicities.
+\end{thms}
+
+\begin{prf}
+Write $B=P\inv AP$.
+
+\case{(a)} $\det(B)=\det(P\inv)\det(A)\det(P)=\tfrac{1}{\det P}\det(A)\det(P)=\det(A)$ by \Thm{2.2.10} and \Thm{2.2.11}.
+
+\case{(b)} Using $\lambda I-B=P\inv(\lambda I-A)P$ (since $P\inv(\lambda I)P=\lambda I$),
+\[
+\det(\lambda I-B)=\det\bigl(P\inv(\lambda I-A)P\bigr)=\det(\lambda I-A)
+\]
+by the same multiplicative computation as (a).
+
+\case{(c)} is left as an exercise: $P\inv$ maps the eigenspace of $A$ for $\lambda$ isomorphically onto that of $B$, preserving dimension.
+\end{prf}
+
+\begin{defns}{6.2.4}{Diagonalizable}
+A square matrix is \emph{diagonalizable} if it is similar to a diagonal matrix.
+\end{defns}
+
+\begin{thms}{6.2.5}{Diagonalizability criteria}
+For an $n\times n$ matrix $A$, the following are equivalent:
+\begin{enumerate}[label=\textup{(\alph*)},leftmargin=2.2em,itemsep=1pt]
+\item $A$ is diagonalizable;
+\item $A$ has $n$ linearly independent eigenvectors;
+\item for each eigenvalue the geometric multiplicity equals the algebraic multiplicity, and the algebraic multiplicities sum to $n$.
+\end{enumerate}
+\end{thms}
+
+\begin{prf}
+(a)$\Rightarrow$(b): if $P\inv AP=D$ is diagonal with entries $\lambda_i$, then $AP=PD$; reading column $i$, $A\vp_i=\lambda_i\vp_i$, so the columns $\vp_i$ of $P$ are eigenvectors, and they are independent because $P$ is invertible (\Thm{5.5.7}). (b)$\Rightarrow$(a): if $\vp_1,\dots,\vp_n$ are independent eigenvectors with eigenvalues $\lambda_i$, the matrix $P=[\vp_1\;\cdots\;\vp_n]$ is invertible and $AP=[\lambda_1\vp_1\;\cdots\;\lambda_n\vp_n]=PD$ with $D=\diag(\lambda_1,\dots,\lambda_n)$, so $P\inv AP=D$. (b)$\iff$(c): a basis of $n$ eigenvectors exists iff the eigenspaces together span $\R^n$; their dimensions (geometric multiplicities) sum to $n$ iff each equals its algebraic multiplicity and the algebraic multiplicities sum to $n$, using $\sum(\text{alg. mult.})\le n$ from $\deg=n$ and \Thm{6.1.18}.
+\end{prf}
+
+\begin{thms}{6.2.6}{Eigenvectors for distinct eigenvalues}
+If $\vv_1,\dots,\vv_r$ are eigenvectors of $A$ corresponding to \emph{distinct} eigenvalues, then $\{\vv_1,\dots,\vv_r\}$ is linearly independent.
+\end{thms}
+
+\begin{proofomit}[MTH2025]The idea: a shortest nontrivial dependence among eigenvectors for distinct eigenvalues can be shortened further by applying $A$ and subtracting a multiple, a contradiction.
+\end{proofomit}
+
+\begin{cors}{6.2.7}{$n$ distinct eigenvalues $\Rightarrow$ diagonalizable}
+If an $n\times n$ matrix has $n$ distinct eigenvalues, then it is diagonalizable.
+\end{cors}
+
+\begin{prf}
+Choosing one eigenvector per eigenvalue gives $n$ eigenvectors for $n$ distinct eigenvalues, independent by \Thm{6.2.6}. By \Thm{6.2.5}(b), $A$ is diagonalizable.
+\end{prf}
+
+\begin{algs}{6.2.8}{Diagonalization}
+Let $A$ be $n\times n$.
+\begin{enumerate}[label=\textup{(\roman*)},leftmargin=2.4em,itemsep=1pt]
+\item Find the eigenvalues, and a basis for each eigenspace. Let $E$ be the union of all these basis vectors. If $E$ has fewer than $n$ vectors, $A$ is \emph{not} diagonalizable.
+\item If $E=\{\vp_1,\dots,\vp_n\}$, form $P=[\vp_1\;\vp_2\;\cdots\;\vp_n]$.
+\item Then $D=P\inv AP$ is diagonal, with diagonal entries the eigenvalues $\lambda_1,\dots,\lambda_n$ corresponding (in order) to $\vp_1,\dots,\vp_n$.
+\end{enumerate}
+\end{algs}
+
+\begin{exmp}{6.2.9}{Diagonalize and compute a power}
+Diagonalize $A=\left[\begin{smallmatrix}2&1\\1&2\end{smallmatrix}\right]$ and compute $A^{10}$.
+
+\smallskip
+\noindent\textit{Solution.} From Examples 6.1.7 and 6.1.11, the eigenvalues are $3,1$ with eigenvectors $(1,1)$, $(1,-1)$. Set
+\[
+P=\begin{bmatrix}1&1\\1&-1\end{bmatrix},\qquad D=\begin{bmatrix}3&0\\0&1\end{bmatrix},\qquad P\inv=\tfrac12\begin{bmatrix}1&1\\1&-1\end{bmatrix}.
+\]
+Then $A=PDP\inv$, and since $A^k=PD^kP\inv$,
+\[
+A^{10}=P\begin{bmatrix}3^{10}&0\\0&1\end{bmatrix}P\inv=\tfrac12\begin{bmatrix}1&1\\1&-1\end{bmatrix}\begin{bmatrix}3^{10}&0\\0&1\end{bmatrix}\begin{bmatrix}1&1\\1&-1\end{bmatrix}=\tfrac12\begin{bmatrix}3^{10}+1&3^{10}-1\\3^{10}-1&3^{10}+1\end{bmatrix}.
+\]
+With $3^{10}=59049$, $A^{10}=\left[\begin{smallmatrix}29525&29524\\29524&29525\end{smallmatrix}\right]$ --- obtained without ten matrix multiplications.
+\end{exmp}
+
+% ===================================================================
+\section*{Chapter 6 Summary}
+\addcontentsline{toc}{section}{Chapter 6 Summary}
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+\item An eigenvector satisfies $A\vx=\lambda\vx$ with $\vx\neq\vze$ (\Defn{6.1.1}); $\lambda$ is an eigenvalue iff $\det(\lambda I-A)=0$ (\Thm{6.1.5}), the characteristic equation.
+\item $\det(\lambda I-A)$ is monic of degree $n$ (\Lem{6.1.8}); for triangular $A$ the eigenvalues are the diagonal entries (\Thm{6.1.10}).
+\item The eigenspace for $\lambda$ is $\ker(\lambda I-A)$, a subspace (\Defn{6.1.12}). Geometric multiplicity $\le$ algebraic multiplicity (\Thm{6.1.18}).
+\item $A^k$ has eigenvalues $\lambda^k$ (\Thm{6.1.14}); $A$ is invertible iff $0$ is not an eigenvalue (\Thm{6.1.16}).
+\item Similar matrices ($B=P\inv AP$) share determinant, characteristic polynomial, and multiplicities (\Thm{6.2.3}).
+\item $A$ is \emph{diagonalizable} iff it has $n$ independent eigenvectors iff every geometric multiplicity matches its algebraic one (\Thm{6.2.5}); $n$ distinct eigenvalues suffice (\Cors{6.2.7}). Diagonalization gives $A^k=PD^kP\inv$ cheaply (\Alg{6.2.8}).
+\end{itemize}
+
+% ===================================================================
+\section*{Chapter 6 Exercises}
+\addcontentsline{toc}{section}{Chapter 6 Exercises}
+
+\begin{enumerate}[label=\textbf{6.\arabic*},leftmargin=2.6em,itemsep=6pt]
+\item Find the eigenvalues and a basis for each eigenspace of $A=\left[\begin{smallmatrix}3&2\\0&1\end{smallmatrix}\right]$.
+
+\item Show that $A=\left[\begin{smallmatrix}0&-1\\1&0\end{smallmatrix}\right]$ has no real eigenvalues, and explain geometrically why.
+
+\item Determine whether $A=\left[\begin{smallmatrix}5&-3\\6&-4\end{smallmatrix}\right]$ is diagonalizable; if so, find $P$ and $D$ with $P\inv AP=D$.
+
+\item Let $A$ be a $3\times3$ matrix with eigenvalues $2,2,5$. State the possible values of the geometric multiplicity of $\lambda=2$, and say in each case whether $A$ is diagonalizable.
+
+\item Prove that if $\lambda$ is an eigenvalue of an invertible matrix $A$, then $\lambda\inv$ is an eigenvalue of $A\inv$ (with the same eigenvector).
+
+\item Use diagonalization to compute $A^k$ in closed form for $A=\left[\begin{smallmatrix}1&2\\0&3\end{smallmatrix}\right]$.
+\end{enumerate}
+
+\subsection*{Solutions to Chapter 6 Exercises}
+
+\begin{enumerate}[label=\textbf{6.\arabic*},leftmargin=2.6em,itemsep=8pt]
+
+\item Triangular, so eigenvalues are the diagonal entries $3,1$ (\Thm{6.1.10}). For $\lambda=3$: $(3I-A)\vx=\left[\begin{smallmatrix}0&-2\\0&2\end{smallmatrix}\right]\vx=\vze$ gives $x_2=0$, basis $\{(1,0)\}$. For $\lambda=1$: $\left[\begin{smallmatrix}-2&-2\\0&0\end{smallmatrix}\right]\vx=\vze$ gives $x_1=-x_2$, basis $\{(1,-1)\}$.
+
+\item Characteristic polynomial $\lambda^2+1$, with no real roots, so no real eigenvalues. Geometrically $A$ is rotation by $90^\circ$, which sends no nonzero real vector to a scalar multiple of itself --- every direction is turned.
+
+\item Characteristic polynomial $\lambda^2-\tr\lambda+\det=\lambda^2-1\cdot\lambda+(-20+18)=\lambda^2-\lambda-2=(\lambda-2)(\lambda+1)$. Two distinct eigenvalues $2,-1$, so diagonalizable (\Cors{6.2.7}). For $\lambda=2$: $\left[\begin{smallmatrix}-3&3\\-6&6\end{smallmatrix}\right]\vx=\vze\Rightarrow x_1=x_2$, eigenvector $(1,1)$. For $\lambda=-1$: $\left[\begin{smallmatrix}-6&3\\-6&3\end{smallmatrix}\right]\vx=\vze\Rightarrow x_2=2x_1$, eigenvector $(1,2)$. So $P=\left[\begin{smallmatrix}1&1\\1&2\end{smallmatrix}\right]$, $D=\left[\begin{smallmatrix}2&0\\0&-1\end{smallmatrix}\right]$.
+
+\item The algebraic multiplicity of $\lambda=2$ is $2$, so its geometric multiplicity is $1$ or $2$ (\Thm{6.1.18}, and $\ge1$ since it is an eigenvalue). If $2$: geometric $=$ algebraic for both eigenvalues, total $=3$, so $A$ is diagonalizable. If $1$: geometric $<$ algebraic for $\lambda=2$, so $A$ is \emph{not} diagonalizable (\Thm{6.2.5}).
+
+\item Suppose $A\vx=\lambda\vx$ with $\vx\neq\vze$. Then $\lambda\neq0$ (\Thm{6.1.16}, $A$ invertible). Apply $A\inv$: $\vx=A\inv(\lambda\vx)=\lambda A\inv\vx$, so $A\inv\vx=\lambda\inv\vx$. Thus $\lambda\inv$ is an eigenvalue of $A\inv$ with eigenvector $\vx$. $\blacksquare$
+
+\item Triangular eigenvalues $1,3$. For $\lambda=1$: $\left[\begin{smallmatrix}0&-2\\0&-2\end{smallmatrix}\right]\vx=\vze\Rightarrow x_2=0$, eigenvector $(1,0)$. For $\lambda=3$: $\left[\begin{smallmatrix}2&-2\\0&0\end{smallmatrix}\right]\vx=\vze\Rightarrow x_1=x_2$, eigenvector $(1,1)$. With $P=\left[\begin{smallmatrix}1&1\\0&1\end{smallmatrix}\right]$, $P\inv=\left[\begin{smallmatrix}1&-1\\0&1\end{smallmatrix}\right]$, $D=\diag(1,3)$:
+\[
+A^k=PD^kP\inv=\begin{bmatrix}1&1\\0&1\end{bmatrix}\begin{bmatrix}1&0\\0&3^k\end{bmatrix}\begin{bmatrix}1&-1\\0&1\end{bmatrix}=\begin{bmatrix}1&3^k-1\\0&3^k\end{bmatrix}.
+\]
+
+\end{enumerate}

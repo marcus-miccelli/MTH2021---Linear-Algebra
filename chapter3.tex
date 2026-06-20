@@ -1,0 +1,596 @@
+\chapter{Vector Spaces}
+\label{ch:vector-spaces}
+
+\begin{roadmap}
+\noindent\textbf{What this chapter is about.}\;
+We now abstract. The familiar arithmetic of vectors in $\R^n$ --- adding them, scaling them --- works identically for polynomials, matrices, and functions. A \emph{vector space} is any set on which addition and scalar multiplication obey ten axioms (A1--A10), and \emph{every} theorem proved from those axioms holds at once for all such sets. We develop the core structural vocabulary: \emph{subspace}, \emph{span}, \emph{linear independence}, \emph{basis}, and \emph{dimension}; the way coordinates let any $n$-dimensional space stand in for $\R^n$; and the four subspaces attached to a matrix. We close by allowing the scalars to come from any \emph{field}, and apply $\Z_2$-vector spaces to error-correcting codes.
+\medskip
+
+\noindent\textbf{Reference.}\; A\&R \S\S4.1--4.7, with \S3.7 (fields) and \S3.8 (coding theory) developed from the seminar notes.
+
+\noindent\textbf{Proof convention.}\; Throughout, every step is justified by an axiom (A1--A10) or a previously-proved result. A handful of routine verifications are marked as exercises, matching the seminar notes; one result (\Thm{3.6.6}) is stated without proof as it belongs to MTH2025.
+\end{roadmap}
+
+\section{Vector Spaces and Subspaces}
+\label{sec:3.1}
+
+\begin{defns}{3.1.1}{Vector space}
+Let $V$ be a non-empty set equipped with two operations: \emph{addition}, assigning to each $\vu,\vv\in V$ an element $\vu+\vv$, and \emph{scalar multiplication}, assigning to each scalar $k$ and each $\vv\in V$ an element $k\vv$. Then $V$ is a \emph{vector space} if the following ten axioms hold for all $\vu,\vv,\vw\in V$ and all scalars $k,m$:
+\begin{center}
+\begin{tabular}{@{}p{0.46\linewidth}p{0.46\linewidth}@{}}
+\axiom{A1} (closure, $+$): $\vu+\vv\in V$. &
+\axiom{A6} (closure, scalar): $k\vu\in V$. \\
+\axiom{A2} (commutativity): $\vu+\vv=\vv+\vu$. &
+\axiom{A7} (distributivity): $k(\vu+\vv)=k\vu+k\vv$. \\
+\axiom{A3} (associativity): $(\vu+\vv)+\vw=\vu+(\vv+\vw)$. &
+\axiom{A8} (distributivity): $(k+m)\vu=k\vu+m\vu$. \\
+\axiom{A4} (zero): there is $\vze\in V$ with $\vu+\vze=\vu$. &
+\axiom{A9} (associativity, scalar): $k(m\vu)=(km)\vu$. \\
+\axiom{A5} (negatives): each $\vu$ has $-\vu\in V$ with $\vu+(-\vu)=\vze$. &
+\axiom{A10} (scalar identity): $1\vu=\vu$. \\
+\end{tabular}
+\end{center}
+\end{defns}
+
+\begin{rmks}{3.1.2}
+Elements of $V$ are called \emph{vectors}. For most of MTH2021 the scalars are real numbers, and $V$ is a \emph{real vector space}. Other scalar fields matter too --- the complex numbers $\C$, or the integers modulo $2$, $\Z_2$ --- as we shall see in \S\ref{sec:3.7}.
+\end{rmks}
+
+The axioms are deliberately spare; even facts that seem obvious must be derived from them. The next two theorems do this groundwork.
+
+\begin{thms}{3.1.3}{}
+Let $V$ be a vector space and $\vv,\vw\in V$. Then
+\textup{(a)} $\vze+\vv=\vv$; \textup{(b)} $-\vv+\vv=\vze$; \textup{(c)} if $\vv+\vw=\vv$ then $\vw=\vze$; \textup{(d)} if $\vv+\vw=\vze$ then $\vw=-\vv$.
+\end{thms}
+
+\begin{prf}
+\case{(a)} By \axiom{A2} then \axiom{A4}, $\vze+\vv=\vv+\vze=\vv$.
+
+\case{(b)} By \axiom{A2} then \axiom{A5}, $-\vv+\vv=\vv+(-\vv)=\vze$.
+
+\case{(c)} Suppose $\vv+\vw=\vv$. Add $-\vv$ on the left and use \axiom{A3}, (b), then (a):
+\[
+\vw=\vze+\vw=(-\vv+\vv)+\vw=-\vv+(\vv+\vw)=-\vv+\vv=\vze.
+\]
+\case{(d)} Suppose $\vv+\vw=\vze$. Then
+\begin{steps}
+\st{\vw=\vze+\vw=(-\vv+\vv)+\vw=-\vv+(\vv+\vw)}{(a), (b), \axiom{A3}}
+\st{\phantom{\vw}=-\vv+\vze=-\vv.}{hypothesis, \axiom{A4}}
+\end{steps}
+\end{prf}
+
+\begin{rmks}{3.1.4}
+Part (c) shows the zero vector is \emph{unique}: any element acting as a zero must equal $\vze$. Part (d) shows each $\vv$ has a \emph{unique} additive inverse.
+\end{rmks}
+
+\begin{exmp}{3.1.5}{Standard vector spaces}
+Each of the following is a vector space: the zero space $\{\vze\}$; $n$-space $\R^n$; the space $\R^\infty$ of infinite real sequences; the space $\R^{m\times n}$ of $m\times n$ matrices; the space $P_n$ of polynomials of degree at most $n$; the space $P_\infty$ of all polynomials; and the space $C[0,1]$ of continuous functions $f:[0,1]\to\R$.
+\end{exmp}
+
+\begin{thms}{3.1.6}{Familiar properties}
+Let $V$ be a vector space, $\vu\in V$, and $k$ a scalar. Then
+\textup{(a)} $0\vu=\vze$; \textup{(b)} $k\vze=\vze$; \textup{(c)} $(-1)\vu=-\vu$; \textup{(d)} if $k\vu=\vze$ then $k=0$ or $\vu=\vze$.
+\end{thms}
+
+\begin{prf}
+\case{(a)} Since $0\vu=(0+0)\vu=0\vu+0\vu$ by \axiom{A8}, adding $-(0\vu)$ to both sides and using \axiom{A3}, \axiom{A5}, \axiom{A4} gives $\vze=0\vu$.
+
+\case{(c)} By \axiom{A10}, \axiom{A8}, and (a), $\vu+(-1)\vu=1\vu+(-1)\vu=(1+(-1))\vu=0\vu=\vze$. By \Thm{3.1.3}(d), $(-1)\vu=-\vu$.
+
+\case{(b)} and (d) are left as exercises (Exercise 3.1);
+
+\case{(d)} uses that if $k\neq0$ then multiplying $k\vu=\vze$ by $k\inv$ and applying \axiom{A9}, \axiom{A10} forces $\vu=\vze$.
+\end{prf}
+
+\subsection{Subspaces}
+
+Often a vector space sits inside another. A line through the origin lives inside $\R^2$; the symmetric matrices live inside $\R^{2\times2}$. Such a subset is a vector space in its own right, and we need only check closure to confirm it.
+
+\begin{defns}{3.1.7}{Subspace}
+A subset $W$ of a vector space $V$ is a \emph{subspace} of $V$ if $W$ is itself a vector space under the addition and scalar multiplication inherited from $V$.
+\end{defns}
+
+\begin{thms}{3.1.8}{Subspace Test}
+A non-empty subset $W$ of a vector space $V$ is a subspace if and only if
+\begin{enumerate}[label=\textup{(\roman*)},leftmargin=2.4em,itemsep=1pt]
+\item $W$ is closed under addition: $\vu,\vv\in W\Rightarrow\vu+\vv\in W$; and
+\item $W$ is closed under scalar multiplication: $\vu\in W,\,k$ scalar $\Rightarrow k\vu\in W$.
+\end{enumerate}
+\end{thms}
+
+\begin{prf}
+($\Rightarrow$) If $W$ is a subspace then it is a vector space, so \axiom{A1} and \axiom{A6} --- which are exactly (i) and (ii) --- hold.
+
+($\Leftarrow$) Suppose (i), (ii) hold. Axioms \axiom{A2}, \axiom{A3}, \axiom{A7}, \axiom{A8}, \axiom{A9}, \axiom{A10} are identities; they hold for all elements of $V$, hence in particular for all elements of $W$. It remains to supply \axiom{A4} and \axiom{A5}. Since $W\neq\varnothing$, choose $\vu\in W$. By (ii) with $k=0$, $0\vu=\vze\in W$, so \axiom{A4} holds (using \Thm{3.1.6}(a)). By (ii) with $k=-1$, $(-1)\vu=-\vu\in W$, so each element of $W$ has its inverse in $W$, giving \axiom{A5} (using \Thm{3.1.6}(c)). Thus $W$ satisfies all ten axioms.
+\end{prf}
+
+\begin{thms}{3.1.9}{}
+If $W$ is a subspace of $V$, then $W$ contains the zero vector of $V$.
+\end{thms}
+
+\begin{prf}
+$W$ is non-empty, so pick $\vu\in W$; by closure under scalar multiplication, $0\vu=\vze\in W$ (\Thm{3.1.6}(a)).
+\end{prf}
+
+\begin{exmp}{3.1.10}{Subspaces}
+The following are subspaces: the zero subspace $\{\vze\}$; any line through the origin in $\R^d$; any plane through the origin in $\R^d$ ($d\ge2$); the symmetric matrices in $\R^{2\times2}$; and $P_n$ inside $P_\infty$.
+
+\smallskip
+For the symmetric matrices $W=\{A\in\R^{2\times2}:A\trans=A\}$: it is non-empty ($O\in W$). If $A,B\in W$ then $(A+B)\trans=A\trans+B\trans=A+B$, so $A+B\in W$; and $(kA)\trans=kA\trans=kA$, so $kA\in W$. By the Subspace Test, $W$ is a subspace.
+\end{exmp}
+
+\begin{exmp}{3.1.11}{Non-subspaces}
+The half-plane $H=\{(x,y)\in\R^2:x\ge0\}$ is not a subspace: it is not closed under scalar multiplication, since $(1,0)\in H$ but $(-1)(1,0)=(-1,0)\notin H$. The plane $3x+y+z=5$ is not a subspace: it does not contain the origin (\Thm{3.1.9} fails).
+\end{exmp}
+
+\section{Span and Linear Independence}
+\label{sec:3.2}
+
+\begin{defns}{3.2.1}{Linear combination}
+A vector $\vv$ is a \emph{linear combination} of $\vw_1,\dots,\vw_r$ if $\vv=\alpha_1\vw_1+\cdots+\alpha_r\vw_r$ for some scalars $\alpha_1,\dots,\alpha_r$, the \emph{coefficients}.
+\end{defns}
+
+\begin{thms}{3.2.2}{}
+Let $S=\{\vw_1,\dots,\vw_r\}\subseteq V$. For any scalars $\alpha_i,\beta_i$:
+\textup{(a)} $\sum_{i=1}^r\alpha_i\vw_i\in V$;
+\textup{(b)} $\bigl(\sum\alpha_i\vw_i\bigr)+\bigl(\sum\beta_i\vw_i\bigr)=\sum(\alpha_i+\beta_i)\vw_i$;
+\textup{(c)} $k\bigl(\sum\alpha_i\vw_i\bigr)=\sum(k\alpha_i)\vw_i$.
+\end{thms}
+
+\begin{prf}
+\case{(a)} By induction on $r$. For $r=1$, $\alpha_1\vw_1\in V$ by \axiom{A6}. Assume $\sum_{i=1}^{r-1}\alpha_i\vw_i\in V$; then $\sum_{i=1}^r\alpha_i\vw_i=\bigl(\sum_{i=1}^{r-1}\alpha_i\vw_i\bigr)+\alpha_r\vw_r$, a sum of two elements of $V$ (the second by \axiom{A6}), hence in $V$ by \axiom{A1}. Parts (b), (c) follow by repeated use of \axiom{A8}, \axiom{A7}, \axiom{A9} and induction.
+\end{prf}
+
+\begin{thms}{3.2.3}{Span is the smallest containing subspace}
+Let $S=\{\vw_1,\dots,\vw_r\}\subseteq V$, and let $W$ be the set of all linear combinations of vectors in $S$. Then
+\textup{(a)} $W$ is a subspace of $V$; and
+\textup{(b)} $W$ is the smallest subspace of $V$ containing $S$.
+\end{thms}
+
+\begin{prf}
+\case{(a)} $W\neq\varnothing$ since $\vw_1=1\vw_1\in W$. If $\vx=\sum\alpha_i\vw_i$ and $\vy=\sum\beta_i\vw_i$ lie in $W$, then $\vx+\vy=\sum(\alpha_i+\beta_i)\vw_i\in W$ by \Thm{3.2.2}(b), and $k\vx=\sum(k\alpha_i)\vw_i\in W$ by \Thm{3.2.2}(c). By the Subspace Test, $W$ is a subspace.
+
+\case{(b)} Let $W'$ be any subspace containing $S$. Being closed under addition and scalar multiplication, $W'$ contains every linear combination of the $\vw_i$, that is, $W\subseteq W'$. So $W$ is contained in every subspace containing $S$ --- it is the smallest such.
+\end{prf}
+
+\begin{defns}{3.2.4}{Span}
+The subspace $W$ of all linear combinations of $S=\{\vw_1,\dots,\vw_r\}$ is the \emph{span} of $S$, written $W=\spn(S)=\spn\{\vw_1,\dots,\vw_r\}$. We say $S$ \emph{spans} $W$.
+\end{defns}
+
+\begin{exmp}{3.2.5}{Spanning sets}
+$\{\ve_1,\ve_2\}$ spans $\R^2$; so does $\{\ve_1,\ve_2,\ve_1+\ve_2\}$ (the extra vector is redundant). The set $\{1,x,x^2\}$ spans $P_2$, as does $\{1,x,x^2,x+x^2\}$.
+\end{exmp}
+
+\begin{defns}{3.2.6}{Linear independence}
+A set $\{\vv_1,\dots,\vv_r\}$ is \emph{linearly independent} if the only solution of
+\[
+k_1\vv_1+k_2\vv_2+\cdots+k_r\vv_r=\vze
+\]
+is the trivial one $k_1=\cdots=k_r=0$. Otherwise the set is \emph{linearly dependent}.
+\end{defns}
+
+\begin{exmp}{3.2.7}{Independence and dependence}
+In $\R^2$, $\{\ve_1,\ve_2\}$ is independent but $\{\ve_1,\ve_2,\ve_1+\ve_2\}$ is dependent (since $\ve_1+\ve_2-(\ve_1+\ve_2)=\vze$ is a nontrivial relation). In $P_2$, $\{1,x,x^2\}$ is independent --- a polynomial $k_0+k_1x+k_2x^2$ is the zero function only if $k_0=k_1=k_2=0$ --- while $\{1,x,x^2,x+x^2\}$ is dependent.
+\end{exmp}
+
+\begin{thms}{3.2.8}{Dependence means redundancy}
+A set $S$ with two or more vectors is
+\textup{(a)} linearly independent if and only if no vector in $S$ is a linear combination of the others;
+\textup{(b)} linearly dependent if and only if at least one vector in $S$ is a linear combination of the others.
+\end{thms}
+
+\begin{prf}
+Statements (a), (b) are contrapositives, so we prove (b). ($\Rightarrow$) If $S=\{\vv_1,\dots,\vv_n\}$ is dependent, there is a relation $\sum k_j\vv_j=\vze$ with some $k_i\neq0$. Solving for $\vv_i$,
+\[
+\vv_i=\sum_{j\neq i}\Bigl(-\tfrac{k_j}{k_i}\Bigr)\vv_j,
+\]
+a linear combination of the others. ($\Leftarrow$) If $\vv_i=\sum_{j\neq i}c_j\vv_j$, then $(-1)\vv_i+\sum_{j\neq i}c_j\vv_j=\vze$ is a relation with the coefficient $-1\neq0$ on $\vv_i$, so $S$ is dependent.
+\end{prf}
+
+\begin{exmp}{3.2.9}{Spanning and independence via a matrix}
+Do $(2,2,2),(0,0,3),(0,1,1)$ span $\R^3$? Are they independent?
+
+\smallskip
+\noindent\textit{Solution.} Writing $\vx=x_1(2,2,2)+x_2(0,0,3)+x_3(0,1,1)$ entrywise gives $A\vx=\vx$ with $A=\left[\begin{smallmatrix}2&0&0\\2&0&1\\2&3&1\end{smallmatrix}\right]$ (columns are the three vectors). Since $\det(A)=2\cdot(0\cdot1-1\cdot3)=-6\neq0$, $A$ is invertible (\Thm{2.2.9}). By \Thm{1.5.13}, $A\vx=\vb$ is consistent for every $\vb\in\R^3$, so the vectors span $\R^3$; and by \Thm{1.5.7}, $A\vx=\vze$ has only the trivial solution, so they are linearly independent.
+\end{exmp}
+
+\section{Basis and Dimension}
+\label{sec:3.3}
+
+A basis is a spanning set with no redundancy --- just enough vectors to build everything, with none to spare.
+
+\begin{defns}{3.3.1}{Basis}
+A set $S=\{\vv_1,\dots,\vv_r\}$ in a vector space $V$ is a \emph{basis} for $V$ if $S$ is linearly independent and spans $V$.
+\end{defns}
+
+\begin{exmp}{3.3.2}{}
+$\{\ve_1,\ve_2\}$ is a basis for $\R^2$, but $\{\ve_1,\ve_2,\ve_1+\ve_2\}$ is not (not independent). $\{1,x,x^2\}$ is a basis for $P_2$, but $\{1,x,x^2,x+x^2\}$ is not. The set $\{(2,2,2),(0,0,3),(0,1,1)\}$ of Example 3.2.9 is a basis for $\R^3$.
+\end{exmp}
+
+\begin{exmp}{3.3.3--3.3.5}{Standard bases}
+The \emph{standard basis} for $\R^n$ is $\{\ve_1,\dots,\ve_n\}$ with $\ve_i$ the vector having $1$ in position $i$ and $0$ elsewhere. The standard basis for $P_n$ is the set of monomials $\{1,x,x^2,\dots,x^n\}$. The standard basis for $\R^{2\times2}$ is the four matrices $\left[\begin{smallmatrix}1&0\\0&0\end{smallmatrix}\right],\left[\begin{smallmatrix}0&1\\0&0\end{smallmatrix}\right],\left[\begin{smallmatrix}0&0\\1&0\end{smallmatrix}\right],\left[\begin{smallmatrix}0&0\\0&1\end{smallmatrix}\right]$.
+\end{exmp}
+
+\begin{exmp}{3.3.6}{An infinite-dimensional space}
+$P_\infty$ has no finite spanning set. If $S=\{p_1,\dots,p_m\}$ were one, let $n$ be the highest degree among the $p_i$; then every combination has degree at most $n$, so $x^{n+1}\notin\spn(S)$, contradicting $\spn(S)=P_\infty$.
+\end{exmp}
+
+\begin{defns}{3.3.7}{Finite-dimensional}
+A vector space is \emph{finite-dimensional} if it has a finite spanning set.
+\end{defns}
+
+The crucial fact --- on which the very notion of dimension rests --- is that in a space spanned by $n$ vectors, no independent set can be larger than $n$.
+
+\begin{thms}{3.3.8}{}
+Let $V$ be finite-dimensional with a basis $B=\{\vv_1,\dots,\vv_n\}$.
+\textup{(a)} Any subset $S$ with more than $n$ vectors is linearly dependent.
+\textup{(b)} Any subset $S$ with fewer than $n$ vectors does not span $V$.
+\end{thms}
+
+\begin{prf}
+\case{(a)} Let $S=\{\vw_1,\dots,\vw_m\}$ with $m>n$. Since $B$ is a basis, each $\vw_j=\sum_{i=1}^n a_{ij}\vv_i$ for scalars $a_{ij}$. Consider a relation $\sum_{j=1}^m k_j\vw_j=\vze$. Substituting,
+\[
+\sum_{j=1}^m k_j\sum_{i=1}^n a_{ij}\vv_i=\sum_{i=1}^n\Bigl(\sum_{j=1}^m a_{ij}k_j\Bigr)\vv_i=\vze.
+\]
+Because $B$ is independent, every coefficient vanishes: $\sum_{j=1}^m a_{ij}k_j=0$ for $i=1,\dots,n$. This is a homogeneous system of $n$ equations in the $m$ unknowns $k_j$ with $m>n$, so by \Thm{1.2.11} it has a nontrivial solution. Hence $S$ is dependent. Part (b) is similar and is left as an exercise.
+\end{prf}
+
+\begin{thms}{3.3.9}{Dimension Theorem}
+Every basis of a finite-dimensional vector space $V$ has the same number of vectors.
+\end{thms}
+
+\begin{prf}
+Let $B$ have $n$ vectors and $B'$ have $n'$ vectors; both are bases. Viewing $B$ as the reference basis, $B'$ is an independent set, so $n'\le n$ by \Thm{3.3.8}(a). Viewing $B'$ as the reference basis, $B$ is independent, so $n\le n'$. Hence $n=n'$.
+\end{prf}
+
+\begin{defns}{3.3.10}{Dimension}
+The \emph{dimension} $\dim(V)$ of a finite-dimensional space $V$ is the number of vectors in any basis. By convention $\dim(\{\vze\})=0$.
+\end{defns}
+
+\begin{exmp}{3.3.11}{}
+$\dim(\R^n)=n$, \quad $\dim(P_n)=n+1$, \quad $\dim(\R^{2\times2})=4$.
+\end{exmp}
+
+\begin{thms}{3.3.12}{Extending and trimming}
+Let $S$ be a nonempty set of vectors in $V$.
+\textup{(a)} If $S$ is independent and $\vv\notin\spn(S)$, then $S\cup\{\vv\}$ is independent.
+\textup{(b)} If $\vv\in S$ is a linear combination of the others, then $\spn(S\setminus\{\vv\})=\spn(S)$.
+\end{thms}
+
+\begin{prf}
+\case{(a)} Let $S=\{\vv_1,\dots,\vv_m\}$ and consider $k\vv+k_1\vv_1+\cdots+k_m\vv_m=\vze$. If $k\neq0$ then $\vv=\sum(-k_i/k)\vv_i\in\spn(S)$, contradicting the hypothesis; so $k=0$. The relation reduces to $\sum k_i\vv_i=\vze$, forcing all $k_i=0$ since $S$ is independent. Thus $S\cup\{\vv\}$ is independent. Part (b) is left as an exercise.
+\end{prf}
+
+\begin{thms}{3.3.13}{$n$ vectors in an $n$-space}
+Let $\dim(V)=n$ and let $S\subseteq V$ contain exactly $n$ vectors.
+\textup{(a)} $S$ is a basis $\iff$ $S$ is linearly independent.
+\textup{(b)} $S$ is a basis $\iff$ $S$ spans $V$.
+\end{thms}
+
+\begin{prf}
+\case{(a)} ($\Leftarrow$) Suppose $S$ is independent. If $S$ were not a basis it would fail to span, so some $\vv\notin\spn(S)$; then $S\cup\{\vv\}$ is independent (\Thm{3.3.12}(a)) with $n+1$ vectors, contradicting \Thm{3.3.8}(a). Hence $S$ spans and is a basis. ($\Rightarrow$) immediate from the definition. Part (b) is dual and left as an exercise.
+\end{prf}
+
+\begin{thms}{3.3.14}{Dimension of a subspace}
+If $W$ is a subspace of a finite-dimensional space $V$, then
+\textup{(a)} $\dim(W)\le\dim(V)$; and
+\textup{(b)} $W=V$ if and only if $\dim(W)=\dim(V)$.
+\end{thms}
+
+\begin{prf}
+\case{(a)} $V$ has a finite spanning set, so any independent subset of $V$ --- in particular any basis of $W$ --- has at most $\dim(V)$ vectors by \Thm{3.3.8}(a). Hence $\dim(W)\le\dim(V)$. Part (b) is left as an exercise: if $\dim(W)=\dim(V)=n$, a basis of $W$ is an independent set of $n$ vectors in $V$, hence a basis of $V$ by \Thm{3.3.13}(a), so $W=\spn(\text{basis})=V$.
+\end{prf}
+
+\begin{thms}{3.3.15}{Bases from spanning/independent sets}
+Let $S$ be a finite set in a finite-dimensional space $V$.
+\textup{(a)} If $S$ spans $V$, then $S$ contains a subset that is a basis.
+\textup{(b)} If $S$ is independent, then $S$ extends to a basis.
+\end{thms}
+
+\begin{prf}
+\case{(a)} Induct on $|S|-\dim(V)\ge0$. If $|S|=\dim(V)$, then $S$ is a spanning set of the right size, hence a basis by \Thm{3.3.13}(b). Otherwise $|S|>\dim(V)$, so $S$ is dependent (\Thm{3.3.8}(a)); by \Thm{3.2.8}(b) some $\vv\in S$ is a combination of the others, and deleting it leaves the span unchanged (\Thm{3.3.12}(b)). The smaller set still spans $V$; by induction it contains a basis, and so does $S$. Part (b) is dual.
+\end{prf}
+
+\section{Direct Sums}
+\label{sec:3.4}
+
+\begin{defns}{3.4.1}{Sum and direct sum}
+Let $V,W$ be subspaces of a vector space $U$. Their \emph{sum} is
+\[
+V+W=\{\vv+\vw:\vv\in V,\;\vw\in W\}.
+\]
+If $V\cap W=\{\vze\}$, the sum is \emph{direct}, written $V\oplus W$.
+\end{defns}
+
+\begin{thms}{3.4.2}{}
+If $V,W$ are subspaces of $U$, then $V+W$ is a subspace of $U$.
+\end{thms}
+
+\begin{prf}
+$V+W\neq\varnothing$ since $\vze=\vze+\vze\in V+W$. If $\vu_1=\vv_1+\vw_1$ and $\vu_2=\vv_2+\vw_2$ (with $\vv_i\in V,\vw_i\in W$), then $\vu_1+\vu_2=(\vv_1+\vv_2)+(\vw_1+\vw_2)\in V+W$ since $V,W$ are closed under addition; and $k\vu_1=k\vv_1+k\vw_1\in V+W$ similarly. The Subspace Test applies.
+\end{prf}
+
+\begin{thms}{3.4.3}{Uniqueness characterises directness}
+The sum $V+W$ is direct if and only if every $\vu\in V+W$ has a \emph{unique} expression $\vu=\vv+\vw$ with $\vv\in V$, $\vw\in W$.
+\end{thms}
+
+\begin{prf}
+($\Rightarrow$) Suppose $V\cap W=\{\vze\}$ and $\vu=\vv+\vw=\vv'+\vw'$ with $\vv,\vv'\in V$, $\vw,\vw'\in W$. Then $\vv-\vv'=\vw'-\vw$; the left side lies in $V$ and the right in $W$, so both lie in $V\cap W=\{\vze\}$. Hence $\vv=\vv'$ and $\vw=\vw'$.
+($\Leftarrow$) Suppose expressions are unique. If $\vx\in V\cap W$, then $\vx=\vx+\vze=\vze+\vx$ are two decompositions (first with $\vv=\vx,\vw=\vze$; second with $\vv=\vze,\vw=\vx$). Uniqueness forces $\vx=\vze$, so $V\cap W=\{\vze\}$.
+\end{prf}
+
+\begin{thms}{3.4.4}{Dimension of a direct sum}
+Let $V,W$ be finite-dimensional subspaces of $U$. If $U=V\oplus W$, then $\dim(U)=\dim(V)+\dim(W)$.
+\end{thms}
+
+\begin{prf}
+Let $B_V=\{\vv_1,\dots,\vv_m\}$ be a basis of $V$ and $B_W=\{\vw_1,\dots,\vw_n\}$ a basis of $W$; we show $B_V\cup B_W$ is a basis of $U$. \emph{Spanning:} any $\vu\in U=V\oplus W$ is $\vu=\vv+\vw$ with $\vv=\sum\alpha_i\vv_i$, $\vw=\sum\beta_i\vw_i$, so $\vu$ is a combination of $B_V\cup B_W$. \emph{Independence:} suppose $\sum\alpha_i\vv_i+\sum\beta_i\vw_i=\vze$. Then $\sum\alpha_i\vv_i=-\sum\beta_i\vw_i$ lies in $V\cap W=\{\vze\}$, so both sides are $\vze$. Independence of $B_V$ gives all $\alpha_i=0$; independence of $B_W$ gives all $\beta_i=0$. Hence $B_V\cup B_W$ is a basis, and $\dim(U)=m+n=\dim(V)+\dim(W)$.
+\end{prf}
+
+\section{Coordinates and Change of Basis}
+\label{sec:3.5}
+
+Once a basis is fixed and \emph{ordered}, every vector acquires a unique list of coordinates. This is what lets an abstract $n$-dimensional space be computed with as though it were $\R^n$.
+
+\begin{thms}{3.5.1}{Unique representation}
+If $B=\{\vv_1,\dots,\vv_n\}$ is a basis for $V$, then every $\vv\in V$ can be written $\vv=c_1\vv_1+\cdots+c_n\vv_n$ in exactly one way.
+\end{thms}
+
+\begin{prf}
+\emph{Existence:} $B$ spans $V$, so such scalars exist. \emph{Uniqueness:} if $\vv=\sum c_i\vv_i=\sum c_i'\vv_i$, then $\sum(c_i-c_i')\vv_i=\vze$; independence of $B$ forces $c_i-c_i'=0$ for each $i$, so the representation is unique.
+\end{prf}
+
+\begin{defns}{3.5.2}{Coordinate vector}
+If $B=\{\vv_1,\dots,\vv_n\}$ is an ordered basis and $\vv=c_1\vv_1+\cdots+c_n\vv_n$, the scalars $c_i$ are the \emph{coordinates} of $\vv$ relative to $B$, and
+\[
+[\vv]_B=(c_1,c_2,\dots,c_n)\in\R^n
+\]
+is the \emph{coordinate vector} of $\vv$ relative to $B$.
+\end{defns}
+
+\begin{exmp}{3.5.3}{Coordinates in $P_2$}
+For the basis $B=\{1,x,x^2\}$ of $P_2$ and $p(x)=a_0+a_1x+a_2x^2$, we have $p=a_0\cdot1+a_1\cdot x+a_2\cdot x^2$, so $[p]_B=(a_0,a_1,a_2)$.
+\end{exmp}
+
+\begin{exmp}{3.5.4}{Coordinates in a skewed basis}
+For $B'=\{1+x,\,2x,\,3x^2\}$ and $p(x)=a_0+a_1x+a_2x^2$, solve $p=c_1(1+x)+c_2(2x)+c_3(3x^2)$. Matching coefficients: $a_0=c_1$, $a_1=c_1+2c_2$, $a_2=3c_3$, so $c_1=a_0$, $c_2=\tfrac{a_1-a_0}{2}$, $c_3=\tfrac{a_2}{3}$, giving $[p]_{B'}=\bigl(a_0,\tfrac{a_1-a_0}{2},\tfrac{a_2}{3}\bigr)$.
+\end{exmp}
+
+How are $[\vv]_B$ and $[\vv]_{B'}$ related when we change basis? The answer is multiplication by a fixed matrix.
+
+\begin{defns}{3.5.5}{Change-of-basis matrix}
+For ordered bases $B=\{\vu_1,\dots,\vu_n\}$ and $B'=\{\vu_1',\dots,\vu_n'\}$ of $V$, the \emph{change-of-basis matrix from $B$ to $B'$} is
+\[
+P_{B',B}=\bigl[\,[\vu_1]_{B'}\;\;[\vu_2]_{B'}\;\;\cdots\;\;[\vu_n]_{B'}\,\bigr],
+\]
+the $n\times n$ matrix whose columns are the coordinate vectors of the \emph{old} basis $B$ relative to the \emph{new} basis $B'$.
+\end{defns}
+
+\begin{thms}{3.5.6}{Change-of-basis formula}
+For all $\vv\in V$, \;$[\vv]_{B'}=P_{B',B}\,[\vv]_B$.
+\end{thms}
+
+\begin{prf}
+Write $[\vv]_B=(c_1,\dots,c_n)$, so $\vv=\sum_j c_j\vu_j$. Taking coordinates relative to $B'$ and using that coordinates respect linear combinations (a consequence of \Thm{3.5.1}),
+\[
+[\vv]_{B'}=\Bigl[\sum_j c_j\vu_j\Bigr]_{B'}=\sum_j c_j[\vu_j]_{B'}=\sum_j c_j\,(\text{$j$th column of }P_{B',B})=P_{B',B}\,[\vv]_B,
+\]
+the last equality by the column interpretation of matrix--vector multiplication (\Thm{1.3.10}).
+\end{prf}
+
+\begin{thms}{3.5.7}{The change-of-basis matrix is invertible}
+$P_{B',B}$ is invertible, with $P_{B',B}^{-1}=P_{B,B'}$.
+\end{thms}
+
+\begin{prf}
+Applying \Thm{3.5.6} twice, for every $\vv$,
+\[
+[\vv]_B=P_{B,B'}[\vv]_{B'}=P_{B,B'}P_{B',B}[\vv]_B.
+\]
+Taking $\vv=\vu_i$ (so $[\vu_i]_B=\ve_i$) shows $P_{B,B'}P_{B',B}\ve_i=\ve_i$ for each $i$; that is, $P_{B,B'}P_{B',B}=I$. By \Thm{1.5.11}, $P_{B',B}$ is invertible with inverse $P_{B,B'}$.
+\end{prf}
+
+\begin{rmks}{3.5.8}
+When $B$ is a standard basis, $P_{B,B'}$ is read off directly (its columns are the coordinates of the new basis vectors, which in a standard basis are the vectors themselves). \Thm{3.5.7} then yields the reverse matrix by inversion.
+\end{rmks}
+
+\section{Row Space, Column Space, and Kernel}
+\label{sec:3.6}
+
+To each $m\times n$ matrix $A$ we attach four subspaces. Three appear here; the fourth, the cokernel, is the kernel of the transpose.
+
+\begin{defns}{3.6.1--3.6.4}{The four fundamental subspaces}
+Let $A$ be an $m\times n$ matrix.
+\begin{itemize}[leftmargin=1.4em,itemsep=1pt]
+\item The \emph{row space} $\rowsp(A)$ is the subspace of $\R^n$ spanned by the rows of $A$.
+\item The \emph{column space} $\colsp(A)$ is the subspace of $\R^m$ spanned by the columns of $A$.
+\item The \emph{kernel} $\ker(A)$ is the set of all $\vx\in\R^n$ with $A\vx=\vze$.
+\item The \emph{cokernel} is $\coker(A)=\ker(A\trans)$.
+\end{itemize}
+\end{defns}
+
+\begin{thms}{3.6.5}{}
+The kernel of an $m\times n$ matrix is a subspace of $\R^n$.
+\end{thms}
+
+\begin{prf}
+$\ker(A)\neq\varnothing$ since $A\vze=\vze$, so $\vze\in\ker(A)$. If $\vx,\vy\in\ker(A)$ then $A(\vx+\vy)=A\vx+A\vy=\vze+\vze=\vze$, so $\vx+\vy\in\ker(A)$; and $A(k\vx)=k(A\vx)=k\vze=\vze$, so $k\vx\in\ker(A)$. By the Subspace Test, $\ker(A)$ is a subspace of $\R^n$.
+\end{prf}
+
+\begin{thms}{3.6.6}{}
+Let $U$ be an echelon form of $A$. If $U$ has $r$ pivots, then $\dim(\rowsp(A))=r$.
+\end{thms}
+
+\begin{proofomit}[MTH2025]The essential points are that row operations do not change the row space, and that the nonzero rows of an echelon form are independent; the pivot count $r$ is therefore the dimension of the row space.
+\end{proofomit}
+
+\begin{cors}{3.6.7}{}
+Every echelon form of $A$ has the same number of pivots.
+\end{cors}
+
+\begin{prf}
+If $U,U'$ are echelon forms of $A$ with $r,r'$ pivots, then $\dim(\rowsp(A))=r$ and $\dim(\rowsp(A))=r'$ by \Thm{3.6.6}; hence $r=r'$.
+\end{prf}
+
+\begin{thms}{3.6.8}{Consistency via the column space}
+The system $A\vx=\vb$ is consistent if and only if $\vb\in\colsp(A)$.
+\end{thms}
+
+\begin{prf}
+By \Thm{1.3.10}, $A\vx=x_1\vec{a}_1+\cdots+x_n\vec{a}_n$ is a linear combination of the columns $\vec{a}_j$ of $A$. Thus $A\vx=\vb$ has a solution $\vx$ if and only if $\vb$ is expressible as such a combination, i.e. $\vb\in\spn\{\vec{a}_1,\dots,\vec{a}_n\}=\colsp(A)$.
+\end{prf}
+
+\begin{exmp}{3.6.9}{Is $\vb$ in the column space?}
+Let $A=\left[\begin{smallmatrix}1&3\\4&6\end{smallmatrix}\right]$, $\vb=\left[\begin{smallmatrix}2\\10\end{smallmatrix}\right]$. Since $\det(A)=6-12=-6\neq0$, $A$ is invertible, so $A\vx=\vb$ is consistent (\Thm{1.5.13}) and $\vb\in\colsp(A)$. Solving, $\vx=A\inv\vb=(1,\tfrac13)\trans$, so $\vb=1\cdot\left[\begin{smallmatrix}1\\4\end{smallmatrix}\right]+\tfrac13\left[\begin{smallmatrix}3\\6\end{smallmatrix}\right]$.
+\end{exmp}
+
+\section{Vector Spaces over Fields}
+\label{sec:3.7}
+
+The definition of a vector space (\Defn{3.1.1}) never used any special property of $\R$ beyond the ordinary rules of arithmetic. Any set of scalars obeying those rules --- a \emph{field} --- will do.
+
+\begin{defns}{3.7.1}{Field}
+A \emph{field} $\F$ is a non-empty set with two operations, addition and multiplication, assigning to each $a,b\in\F$ unique elements $a+b$ and $ab$ in $\F$, such that for all $a,b,c\in\F$:
+\begin{center}
+\begin{tabular}{@{}p{0.46\linewidth}p{0.46\linewidth}@{}}
+\axiom{F1} (commutativity): $a+b=b+a$, $ab=ba$. &
+\axiom{F4} (identities): distinct $0,1\in\F$ with $a+0=a$, $1a=a$. \\
+\axiom{F2} (associativity): $a+(b+c)=(a+b)+c$, $a(bc)=(ab)c$. &
+\axiom{F5} (additive inverse): each $a$ has $-a$ with $a+(-a)=0$. \\
+\axiom{F3} (distributivity): $a(b+c)=ab+ac$. &
+\axiom{F6} (multiplicative inverse): each $a\neq0$ has $a^{-1}$ with $aa^{-1}=1$. \\
+\end{tabular}
+\end{center}
+\end{defns}
+
+\begin{exmp}{3.7.2}{Common fields}
+The rationals $\Q$, the reals $\R$, the complex numbers $\C$, and the integers modulo a prime $p$, written $\Z_p=\{0,1,\dots,p-1\}$, are all fields. In $\Z_p$ one adds and multiplies as usual, then reduces modulo $p$.
+\end{exmp}
+
+\begin{exmp}{3.7.3}{Arithmetic in $\Z_3$}
+The addition and multiplication tables for $\Z_3=\{0,1,2\}$:
+\[
+\begin{array}{c|ccc}
++&0&1&2\\\hline 0&0&1&2\\ 1&1&2&0\\ 2&2&0&1
+\end{array}
+\qquad\qquad
+\begin{array}{c|ccc}
+\times&0&1&2\\\hline 0&0&0&0\\ 1&0&1&2\\ 2&0&2&1
+\end{array}
+\]
+Every nonzero element has a multiplicative inverse ($1^{-1}=1$, $2^{-1}=2$ since $2\cdot2=4\equiv1$), so \axiom{F6} holds and $\Z_3$ is a field.
+\end{exmp}
+
+\begin{rmks}{3.7.4}
+The construction of $\Z_p$ makes sense for any $p\in\N$, but $\Z_p$ is a field only when $p$ is prime --- otherwise a nonzero element can fail to have a multiplicative inverse (e.g. $2$ in $\Z_4$).
+\end{rmks}
+
+\begin{exmp}{3.7.5}{$\F^n$ is a vector space over $\F$}
+For a field $\F$ and $n\in\N$, the set $\F^n$ of $n$-tuples from $\F$, with componentwise addition and scalar multiplication, satisfies A1--A10 and is a vector space over $\F$. Taking $\F=\Z_2$ gives $\Z_2^n$, the setting for binary codes below.
+\end{exmp}
+
+\section{Application: Coding Theory}
+\label{sec:3.8}
+
+Information sent over a noisy channel can be corrupted. \emph{Coding theory} adds structured redundancy so that errors can be detected, and sometimes corrected. We work over $\Z_2$, so codewords are binary strings in $\Z_2^n$ and arithmetic is mod $2$.
+
+\subsection{Error detection}
+
+With plain $3$-bit words, every string in $\Z_2^3$ is valid, so a single flipped bit turns one valid word into another and goes undetected. Appending a \emph{checksum} bit --- the mod-$2$ sum of the data bits --- fixes this: a single error makes the checksum inconsistent, so the received word is not a codeword and the error is \emph{detected}. (A two-bit error can still slip through.)
+
+\subsection{Error correction: the Hamming $(7,4)$ code}
+
+To \emph{correct} errors we add more redundancy. The Hamming $(7,4)$ code encodes a $4$-bit word $\vec{d}=(d_1,d_2,d_3,d_4)$ as a $7$-bit word $(d_1,d_2,d_3,d_4,p_1,p_2,p_3)$ with parity bits
+\[
+p_1=d_2+d_3+d_4,\qquad p_2=d_1+d_3+d_4,\qquad p_3=d_1+d_2+d_4\pmod 2.
+\]
+Treating $\vec{d}$ as a row vector, the codeword is $\vec{c}=\vec{d}\,G$, where the \emph{generator matrix} is
+\[
+G=\begin{bmatrix}1&0&0&0&0&1&1\\0&1&0&0&1&0&1\\0&0&1&0&1&1&0\\0&0&0&1&1&1&1\end{bmatrix}.
+\]
+
+\begin{lems}{3.8.2}{}
+The set of codewords generated by $G$ is $\rowsp(G)$.
+\end{lems}
+
+\begin{prf}
+The codewords are $\{\vec{d}\,G:\vec{d}\in\Z_2^4\}$. By \Thm{1.3.10} applied to rows (equivalently, $\vec{d}\,G=\sum_i d_i(\text{row }i\text{ of }G)$), each $\vec{d}\,G$ is a linear combination of the rows of $G$, and conversely every such combination arises from some $\vec{d}$. Hence the codeword set is exactly $\spn\{\text{rows of }G\}=\rowsp(G)$.
+\end{prf}
+
+\begin{exmp}{3.8.3}{Encoding}
+For $\vec{d}=(1,0,0,1)$: $p_1=0{+}0{+}1=1$, $p_2=1{+}0{+}1=0$, $p_3=1{+}0{+}1=0$, so $\vec{c}=\vec{d}\,G=(1,0,0,1,1,0,0)$.
+\end{exmp}
+
+To test whether a received word $\vec{c}\in\Z_2^7$ is a codeword, introduce the \emph{parity-check matrix}
+\[
+H=\begin{bmatrix}0&0&0&1&1&1&1\\0&1&1&0&0&1&1\\1&0&1&0&1&0&1\end{bmatrix}.
+\]
+
+\begin{thms}{3.8.4}{}
+$\rowsp(G)=\ker(H)$; consequently $\vec{c}$ is a valid codeword if and only if $H\vec{c}\trans=\vze$.
+\end{thms}
+
+\begin{prf}[Proof sketch]
+One checks $HG\trans=O$ over $\Z_2$, so every row of $G$ lies in $\ker(H)$, giving $\rowsp(G)\subseteq\ker(H)$. Counting dimensions, $\dim\rowsp(G)=4$ (the rows of $G$ are independent) and $\dim\ker(H)=7-\rank(H)=7-3=4$, so the inclusion is an equality. The final statement is then immediate: $\vec{c}\in\rowsp(G)\iff\vec{c}\in\ker(H)\iff H\vec{c}\trans=\vze$.
+\end{prf}
+
+\begin{defns}{3.8.5}{Linear code}
+A subspace $L$ of $\Z_2^n$ is a \emph{linear code}. A matrix $G$ is a \emph{generator matrix} for $L$ if its rows form a basis of $L$, and $H$ is a \emph{parity-check matrix} for $L$ if $\ker(H)=\rowsp(G)=L$.
+\end{defns}
+
+\begin{lems}{3.8.7}{One-bit error correction}
+A linear code with parity-check matrix $H$ is one-bit error-correcting if and only if the columns of $H$ are all nonzero and pairwise distinct.
+\end{lems}
+
+\begin{prf}[Idea]
+A single error in position $i$ adds $\ve_i$ to the transmitted codeword; the received word $\vec{r}$ then has \emph{syndrome} $H\vec{r}\trans=H\ve_i\trans=$ the $i$th column of $H$. Distinct nonzero columns mean each single-error syndrome is nonzero and identifies its position $i$ uniquely, so the error can be located and flipped back. If two columns coincided, the corresponding single-bit errors would be indistinguishable; if a column were zero, that error would be invisible.
+\end{prf}
+
+% ===================================================================
+\section*{Chapter 3 Summary}
+\addcontentsline{toc}{section}{Chapter 3 Summary}
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+\item A vector space is any set satisfying A1--A10 (\Defn{3.1.1}); a subset is a subspace iff it is nonempty and closed under $+$ and scalar multiplication (\Thm{3.1.8}), and every subspace contains $\vze$ (\Thm{3.1.9}).
+\item $\spn(S)$ is the smallest subspace containing $S$ (\Thm{3.2.3}); a set is dependent iff some vector is a combination of the others (\Thm{3.2.8}).
+\item A \emph{basis} is an independent spanning set. All bases have the same size (\Thm{3.3.9}), the \emph{dimension}. In an $n$-space, any $n$ independent vectors --- or any $n$ spanning vectors --- form a basis (\Thm{3.3.13}). Independent sets extend to bases; spanning sets contain bases (\Thm{3.3.15}).
+\item For $U=V\oplus W$: decompositions are unique (\Thm{3.4.3}) and $\dim U=\dim V+\dim W$ (\Thm{3.4.4}).
+\item Coordinates relative to a basis are unique (\Thm{3.5.1}); changing basis multiplies by $P_{B',B}$ (\Thm{3.5.6}), which is invertible with inverse $P_{B,B'}$ (\Thm{3.5.7}).
+\item The four subspaces of $A$: row, column, kernel, cokernel. $\ker(A)$ is a subspace (\Thm{3.6.5}); $\dim\rowsp(A)=$ pivot count (\Thm{3.6.6}); $A\vx=\vb$ is consistent iff $\vb\in\colsp(A)$ (\Thm{3.6.8}).
+\item Scalars may come from any field $\F$ (\Defn{3.7.1}); $\Z_2^n$ underlies binary linear codes, where codewords are $\rowsp(G)=\ker(H)$ (\Thm{3.8.4}) and one-bit correction holds iff $H$ has distinct nonzero columns (\Lem{3.8.7}).
+\end{itemize}
+
+% ===================================================================
+\section*{Chapter 3 Exercises}
+\addcontentsline{toc}{section}{Chapter 3 Exercises}
+
+\begin{enumerate}[label=\textbf{3.\arabic*},leftmargin=2.6em,itemsep=6pt]
+\item Prove \Thm{3.1.6}(b) and (d) from the axioms: $k\vze=\vze$, and if $k\vu=\vze$ then $k=0$ or $\vu=\vze$.
+
+\item Determine whether $W=\{(x,y,z)\in\R^3:x+2y-z=0\}$ is a subspace of $\R^3$. If so, find a basis and its dimension.
+
+\item Are the polynomials $1+x$, $x+x^2$, $1+x^2$ a basis for $P_2$? Justify using a determinant.
+
+\item Let $V$ be the subspace of $\R^{2\times2}$ of symmetric matrices. Find $\dim(V)$ and exhibit a basis.
+
+\item For $A=\left[\begin{smallmatrix}1&2&1\\2&4&3\end{smallmatrix}\right]$, find a basis for $\ker(A)$ and state $\dim\ker(A)$.
+
+\item In $\Z_2^7$ with the Hamming code, the word $\vec{r}=(1,0,1,1,0,0,1)$ is received. Compute the syndrome $H\vec{r}\trans$ and, using \Lem{3.8.7}, determine the corrected codeword.
+\end{enumerate}
+
+\subsection*{Solutions to Chapter 3 Exercises}
+
+\begin{enumerate}[label=\textbf{3.\arabic*},leftmargin=2.6em,itemsep=8pt]
+
+\item (b) $k\vze=k(\vze+\vze)=k\vze+k\vze$ by \axiom{A7}; adding $-(k\vze)$ and using \axiom{A3},\axiom{A5},\axiom{A4} gives $\vze=k\vze$. (d) Suppose $k\vu=\vze$ and $k\neq0$. Multiply by $k^{-1}$: $\vu=1\vu=(k^{-1}k)\vu=k^{-1}(k\vu)=k^{-1}\vze=\vze$, using \axiom{A10},\axiom{A9} and part (b). So $k=0$ or $\vu=\vze$. $\blacksquare$
+
+\item $W$ is the solution set of one homogeneous equation, hence $\ker\!\left[\begin{smallmatrix}1&2&-1\end{smallmatrix}\right]$, a subspace by \Thm{3.6.5}. Free variables $y,z$: $x=-2y+z$, so $(x,y,z)=y(-2,1,0)+z(1,0,1)$. A basis is $\{(-2,1,0),(1,0,1)\}$ and $\dim(W)=2$.
+
+\item Coordinate vectors relative to $\{1,x,x^2\}$ are $(1,1,0),(0,1,1),(1,0,1)$. Form $M=\left[\begin{smallmatrix}1&0&1\\1&1&0\\0&1&1\end{smallmatrix}\right]$ (columns the coordinate vectors); $\det(M)=1(1)-0+1(1)=2\neq0$, so $M$ is invertible, the three coordinate vectors are independent in $\R^3$, and hence the polynomials are independent. Three independent vectors in the $3$-dimensional $P_2$ form a basis (\Thm{3.3.13}(a)). \checkmark
+
+\item A symmetric $2\times2$ matrix is $\left[\begin{smallmatrix}a&b\\b&c\end{smallmatrix}\right]=a\left[\begin{smallmatrix}1&0\\0&0\end{smallmatrix}\right]+b\left[\begin{smallmatrix}0&1\\1&0\end{smallmatrix}\right]+c\left[\begin{smallmatrix}0&0\\0&1\end{smallmatrix}\right]$. These three matrices are independent and span $V$, so they form a basis and $\dim(V)=3$.
+
+\item Reduce: $\left[\begin{smallmatrix}1&2&1\\2&4&3\end{smallmatrix}\right]\to\left[\begin{smallmatrix}1&2&1\\0&0&1\end{smallmatrix}\right]\to\left[\begin{smallmatrix}1&2&0\\0&0&1\end{smallmatrix}\right]$. Pivots in columns $1,3$; free variable $x_2=t$. Then $x_3=0$, $x_1=-2t$, so $\ker(A)=\{t(-2,1,0):t\in\R\}$, a basis is $\{(-2,1,0)\}$, and $\dim\ker(A)=1$.
+
+\item $H\vec{r}\trans$ over $\Z_2$: row $1$ of $H$ dotted with $\vec{r}$ is $r_4{+}r_5{+}r_6{+}r_7=1{+}0{+}0{+}1=0$; row $2$ is $r_2{+}r_3{+}r_6{+}r_7=0{+}1{+}0{+}1=0$; row $3$ is $r_1{+}r_3{+}r_5{+}r_7=1{+}1{+}0{+}1=1$. The syndrome is $(0,0,1)\trans$, which matches column $1$ of $H$ (entries $0,0,1$). So the error is in position $1$; flipping it gives the corrected codeword $\vec{c}=(0,0,1,1,0,0,1)$.
+
+\end{enumerate}

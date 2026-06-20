@@ -1,0 +1,253 @@
+% ===================================================================
+%  MTH2021 Linear Algebra with Applications  —  Shared Preamble
+% ===================================================================
+\usepackage[a4paper,margin=2.6cm,headheight=14pt]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{titlesec}
+\usepackage[Conny]{fncychap}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{adjustbox}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{multicol}
+\usepackage[T1]{fontenc}
+\usepackage[protrusion=true,expansion=false]{microtype}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=NavyBlue,citecolor=NavyBlue,
+            urlcolor=NavyBlue,linktoc=all}
+
+% ---- Palette ------------------------------------------------------
+\definecolor{NavyBlue}{RGB}{16,52,96}
+\definecolor{InkBlue}{RGB}{28,62,110}
+\definecolor{BoxGrey}{RGB}{244,246,249}
+\definecolor{RuleGrey}{RGB}{120,130,145}
+\definecolor{ThmBlue}{RGB}{232,238,247}
+\definecolor{DefGreen}{RGB}{234,243,236}
+\definecolor{DefRule}{RGB}{52,120,72}
+\definecolor{ExAmber}{RGB}{250,246,235}
+\definecolor{ExRule}{RGB}{170,130,40}
+\definecolor{WarnRed}{RGB}{251,239,239}
+\definecolor{WarnRule}{RGB}{160,55,55}
+
+% ---- Headers ------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyhead[L]{\small\itshape\nouppercase{\leftmark}}
+\fancyhead[R]{\small\thepage}
+\fancyfoot[C]{\small MTH2021 Linear Algebra with Applications}
+
+% ---- Section styling ---------------------------------------------
+\titleformat{\section}{\Large\bfseries\color{NavyBlue}}{\thesection}{0.7em}{}
+\titleformat{\subsection}{\large\bfseries\color{InkBlue}}{\thesubsection}{0.6em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries\color{InkBlue}}{\thesubsubsection}{0.5em}{}
+
+% ===================================================================
+%  Theorem-like environments — MANUAL numbering to mirror the
+%  seminar notes exactly (e.g. Theorem 1.5.7, Definition 1.2.3).
+%  Usage:  \begin{thms}{1.5.7}{Equivalent statements} ... \end{thms}
+%  The second argument (title) may be empty: {...}{}
+%  Auto-creates \label targets thm:1.5.7, def:1.2.3, etc.
+% ===================================================================
+\makeatletter
+\newcommand{\@mlabeltitle}[1]{\if\relax\detokenize{#1}\relax\else\;(#1)\fi}
+
+\newtcolorbox{resultbox}[3]{%
+  boxrule=0pt, frame hidden, sharp corners,
+  borderline west={3pt}{0pt}{InkBlue},
+  colback=ThmBlue, breakable, enhanced jigsaw,
+  left=10pt,right=8pt,top=6pt,bottom=6pt,before skip=10pt,after skip=10pt,
+  before upper={\textbf{#1~#2}\@mlabeltitle{#3}\par\smallskip}}
+
+\newenvironment{thms}[2]{%
+  \hypertarget{thm:#1}{}\begin{resultbox}{Theorem}{#1}{#2}}{\end{resultbox}}
+\newenvironment{lems}[2]{%
+  \hypertarget{lem:#1}{}\begin{resultbox}{Lemma}{#1}{#2}}{\end{resultbox}}
+\newenvironment{cors}[2]{%
+  \hypertarget{cor:#1}{}\begin{resultbox}{Corollary}{#1}{#2}}{\end{resultbox}}
+\newenvironment{props}[2]{%
+  \hypertarget{prop:#1}{}\begin{resultbox}{Proposition}{#1}{#2}}{\end{resultbox}}
+
+\newtcolorbox{defbox}[2]{%
+  boxrule=0pt, frame hidden, sharp corners,
+  borderline west={3pt}{0pt}{DefRule},
+  colback=DefGreen, breakable, enhanced jigsaw,
+  left=10pt,right=8pt,top=6pt,bottom=6pt,before skip=10pt,after skip=10pt,
+  before upper={\textbf{Definition~#1}\@mlabeltitle{#2}\par\smallskip}}
+\newenvironment{defns}[2]{%
+  \hypertarget{def:#1}{}\begin{defbox}{#1}{#2}}{\end{defbox}}
+
+\newtcolorbox{algbox}[2]{%
+  boxrule=0pt, frame hidden, sharp corners,
+  borderline west={3pt}{0pt}{RuleGrey},
+  colback=BoxGrey, breakable, enhanced jigsaw,
+  left=10pt,right=8pt,top=6pt,bottom=6pt,before skip=10pt,after skip=10pt,
+  before upper={\textbf{Algorithm~#1}\@mlabeltitle{#2}\par\smallskip}}
+\newenvironment{algs}[2]{%
+  \hypertarget{alg:#1}{}\begin{algbox}{#1}{#2}}{\end{algbox}}
+
+\newtcolorbox{rmkbox}[1]{%
+  boxrule=0pt, frame hidden, sharp corners,
+  borderline west={2pt}{0pt}{RuleGrey},
+  colback=white, breakable, enhanced jigsaw,
+  left=10pt,right=4pt,top=2pt,bottom=2pt,before skip=8pt,after skip=8pt,
+  before upper={\textbf{Remark~#1.}\;}}
+\newenvironment{rmks}[1]{%
+  \hypertarget{rmk:#1}{}\begin{rmkbox}{#1}}{\end{rmkbox}}
+
+% Unnumbered remark/aside (no "Remark N." prefix auto-added)
+\newtcolorbox{rmknotebox}{%
+  boxrule=0pt, frame hidden, sharp corners,
+  borderline west={2pt}{0pt}{RuleGrey},
+  colback=white, breakable, enhanced jigsaw,
+  left=10pt,right=4pt,top=2pt,bottom=2pt,before skip=8pt,after skip=8pt}
+\newenvironment{rmknote}{\begin{rmknotebox}}{\end{rmknotebox}}
+
+\newtcolorbox{exmpbox}[2]{%
+  colback=ExAmber, colframe=ExRule, boxrule=0.6pt, sharp corners,
+  breakable, enhanced, left=9pt,right=9pt,top=7pt,bottom=7pt,
+  before skip=11pt, after skip=11pt,
+  fonttitle=\bfseries\color{white}, coltitle=white, colbacktitle=ExRule,
+  attach boxed title to top left={yshift=-0.5pt,xshift=8pt},
+  boxed title style={sharp corners,boxrule=0pt},
+  title={Example~#1\@mlabeltitle{#2}}}
+\newenvironment{exmp}[2]{%
+  \hypertarget{eg:#1}{}\begin{exmpbox}{#1}{#2}}{\end{exmpbox}}
+\makeatother
+
+% Wide-display helper: shrink an over-wide math display to \linewidth.
+\newcommand{\widedisplay}[1]{%
+  \begin{center}\adjustbox{max width=\linewidth}{$\displaystyle #1$}\end{center}}
+
+% Warning / pitfall box
+\newtcolorbox{pitfall}[1][Warning]{
+  colback=WarnRed, colframe=WarnRule, boxrule=0.6pt, sharp corners,
+  breakable, enhanced, left=9pt,right=9pt,top=6pt,bottom=6pt,
+  before skip=10pt, after skip=10pt,
+  fonttitle=\bfseries, coltitle=WarnRule, title={#1}}
+
+% Chapter "roadmap" intro box
+\newtcolorbox{roadmap}{
+  colback=BoxGrey, colframe=NavyBlue, boxrule=0.8pt, sharp corners,
+  breakable, enhanced, left=10pt,right=10pt,top=8pt,bottom=8pt,
+  before skip=6pt, after skip=14pt}
+
+% ---- Proof tweak --------------------------------------------------
+\renewcommand{\qedsymbol}{$\blacksquare$}
+
+% ===================================================================
+%  Redesigned PROOF presentation.
+%  proofbox : a light box with a left rule in the theorem blue, so it
+%             reads as "hanging off" the result it proves. Optional
+%             argument relabels the header (e.g. [Proof of (b)]).
+%  steps    : one logical step per line; \st{statement}{reason} puts
+%             the reason flush right (seminar "statement | reason").
+%             \stn{statement} for a step with no cited reason.
+%  case     : \case{(a)} heads a sub-part with space above it.
+%  proofomit: deferral notice (MTH2025 / Problem Set), same styling.
+% ===================================================================
+\makeatletter
+\definecolor{ProofBlue}{RGB}{60,96,150}
+\definecolor{ProofBack}{RGB}{248,250,253}
+
+\newtcolorbox{proofboxenv}[1]{%
+  boxrule=0pt, frame hidden, sharp corners,
+  borderline west={2.5pt}{0pt}{ProofBlue},
+  colback=ProofBack, breakable, enhanced jigsaw,
+  left=11pt,right=8pt,top=5pt,bottom=5pt,
+  before skip=-4pt, after skip=12pt,
+  before upper={\textit{\color{ProofBlue}#1.}\par\smallskip}}
+
+% \begin{prf} ... \end{prf}            -> header "Proof"
+% \begin{prf}[Proof of (b)] ... \end{prf}
+\newenvironment{prf}[1][Proof]{\begin{proofboxenv}{#1}}{\unskip\nobreak\hfil\penalty50\hskip1em\null\nobreak\hfil$\blacksquare$\parfillskip=0pt\finalhyphendemerits=0\end{proofboxenv}}
+
+% Step list: each step on its own line, reason flush right.
+\newenvironment{steps}{%
+  \begin{list}{}{%
+    \setlength{\leftmargin}{1.2em}\setlength{\rightmargin}{0pt}%
+    \setlength{\itemsep}{3pt}\setlength{\parsep}{0pt}%
+    \setlength{\topsep}{3pt}\setlength{\labelwidth}{0pt}%
+    \setlength{\labelsep}{0pt}\setlength{\listparindent}{0pt}}%
+  }{\end{list}}
+% \st{statement}{reason}
+\newcommand{\st}[2]{\item $\displaystyle #1$ \hfill\makebox[0pt][r]{\small\color{RuleGrey}(#2)}\par}
+% step with no reason
+\newcommand{\stn}[1]{\item $\displaystyle #1$\par}
+% inline text step (for prose lines inside a step list)
+\newcommand{\stt}[1]{\item #1\par}
+
+% Case header inside a proof.
+\newcommand{\case}[1]{\par\smallskip\noindent\textbf{\color{ProofBlue}#1}\enspace\ignorespaces}
+
+% Deferral notice, styled like a faint proof box.
+\newtcolorbox{omitbox}{%
+  boxrule=0pt, frame hidden, sharp corners,
+  borderline west={2.5pt}{0pt}{RuleGrey},
+  colback=white, breakable, enhanced jigsaw,
+  left=11pt,right=8pt,top=4pt,bottom=4pt,
+  before skip=-4pt, after skip=12pt}
+\newenvironment{proofomit}[1][MTH2025]{%
+  \begin{omitbox}\textit{\color{RuleGrey}Proof omitted (#1).}\;\ignorespaces}{\end{omitbox}}
+\makeatother
+
+% ===================================================================
+%  Math macros
+% ===================================================================
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\F}{\mathbb{F}}
+\renewcommand{\vec}[1]{\mathbf{#1}}
+\newcommand{\vu}{\mathbf{u}}
+\newcommand{\vv}{\mathbf{v}}
+\newcommand{\vw}{\mathbf{w}}
+\newcommand{\vx}{\mathbf{x}}
+\newcommand{\vy}{\mathbf{y}}
+\newcommand{\vb}{\mathbf{b}}
+\newcommand{\vc}{\mathbf{c}}
+\newcommand{\vz}{\mathbf{z}}
+\newcommand{\vze}{\mathbf{0}}
+\newcommand{\ve}{\mathbf{e}}
+\newcommand{\vp}{\mathbf{p}}
+\newcommand{\veci}{\mathbf{i}}
+\newcommand{\trans}{^{\mathsf{T}}}
+\newcommand{\inv}{^{-1}}
+\newcommand{\spn}{\operatorname{span}}
+\newcommand{\rank}{\operatorname{rank}}
+\newcommand{\nullity}{\operatorname{nullity}}
+\newcommand{\tr}{\operatorname{tr}}
+\newcommand{\rowsp}{\operatorname{row}}
+\newcommand{\colsp}{\operatorname{col}}
+\newcommand{\ran}{\operatorname{ran}}
+\newcommand{\coker}{\operatorname{coker}}
+\newcommand{\proj}{\operatorname{proj}}
+\newcommand{\dist}{\operatorname{dist}}
+\renewcommand{\dim}{\operatorname{dim}}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\Mat}{\mathrm{M}}
+\newcommand{\inner}[2]{\langle #1, #2 \rangle}
+\newcommand{\norm}[1]{\lVert #1 \rVert}
+\newcommand{\abs}[1]{\lvert #1 \rvert}
+\DeclareMathOperator{\REFop}{REF}
+\DeclareMathOperator{\RREFop}{RREF}
+\newcommand{\REF}{\ensuremath{\REFop}}
+\newcommand{\RREF}{\ensuremath{\RREFop}}
+
+% Cross-reference shorthand: the argument IS the seminar-notes number,
+% so we print it literally and hyperlink to the environment's target.
+\newcommand{\Thm}[1]{\hyperlink{thm:#1}{Theorem~#1}}
+\newcommand{\Lem}[1]{\hyperlink{lem:#1}{Lemma~#1}}
+\newcommand{\Cors}[1]{\hyperlink{cor:#1}{Corollary~#1}}
+\newcommand{\Props}[1]{\hyperlink{prop:#1}{Proposition~#1}}
+\newcommand{\Defn}[1]{\hyperlink{def:#1}{Definition~#1}}
+\newcommand{\Alg}[1]{\hyperlink{alg:#1}{Algorithm~#1}}
+\newcommand{\Rmk}[1]{\hyperlink{rmk:#1}{Remark~#1}}
+\newcommand{\Egref}[1]{\hyperlink{eg:#1}{Example~#1}}
+\newcommand{\axiom}[1]{\textsf{#1}}

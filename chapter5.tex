@@ -1,0 +1,523 @@
+\chapter{Inner Product Spaces}
+\label{ch:inner-products}
+
+\begin{roadmap}
+\noindent\textbf{What this chapter is about.}\;
+Vector spaces have no built-in notion of length or angle. An \emph{inner product} supplies one: a way to multiply two vectors into a scalar, generalising the dot product. From it we recover lengths, distances, the Cauchy--Schwarz inequality, angles, and above all \emph{orthogonality}. Orthonormal bases make computation trivial, and the \emph{Gram--Schmidt} process manufactures them from any basis. We then prove the \emph{Fundamental Theorem of Linear Algebra}, relating the four subspaces of a matrix, and apply orthogonal projection to solve the \emph{least-squares problem} --- the best approximate solution of an inconsistent system.
+\medskip
+
+\noindent\textbf{Reference.}\; A\&R \S\S6.1--6.4 and \S7.7.
+\end{roadmap}
+
+\section{Inner Products}
+\label{sec:5.1}
+
+\begin{defns}{5.1.1}{Inner product}
+An \emph{inner product} on a real vector space $V$ is a function $\inner{\cdot}{\cdot}$ assigning a real number $\inner{\vu}{\vv}$ to each pair of vectors, such that for all $\vu,\vv,\vw\in V$ and all $k\in\R$:
+\begin{enumerate}[label=\arabic*.,leftmargin=2.2em,itemsep=1pt]
+\item \emph{Symmetry:} $\inner{\vu}{\vv}=\inner{\vv}{\vu}$;
+\item \emph{Linearity:} $\inner{\vu}{\vv+k\vw}=\inner{\vu}{\vv}+k\inner{\vu}{\vw}$;
+\item \emph{Positive definiteness:} $\inner{\vv}{\vv}\ge0$, with $\inner{\vv}{\vv}=0$ if and only if $\vv=\vze$.
+\end{enumerate}
+\end{defns}
+
+\begin{defns}{5.1.2}{Inner product space}
+A real vector space with an inner product is a \emph{real inner product space}.
+\end{defns}
+
+Linearity is stated in the second slot; symmetry transfers it to the first.
+
+\begin{lems}{5.1.3}{Linearity in the first argument}
+$\inner{\vu+k\vw}{\vv}=\inner{\vu}{\vv}+k\inner{\vw}{\vv}$.
+\end{lems}
+
+\begin{prf}
+\begin{steps}
+\st{\inner{\vu+k\vw}{\vv}=\inner{\vv}{\vu+k\vw}}{symmetry}
+\st{\phantom{\inner{\vu+k\vw}{\vv}}=\inner{\vv}{\vu}+k\inner{\vv}{\vw}}{linearity in slot 2}
+\st{\phantom{\inner{\vu+k\vw}{\vv}}=\inner{\vu}{\vv}+k\inner{\vw}{\vv}.}{symmetry, twice}
+\end{steps}
+\end{prf}
+
+\begin{exmp}{5.1.4}{Euclidean inner product}
+The dot product $\inner{\vu}{\vv}=\vu\cdot\vv=\sum_{i=1}^n u_iv_i$ on $\R^n$ satisfies all three axioms. With it, $\R^n$ is \emph{Euclidean $n$-space}.
+\end{exmp}
+
+\begin{exmp}{5.1.5}{Weighted inner product}
+For positive reals $w_1,\dots,w_n$, the formula $\inner{\vu}{\vv}=\sum_{i=1}^n w_iu_iv_i$ is an inner product on $\R^n$. Positive definiteness uses $w_i>0$: $\inner{\vv}{\vv}=\sum w_iv_i^2\ge0$, vanishing only when every $v_i=0$.
+\end{exmp}
+
+\begin{exmp}{5.1.6}{Matrix inner product}
+For an invertible $n\times n$ matrix $A$, the formula $\inner{\vu}{\vv}=(A\vu)\cdot(A\vv)$ is an inner product on $\R^n$. Positive definiteness holds because $\inner{\vv}{\vv}=\norm{A\vv}^2\ge0$, and equals $0$ only if $A\vv=\vze$, i.e. $\vv=\vze$ since $A$ is invertible (\Thm{1.5.7}).
+\end{exmp}
+
+\begin{rmks}{5.1.7}
+The Euclidean inner product is the case $A=I$ of the matrix inner product; the weighted inner product is the case where $A=\diag(\sqrt{w_1},\dots,\sqrt{w_n})$.
+\end{rmks}
+
+\begin{exmp}{5.1.8}{Function-space inner product}
+On $C[a,b]$, the formula
+\[
+\inner{f}{g}=\int_a^b f(x)g(x)\,dx
+\]
+is an inner product. Symmetry and linearity are clear; positive definiteness, $\inner{f}{f}=\int_a^b f(x)^2\,dx\ge0$ with equality iff $f\equiv0$, uses continuity of $f$.
+\end{exmp}
+
+\begin{rmks}{5.1.9}
+The integral inner product is the continuous analogue of the dot product: summation over coordinates becomes integration over the domain.
+\end{rmks}
+
+\begin{defns}{5.1.10}{Norm and distance}
+In a real inner product space, the \emph{length} (or \emph{norm}) of $\vv$ is $\norm{\vv}=\sqrt{\inner{\vv}{\vv}}$, and the \emph{distance} between $\vu,\vv$ is
+\[
+\dist(\vu,\vv)=\norm{\vu-\vv}=\sqrt{\inner{\vu-\vv}{\vu-\vv}}.
+\]
+\end{defns}
+
+\begin{thms}{5.1.11}{Properties of norm and distance}
+For $\vu,\vv,\vw$ in a real inner product space and $k\in\R$:
+\begin{multicols}{2}
+\begin{enumerate}[label=\textup{(\alph*)},leftmargin=1.6em,itemsep=1pt]
+\item $\norm{\vv}\ge0$, with $\norm{\vv}=0\iff\vv=\vze$;
+\item $\norm{k\vv}=\abs{k}\,\norm{\vv}$;
+\item $\norm{\vu+\vv}\le\norm{\vu}+\norm{\vv}$ (triangle inequality);
+\item $\dist(\vu,\vv)=\dist(\vv,\vu)$;
+\item $\dist(\vu,\vv)\ge0$, with equality $\iff\vu=\vv$;
+\item $\dist(\vu,\vv)\le\dist(\vu,\vw)+\dist(\vw,\vv)$.
+\end{enumerate}
+\end{multicols}
+\end{thms}
+
+\begin{prf}
+\case{(a)} is positive definiteness restated.
+
+\case{(b)} $\norm{k\vv}=\sqrt{\inner{k\vv}{k\vv}}=\sqrt{k^2\inner{\vv}{\vv}}=\abs{k}\norm{\vv}$.
+
+\case{(c)} is proved below using Cauchy--Schwarz (\Thm{5.2.1}). Parts (d)--(f) follow from (a)--(c) applied to difference vectors: (d) from $\norm{-\vx}=\norm{\vx}$, (e) from (a), and (f) (the triangle inequality for distance) from (c) with $\vu-\vv=(\vu-\vw)+(\vw-\vv)$.
+\end{prf}
+
+\begin{exmp}{5.1.12}{A non-standard inner product on $\R^2$}
+Suppose $\R^2$ carries $\inner{\vu}{\vv}=u_1v_1+3u_2v_2$ (a weighted inner product). Then $\norm{(1,1)}=\sqrt{1+3}=2$, not $\sqrt2$ --- length depends on the inner product, not just the coordinates.
+\end{exmp}
+
+\begin{exmp}{5.1.13}{Norms of $\sin$ and $\cos$}
+On $C[0,2\pi]$ with $\inner{f}{g}=\int_0^{2\pi}fg\,dx$,
+\[
+\norm{\sin x}^2=\int_0^{2\pi}\sin^2x\,dx=\pi,\qquad \norm{\cos x}^2=\int_0^{2\pi}\cos^2x\,dx=\pi,
+\]
+so $\norm{\sin x}=\norm{\cos x}=\sqrt\pi$.
+\end{exmp}
+
+\section{Angle and Orthogonality}
+\label{sec:5.2}
+
+\begin{thms}{5.2.1}{Cauchy--Schwarz inequality}
+In a real inner product space, $\abs{\inner{\vu}{\vv}}\le\norm{\vu}\,\norm{\vv}$ for all $\vu,\vv$.
+\end{thms}
+
+\begin{prf}
+If $\vu=\vze$ both sides are $0$. Otherwise, for any $t\in\R$ consider
+\[
+0\le\inner{t\vu+\vv}{t\vu+\vv}=\norm{\vu}^2t^2+2\inner{\vu}{\vv}t+\norm{\vv}^2,
+\]
+using \Lem{5.1.3} and linearity. This quadratic in $t$ is nonnegative for all $t$, so its discriminant is $\le0$:
+\[
+\bigl(2\inner{\vu}{\vv}\bigr)^2-4\norm{\vu}^2\norm{\vv}^2\le0\;\Longrightarrow\;\inner{\vu}{\vv}^2\le\norm{\vu}^2\norm{\vv}^2.
+\]
+Taking square roots gives $\abs{\inner{\vu}{\vv}}\le\norm{\vu}\norm{\vv}$.
+\end{prf}
+
+\begin{prf}[Proof of the triangle inequality \textup{(\Thm{5.1.11}(c))}]
+Using Cauchy--Schwarz, $\norm{\vu+\vv}^2=\norm{\vu}^2+2\inner{\vu}{\vv}+\norm{\vv}^2\le\norm{\vu}^2+2\norm{\vu}\norm{\vv}+\norm{\vv}^2=(\norm{\vu}+\norm{\vv})^2$; take square roots.
+\end{prf}
+
+\begin{defns}{5.2.2}{Angle}
+The \emph{angle} between nonzero $\vu,\vv$ is $\theta=\arccos\!\Bigl(\dfrac{\inner{\vu}{\vv}}{\norm{\vu}\,\norm{\vv}}\Bigr)$. Cauchy--Schwarz guarantees the argument lies in $[-1,1]$, so $\theta$ is well-defined.
+\end{defns}
+
+\begin{exmp}{5.2.3}{Angle between $\sin$ and $\cos$}
+On $C[0,2\pi]$, $\inner{\sin x}{\cos x}=\int_0^{2\pi}\sin x\cos x\,dx=0$, so $\theta=\arccos 0=\tfrac\pi2$: $\sin$ and $\cos$ are perpendicular as functions.
+\end{exmp}
+
+\begin{defns}{5.2.4}{Orthogonality}
+Vectors $\vu,\vv$ are \emph{orthogonal} if $\inner{\vu}{\vv}=0$. (Example 5.2.3 shows $\sin$ and $\cos$ are orthogonal in $C[0,2\pi]$.)
+\end{defns}
+
+\begin{exmp}{5.2.5}{}
+For $\vu=(1,1)$ and $\vv=(1,-1)$ in Euclidean $\R^2$, $\inner{\vu}{\vv}=1-1=0$, so they are orthogonal.
+\end{exmp}
+
+\begin{thms}{5.2.6}{Generalised Pythagorean theorem}
+If $\vu,\vv$ are orthogonal in a real inner product space, then $\norm{\vu+\vv}^2=\norm{\vu}^2+\norm{\vv}^2$.
+\end{thms}
+
+\begin{prf}
+$\norm{\vu+\vv}^2=\inner{\vu+\vv}{\vu+\vv}=\norm{\vu}^2+2\inner{\vu}{\vv}+\norm{\vv}^2=\norm{\vu}^2+\norm{\vv}^2$, since $\inner{\vu}{\vv}=0$.
+\end{prf}
+
+\section{Orthogonal Complements}
+\label{sec:5.3}
+
+\begin{defns}{5.3.1}{Orthogonal subspaces}
+Subspaces $U,W$ of an inner product space $V$ are \emph{orthogonal}, written $U\perp W$, if every vector of $U$ is orthogonal to every vector of $W$.
+\end{defns}
+
+\begin{lems}{5.3.2}{}
+If $U\perp W$, then $U\cap W=\{\vze\}$.
+\end{lems}
+
+\begin{prf}
+If $\vx\in U\cap W$, then $\vx$ is orthogonal to itself: $\inner{\vx}{\vx}=0$. By positive definiteness, $\vx=\vze$.
+\end{prf}
+
+\begin{cors}{5.3.3}{}
+If $U,W$ are orthogonal subspaces of $V$, then $U+W=U\oplus W$.
+\end{cors}
+
+\begin{prf}
+By \Lem{5.3.2}, $U\cap W=\{\vze\}$, which is exactly the condition for the sum to be direct (\Defn{3.4.1}).
+\end{prf}
+
+\begin{defns}{5.3.4}{Orthogonal complement}
+The \emph{orthogonal complement} of a subspace $U\subseteq V$ is
+\[
+U^\perp=\{\vv\in V:\inner{\vv}{\vu}=0\text{ for all }\vu\in U\}.
+\]
+\end{defns}
+
+\begin{lems}{5.3.5}{}
+$U^\perp$ is a subspace of $V$.
+\end{lems}
+
+\begin{prf}
+$\vze\in U^\perp$ since $\inner{\vze}{\vu}=0$ for all $\vu$. If $\vx,\vy\in U^\perp$ and $k$ is a scalar, then for every $\vu\in U$, $\inner{\vx+k\vy}{\vu}=\inner{\vx}{\vu}+k\inner{\vy}{\vu}=0+0=0$ by \Lem{5.1.3}, so $\vx+k\vy\in U^\perp$. By the Subspace Test, $U^\perp$ is a subspace.
+\end{prf}
+
+\section{Gram--Schmidt and Orthonormal Bases}
+\label{sec:5.4}
+
+\begin{defns}{5.4.1}{Orthogonal and orthonormal sets}
+A set of two or more vectors is \emph{orthogonal} if every pair is orthogonal, and \emph{orthonormal} if in addition every vector has length $1$. For nonzero $\vv$, the vector $\vv/\norm{\vv}$ is a \emph{unit vector}; replacing $\vv$ by $\vv/\norm{\vv}$ is \emph{normalisation}.
+\end{defns}
+
+\begin{exmp}{5.4.2}{}
+$S=\{(1,1,1),(0,1,-1),(2,-1,-1)\}$ is orthogonal in Euclidean $\R^3$: each pairwise dot product is zero (e.g. $(1,1,1)\cdot(0,1,-1)=0$). Normalising each vector turns $S$ into an orthonormal set.
+\end{exmp}
+
+\begin{thms}{5.4.3}{Orthogonal sets are independent}
+If $S=\{\vv_1,\dots,\vv_n\}$ is an orthogonal set of \emph{nonzero} vectors, then $S$ is linearly independent.
+\end{thms}
+
+\begin{prf}
+Suppose $\sum_i c_i\vv_i=\vze$. Take the inner product with $\vv_j$; by orthogonality all terms vanish except $i=j$:
+\begin{steps}
+\st{0=\inner{\textstyle\sum_i c_i\vv_i}{\vv_j}=\sum_i c_i\inner{\vv_i}{\vv_j}}{linearity}
+\st{\phantom{0}=c_j\inner{\vv_j}{\vv_j}=c_j\norm{\vv_j}^2.}{orthogonality kills $i\neq j$}
+\end{steps}
+Since $\vv_j\neq\vze$, $\norm{\vv_j}^2>0$, so $c_j=0$. As $j$ was arbitrary, every $c_j=0$ and $S$ is independent.
+\end{prf}
+
+\begin{cors}{5.4.4}{}
+An orthonormal set is linearly independent.
+\end{cors}
+
+\begin{prf}
+Orthonormal vectors are nonzero (they have length $1$) and orthogonal, so \Thm{5.4.3} applies.
+\end{prf}
+
+\begin{thms}{5.4.5}{Inner products via orthonormal coordinates}
+If $B$ is an orthonormal basis for an $n$-dimensional inner product space $V$, then $\inner{\vu}{\vv}=[\vu]_B\cdot[\vv]_B$ for all $\vu,\vv\in V$.
+\end{thms}
+
+\begin{prf}
+Write $\vu=\sum_i a_i\vv_i$, $\vv=\sum_j b_j\vv_j$ with $B=\{\vv_i\}$ orthonormal. Then by bilinearity and $\inner{\vv_i}{\vv_j}=\delta_{ij}$,
+\[
+\inner{\vu}{\vv}=\sum_{i,j}a_ib_j\inner{\vv_i}{\vv_j}=\sum_i a_ib_i=[\vu]_B\cdot[\vv]_B.
+\]
+\end{prf}
+
+\begin{thms}{5.4.6}{Fourier expansion}
+If $B=\{\vv_1,\dots,\vv_n\}$ is an orthonormal basis for $V$, then every $\vu\in V$ satisfies
+\[
+\vu=\inner{\vu}{\vv_1}\vv_1+\inner{\vu}{\vv_2}\vv_2+\cdots+\inner{\vu}{\vv_n}\vv_n.
+\]
+\end{thms}
+
+\begin{prf}
+Since $B$ is a basis, $\vu=\sum_i c_i\vv_i$ for unique scalars $c_i$. Taking the inner product with $\vv_j$ and using orthonormality, $\inner{\vu}{\vv_j}=\sum_i c_i\inner{\vv_i}{\vv_j}=c_j$. So $c_j=\inner{\vu}{\vv_j}$, as claimed.
+\end{prf}
+
+The coefficients $\inner{\vu}{\vv_j}$ are the orthogonal projections of $\vu$ onto the basis directions, which leads to projection onto a subspace.
+
+\begin{thms}{5.4.7}{Projection Theorem}
+Let $W$ be a finite-dimensional subspace of an inner product space $V$. Then every $\vu\in V$ can be written uniquely as
+\[
+\vu=\vw+\vw^\perp,\qquad \vw\in W,\;\vw^\perp\in W^\perp.
+\]
+\end{thms}
+
+\begin{prf}
+Take an orthonormal basis $\{\vv_1,\dots,\vv_k\}$ of $W$ (which exists by \Thm{5.4.10} below) and set $\vw=\sum_{j=1}^k\inner{\vu}{\vv_j}\vv_j\in W$ and $\vw^\perp=\vu-\vw$. For each $i$, $\inner{\vw^\perp}{\vv_i}=\inner{\vu}{\vv_i}-\sum_j\inner{\vu}{\vv_j}\inner{\vv_j}{\vv_i}=\inner{\vu}{\vv_i}-\inner{\vu}{\vv_i}=0$, so $\vw^\perp\perp W$. Uniqueness: if $\vu=\vw_1+\vw_1^\perp=\vw_2+\vw_2^\perp$, then $\vw_1-\vw_2=\vw_2^\perp-\vw_1^\perp\in W\cap W^\perp=\{\vze\}$ (\Lem{5.3.2}), so the decompositions agree.
+\end{prf}
+
+\begin{defns}{5.4.8}{Orthogonal projection}
+The vector $\vw$ in \Thm{5.4.7} is the \emph{orthogonal projection} of $\vu$ on $W$, written $\vw=\proj_W\vu$.
+\end{defns}
+
+\begin{rmks}{5.4.9}
+If $\{\vv_1,\dots,\vv_k\}$ is merely orthogonal (not normalised), then
+\[
+\proj_W\vu=\sum_{j=1}^k\frac{\inner{\vu}{\vv_j}}{\norm{\vv_j}^2}\vv_j,
+\]
+each term dividing by $\norm{\vv_j}^2$ to compensate for unnormalised lengths.
+\end{rmks}
+
+\begin{thms}{5.4.10}{Existence of orthonormal bases}
+Every nonzero finite-dimensional inner product space has an orthonormal basis.
+\end{thms}
+
+\begin{prf}
+Start from any basis $\{\vu_1,\dots,\vu_n\}$ and apply the Gram--Schmidt process (\Alg{5.4.11}) to produce an orthogonal basis $\{\vv_1,\dots,\vv_n\}$; then normalise each $\vv_j$. The construction (verified in \Alg{5.4.11}) keeps each $\vv_j$ nonzero and the spans equal, so the result is an orthonormal basis.
+\end{prf}
+
+\begin{algs}{5.4.11}{Gram--Schmidt}
+To convert a basis $\{\vu_1,\dots,\vu_n\}$ into an orthogonal basis $\{\vv_1,\dots,\vv_n\}$ spanning the same space, set
+\begin{align*}
+\vv_1&=\vu_1,\\
+\vv_2&=\vu_2-\frac{\inner{\vu_2}{\vv_1}}{\norm{\vv_1}^2}\vv_1,\\
+\vv_3&=\vu_3-\frac{\inner{\vu_3}{\vv_1}}{\norm{\vv_1}^2}\vv_1-\frac{\inner{\vu_3}{\vv_2}}{\norm{\vv_2}^2}\vv_2,\\
+&\;\;\vdots\\
+\vv_k&=\vu_k-\sum_{j=1}^{k-1}\frac{\inner{\vu_k}{\vv_j}}{\norm{\vv_j}^2}\vv_j.
+\end{align*}
+At each step, $\vv_k=\vu_k-\proj_{W_{k-1}}\vu_k$ where $W_{k-1}=\spn\{\vv_1,\dots,\vv_{k-1}\}$. Normalise ($\ve_j=\vv_j/\norm{\vv_j}$) to obtain an orthonormal basis.
+\end{algs}
+
+\begin{exmp}{5.4.12}{Gram--Schmidt in $\R^2$}
+Apply Gram--Schmidt to $\vu_1=(1,1)$, $\vu_2=(0,1)$ in Euclidean $\R^2$. First $\vv_1=(1,1)$. Then
+\[
+\vv_2=(0,1)-\frac{\inner{(0,1)}{(1,1)}}{\norm{(1,1)}^2}(1,1)=(0,1)-\frac{1}{2}(1,1)=\Bigl(-\tfrac12,\tfrac12\Bigr).
+\]
+Check: $\vv_1\cdot\vv_2=-\tfrac12+\tfrac12=0$. Normalising, $\ve_1=\tfrac{1}{\sqrt2}(1,1)$ and $\ve_2=\tfrac{1}{\sqrt2}(-1,1)$.
+\end{exmp}
+
+\begin{thms}{5.4.13}{}
+If $V$ is a finite-dimensional inner product space and $W$ is a subspace, then $V=W\oplus W^\perp$, and $\dim V=\dim W+\dim W^\perp$.
+\end{thms}
+
+\begin{prf}
+By the Projection Theorem (\Thm{5.4.7}), every $\vu\in V$ decomposes uniquely as $\vw+\vw^\perp$ with $\vw\in W$, $\vw^\perp\in W^\perp$, so $V=W+W^\perp$ with the sum direct (\Cors{5.3.3}). The dimension formula is \Thm{3.4.4}.
+\end{prf}
+
+\section{The Fundamental Theorem of Linear Algebra}
+\label{sec:5.5}
+
+The four subspaces of a matrix are not independent of each other: each is the orthogonal complement of another, and their dimensions are governed by a single number, the rank.
+
+\begin{thms}{5.5.1}{Row space and kernel are complementary}
+If $A$ is an $m\times n$ matrix, then $\rowsp(A)^\perp=\ker(A)$ in $\R^n$.
+\end{thms}
+
+\begin{prf}
+Let $\vec{r}_1,\dots,\vec{r}_m$ be the rows of $A$. Then $\vx\in\ker(A)\iff A\vx=\vze\iff\vec{r}_i\cdot\vx=0$ for every $i$. By linearity of the dot product, $\vec{r}_i\cdot\vx=0$ for all $i$ if and only if $\vec{w}\cdot\vx=0$ for every $\vec{w}\in\spn\{\vec{r}_i\}=\rowsp(A)$. That last condition is exactly $\vx\in\rowsp(A)^\perp$. Hence $\ker(A)=\rowsp(A)^\perp$.
+\end{prf}
+
+\begin{cors}{5.5.2}{Orthogonal decompositions}
+For any $m\times n$ matrix $A$:
+\textup{(a)} $\R^n=\rowsp(A)\oplus\ker(A)$;
+\textup{(b)} $\R^m=\colsp(A)\oplus\ker(A\trans)$.
+\end{cors}
+
+\begin{prf}
+\case{(a)} By \Thm{5.5.1}, $\ker(A)=\rowsp(A)^\perp$, and \Thm{5.4.13} gives $\R^n=\rowsp(A)\oplus\rowsp(A)^\perp$.
+
+\case{(b)} Apply (a) to $A\trans$: since $\rowsp(A\trans)=\colsp(A)$ and $\ker(A\trans)=\coker(A)$, we get $\R^m=\colsp(A)\oplus\ker(A\trans)$.
+\end{prf}
+
+\begin{thms}{5.5.6}{Fundamental Theorem of Linear Algebra}
+Let $A$ be an $m\times n$ matrix with $r$ pivots. Then
+\begin{multicols}{2}
+\begin{enumerate}[label=\textup{(\roman*)},leftmargin=1.8em,itemsep=1pt]
+\item $\dim(\colsp(A))=r=\rank(A)$;
+\item $\dim(\rowsp(A))=r=\rank(A)$;
+\item $\dim(\ker(A))=n-r=\nullity(A)$;
+\item $\dim(\coker(A))=m-r=\nullity(A\trans)$.
+\end{enumerate}
+\end{multicols}
+\end{thms}
+
+\begin{prf}
+\case{(ii)} is \Thm{3.6.6}: the pivot count equals $\dim\rowsp(A)$. (iii): $\ker(A)$ is the solution space of $A\vx=\vze$, with one basis vector per free variable; there are $n-r$ free variables, so $\dim\ker(A)=n-r$, which by \Cors{5.5.2}(a) and \Thm{3.4.4} equals $n-\dim\rowsp(A)=n-r$ consistently. (i): from $\R^n=\rowsp(A)\oplus\ker(A)$ (\Cors{5.5.2}(a)), $\dim\rowsp(A)=n-(n-r)=r$; and applying the Rank--Nullity Theorem to $T_A$ (whose range is $\colsp(A)$, \Egref{4.3.2}) gives $\dim\colsp(A)=n-\dim\ker(A)=r$. So row rank $=$ column rank $=r$. (iv): apply (iii) to $A\trans$, an $n\times m$ matrix with the same pivot count $r$, giving $\dim\ker(A\trans)=m-r$.
+\end{prf}
+
+\begin{rmknote}
+\textbf{Remark.}\; The equality of (i) and (ii) --- row rank equals column rank --- is remarkable: the number of independent rows of any matrix equals the number of independent columns, though rows and columns live in different spaces.
+\end{rmknote}
+
+For a square matrix, the Fundamental Theorem adds many further equivalent conditions to the invertibility list.
+
+\begin{thms}{5.5.7}{Equivalent statements (the master list)}
+For an $n\times n$ matrix $A$, the following are equivalent:
+\begin{multicols}{2}
+\begin{enumerate}[label=\textup{(\alph*)},leftmargin=1.6em,itemsep=0pt]
+\item $A$ is invertible;
+\item $A\vx=\vze$ has only the trivial solution;
+\item $\RREF(A)=I_n$;
+\item $A$ is a product of elementary matrices;
+\item $A\vx=\vb$ is consistent for every $\vb$;
+\item $A\vx=\vb$ has a unique solution for every $\vb$;
+\item $\det(A)\neq0$;
+\item the columns of $A$ are linearly independent;
+\item the rows of $A$ are linearly independent;
+\item the columns of $A$ span $\R^n$;
+\item the rows of $A$ span $\R^n$;
+\item the columns of $A$ form a basis of $\R^n$;
+\item the rows of $A$ form a basis of $\R^n$;
+\item $\rank(A)=n$;
+\item $\nullity(A)=0$;
+\item $\ran(T_A)=\R^n$.
+\end{enumerate}
+\end{multicols}
+\end{thms}
+
+\begin{prf}
+Conditions (a)--(g) are \Thm{2.2.12}. For the rest, $A$ is $n\times n$, so by the Fundamental Theorem the pivot count $r$ satisfies: (n) $\rank(A)=n\iff r=n\iff\RREF(A)=I_n$, which is (c); (o) $\nullity(A)=0\iff n-r=0\iff r=n$, again (n); (h),(j),(l),(n) all say the $n$ columns are independent / spanning / a basis / rank $n$, equivalent to $r=n$ by \Thm{3.3.13}; (i),(k),(m) are the row versions, equivalent via $\det(A)=\det(A\trans)$ (\Thm{2.2.2}); (p) $\ran(T_A)=\colsp(A)=\R^n\iff$ (j). All reduce to $r=n$, i.e. to (a).
+\end{prf}
+
+\section{Least Squares}
+\label{sec:5.6}
+
+When $A\vx=\vb$ is inconsistent --- as overdetermined systems from real data usually are --- we cannot solve it exactly, but we can find the $\vx$ making $A\vx$ as close to $\vb$ as possible. The geometry of projection makes this precise.
+
+\begin{thms}{5.6.1}{Closest Point}
+If $W$ is a finite-dimensional subspace of an inner product space $V$ and $\vb\in V$, then the point of $W$ closest to $\vb$ is $\proj_W\vb$: that is, $\dist(\vb,\proj_W\vb)<\dist(\vb,\vw)$ for every $\vw\in W$ with $\vw\neq\proj_W\vb$.
+\end{thms}
+
+\begin{prf}
+Write $\vb=\proj_W\vb+\vz$ with $\vz=\vb-\proj_W\vb\in W^\perp$ (\Thm{5.4.7}). For any $\vw\in W$, the vector $\proj_W\vb-\vw\in W$ is orthogonal to $\vz$, so by Pythagoras (\Thm{5.2.6}),
+\[
+\dist(\vb,\vw)^2=\norm{\vz+(\proj_W\vb-\vw)}^2=\norm{\vz}^2+\norm{\proj_W\vb-\vw}^2\ge\norm{\vz}^2=\dist(\vb,\proj_W\vb)^2,
+\]
+with equality only when $\vw=\proj_W\vb$. Taking square roots gives the strict inequality for $\vw\neq\proj_W\vb$.
+\end{prf}
+
+\begin{defns}{5.6.2}{Least-squares problem}
+Given $A\vx=\vb$ ($m$ equations, $n$ unknowns), a \emph{least-squares solution} is a vector $\vx$ minimising $\norm{\vb-A\vx}$ in the Euclidean inner product on $\R^m$. The vector $\vb-A\vx$ is the \emph{error vector} and $\norm{\vb-A\vx}$ the \emph{least-squares error}.
+\end{defns}
+
+\begin{rmks}{5.6.3}
+The name reflects that $\norm{\vb-A\vx}^2=\sum_i(b_i-(A\vx)_i)^2$ is a sum of squares, which least-squares solutions minimise.
+\end{rmks}
+
+\begin{thms}{5.6.4}{}
+Let $W=\colsp(A)$. Then $\vx$ is a least-squares solution of $A\vx=\vb$ if and only if $A\vx=\proj_W\vb$.
+\end{thms}
+
+\begin{prf}
+The achievable vectors $A\vx$ are exactly the elements of $W=\colsp(A)$ (\Thm{1.3.10}). Minimising $\norm{\vb-A\vx}$ over all $\vx$ is therefore minimising $\norm{\vb-\vw}$ over $\vw\in W$, whose unique minimiser is $\vw=\proj_W\vb$ (\Thm{5.6.1}). So $\vx$ is least-squares $\iff A\vx=\proj_W\vb$.
+\end{prf}
+
+\begin{thms}{5.6.5}{Normal equations}
+A vector $\vx$ is a least-squares solution of $A\vx=\vb$ if and only if it solves the \emph{normal system}
+\[
+A\trans A\,\vx=A\trans\vb.
+\]
+Moreover, the normal system is always consistent.
+\end{thms}
+
+\begin{prf}
+By \Thm{5.6.4}, $\vx$ is least-squares $\iff A\vx=\proj_W\vb$ ($W=\colsp(A)$) $\iff\vb-A\vx\in W^\perp$. Now $W^\perp=\colsp(A)^\perp=\ker(A\trans)$ (\Thm{5.5.1} applied to $A\trans$, since $\rowsp(A\trans)=\colsp(A)$). So the condition is $A\trans(\vb-A\vx)=\vze$, i.e. $A\trans A\vx=A\trans\vb$. Consistency: $\proj_W\vb\in W=\colsp(A)$, so some $\vx$ achieves $A\vx=\proj_W\vb$, and that $\vx$ solves the normal system.
+\end{prf}
+
+\begin{exmp}{5.6.6}{Least-squares solutions}
+Find all least-squares solutions of $A\vx=\vb$ with $A=\left[\begin{smallmatrix}1&3\\2&6\\3&9\end{smallmatrix}\right]$, $\vb=\left[\begin{smallmatrix}1\\0\\1\end{smallmatrix}\right]$.
+
+\smallskip
+\noindent\textit{Solution.} Form the normal system $A\trans A\vx=A\trans\vb$:
+\[
+A\trans A=\begin{bmatrix}14&42\\42&126\end{bmatrix},\qquad A\trans\vb=\begin{bmatrix}1+0+3\\3+0+9\end{bmatrix}=\begin{bmatrix}4\\12\end{bmatrix}.
+\]
+Row-reducing $[A\trans A\mid A\trans\vb]$: $R_2\mapsto R_2-3R_1$ gives $\left[\begin{array}{cc|c}14&42&4\\0&0&0\end{array}\right]$, so $14x_1+42x_2=4$, i.e. $x_1=\tfrac{2}{7}-3x_2$. The least-squares solutions form a line:
+\[
+\vx=\Bigl(\tfrac27-3t,\;t\Bigr),\qquad t\in\R.
+\]
+(There are infinitely many because the columns of $A$ are dependent --- the second is $3$ times the first.)
+\end{exmp}
+
+\begin{defns}{5.6.7}{Gram matrix}
+For an $m\times n$ matrix $A$, the $n\times n$ matrix $A\trans A$ is the \emph{Gram matrix} of $A$.
+\end{defns}
+
+\begin{thms}{5.6.8}{Properties of the Gram matrix}
+For any $m\times n$ matrix $A$:
+\textup{(a)} $\ker(A\trans A)=\ker(A)$;
+\textup{(b)} $\rank(A\trans A)=\rank(A)$;
+\textup{(c)} $A\trans A$ is invertible if and only if $A$ has linearly independent columns.
+\end{thms}
+
+\begin{prf}
+\case{(a)} Clearly $\ker(A)\subseteq\ker(A\trans A)$. Conversely, if $A\trans A\vx=\vze$, then $\norm{A\vx}^2=(A\vx)\cdot(A\vx)=\vx\trans A\trans A\vx=\vx\trans\vze=0$, so $A\vx=\vze$; thus $\ker(A\trans A)\subseteq\ker(A)$.
+
+\case{(b)} By Rank--Nullity applied to the $n$-column matrices $A$ and $A\trans A$, equal kernels (part (a)) give equal nullities, hence equal ranks.
+
+\case{(c)} $A\trans A$ is $n\times n$, so it is invertible $\iff\rank(A\trans A)=n$ (\Thm{5.5.7}) $\iff\rank(A)=n$ (part (b)) $\iff$ the $n$ columns of $A$ are independent (\Thm{5.5.7}).
+\end{prf}
+
+\begin{rmks}{5.6.9}
+When $A$ has independent columns, $A\trans A$ is invertible and the least-squares solution is \emph{unique}:
+\[
+\vx=(A\trans A)\inv A\trans\vb.
+\]
+This is the workhorse formula for line- and curve-fitting: to fit data $(x_i,y_i)$ by $y=c_0+c_1x$, take $A$ with rows $(1,x_i)$ and $\vb=(y_i)$; provided the $x_i$ are not all equal, the columns are independent and the best-fit line is unique.
+\end{rmks}
+
+% ===================================================================
+\section*{Chapter 5 Summary}
+\addcontentsline{toc}{section}{Chapter 5 Summary}
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+\item An inner product is symmetric, linear, and positive-definite (\Defn{5.1.1}); it defines norm $\norm{\vv}=\sqrt{\inner{\vv}{\vv}}$ and distance (\Defn{5.1.10}). Cauchy--Schwarz $\abs{\inner{\vu}{\vv}}\le\norm{\vu}\norm{\vv}$ (\Thm{5.2.1}) underlies the triangle inequality and the definition of angle.
+\item Orthogonal sets of nonzero vectors are independent (\Thm{5.4.3}); in an orthonormal basis, coordinates are inner products (Fourier expansion, \Thm{5.4.6}).
+\item \textbf{Gram--Schmidt} (\Alg{5.4.11}) turns any basis into an orthogonal one by subtracting projections; every finite-dimensional inner product space has an orthonormal basis (\Thm{5.4.10}).
+\item Projection onto $W$ gives the closest point (\Thm{5.6.1}); $V=W\oplus W^\perp$ (\Thm{5.4.13}).
+\item \textbf{Fundamental Theorem (\Thm{5.5.6}):} row rank $=$ column rank $=r$, $\dim\ker(A)=n-r$, $\dim\coker(A)=m-r$; with $\rowsp(A)^\perp=\ker(A)$ (\Thm{5.5.1}). The square-matrix master list is \Thm{5.5.7}.
+\item \textbf{Least squares:} the best approximate solution of $A\vx=\vb$ solves the normal equations $A\trans A\vx=A\trans\vb$ (\Thm{5.6.5}), always consistent; unique as $(A\trans A)\inv A\trans\vb$ when $A$ has independent columns (\Thm{5.6.8}).
+\end{itemize}
+
+% ===================================================================
+\section*{Chapter 5 Exercises}
+\addcontentsline{toc}{section}{Chapter 5 Exercises}
+
+\begin{enumerate}[label=\textbf{5.\arabic*},leftmargin=2.6em,itemsep=6pt]
+\item On $\R^2$ with $\inner{\vu}{\vv}=2u_1v_1+u_2v_2$, compute $\norm{(1,2)}$ and the angle between $(1,0)$ and $(1,1)$.
+
+\item Apply Gram--Schmidt to $\vu_1=(1,1,0)$, $\vu_2=(1,0,1)$, $\vu_3=(0,1,1)$ in Euclidean $\R^3$ to produce an orthogonal basis.
+
+\item Let $W=\spn\{(1,1,0),(0,1,1)\}\subseteq\R^3$. Find $\proj_W(2,0,0)$ and the distance from $(2,0,0)$ to $W$.
+
+\item For $A=\left[\begin{smallmatrix}1&0\\1&1\\0&1\end{smallmatrix}\right]$, $\vb=(1,2,3)\trans$, find the unique least-squares solution of $A\vx=\vb$.
+
+\item Prove that for any $\vu,\vv$ in a real inner product space, $\norm{\vu+\vv}^2+\norm{\vu-\vv}^2=2\norm{\vu}^2+2\norm{\vv}^2$ (the parallelogram law).
+
+\item Let $A$ be $m\times n$ with independent columns. Prove that $P=A(A\trans A)\inv A\trans$ satisfies $P^2=P$ and $P\trans=P$, and explain why $P\vb=\proj_{\colsp(A)}\vb$.
+\end{enumerate}
+
+\subsection*{Solutions to Chapter 5 Exercises}
+
+\begin{enumerate}[label=\textbf{5.\arabic*},leftmargin=2.6em,itemsep=8pt]
+
+\item $\norm{(1,2)}=\sqrt{2(1)^2+(2)^2}=\sqrt6$. For the angle: $\inner{(1,0)}{(1,1)}=2(1)(1)+0=2$, $\norm{(1,0)}=\sqrt2$, $\norm{(1,1)}=\sqrt{2+1}=\sqrt3$, so $\cos\theta=\tfrac{2}{\sqrt2\sqrt3}=\tfrac{2}{\sqrt6}$, giving $\theta=\arccos(2/\sqrt6)\approx35.3^\circ$.
+
+\item $\vv_1=(1,1,0)$. $\vv_2=(1,0,1)-\tfrac{1}{2}(1,1,0)=(\tfrac12,-\tfrac12,1)$. For $\vv_3$: $\inner{\vu_3}{\vv_1}=1$, $\inner{\vu_3}{\vv_2}=-\tfrac12+1=\tfrac12$, $\norm{\vv_2}^2=\tfrac32$, so $\vv_3=(0,1,1)-\tfrac12(1,1,0)-\tfrac{1/2}{3/2}(\tfrac12,-\tfrac12,1)=(0,1,1)-(\tfrac12,\tfrac12,0)-(\tfrac16,-\tfrac16,\tfrac13)=(-\tfrac23,\tfrac23,\tfrac23)$. Orthogonal basis: $\{(1,1,0),(\tfrac12,-\tfrac12,1),(-\tfrac23,\tfrac23,\tfrac23)\}$.
+
+\item The spanning vectors $\vv_1=(1,1,0)$, $\vv_2=(0,1,1)$ are not orthogonal ($\vv_1\cdot\vv_2=1$). Orthogonalise: $\vv_2'=(0,1,1)-\tfrac12(1,1,0)=(-\tfrac12,\tfrac12,1)$. Then with $\vu=(2,0,0)$: $\proj_W\vu=\tfrac{\inner{\vu}{\vv_1}}{\norm{\vv_1}^2}\vv_1+\tfrac{\inner{\vu}{\vv_2'}}{\norm{\vv_2'}^2}\vv_2'=\tfrac{2}{2}(1,1,0)+\tfrac{-1}{3/2}(-\tfrac12,\tfrac12,1)=(1,1,0)+(\tfrac13,-\tfrac13,-\tfrac23)=(\tfrac43,\tfrac23,-\tfrac23)$. Distance $=\norm{\vu-\proj_W\vu}=\norm{(\tfrac23,-\tfrac23,\tfrac23)}=\tfrac{2}{\sqrt3}$.
+
+\item $A\trans A=\left[\begin{smallmatrix}2&1\\1&2\end{smallmatrix}\right]$, $A\trans\vb=\left[\begin{smallmatrix}1+2\\2+3\end{smallmatrix}\right]=\left[\begin{smallmatrix}3\\5\end{smallmatrix}\right]$. Columns of $A$ are independent, so the solution is unique: $\vx=(A\trans A)\inv A\trans\vb=\tfrac13\left[\begin{smallmatrix}2&-1\\-1&2\end{smallmatrix}\right]\left[\begin{smallmatrix}3\\5\end{smallmatrix}\right]=\tfrac13(1,7)=(\tfrac13,\tfrac73)$.
+
+\item Expand both norms via the inner product: $\norm{\vu+\vv}^2=\norm{\vu}^2+2\inner{\vu}{\vv}+\norm{\vv}^2$ and $\norm{\vu-\vv}^2=\norm{\vu}^2-2\inner{\vu}{\vv}+\norm{\vv}^2$. Adding, the cross terms cancel: $\norm{\vu+\vv}^2+\norm{\vu-\vv}^2=2\norm{\vu}^2+2\norm{\vv}^2$. $\blacksquare$
+
+\item Independent columns make $A\trans A$ invertible (\Thm{5.6.8}). \emph{Idempotent:}
+\[
+P^2=A(A\trans A)\inv \underbrace{A\trans A(A\trans A)\inv}_{=\,I} A\trans=A(A\trans A)\inv A\trans=P.
+\]
+\emph{Symmetric:} $P\trans=\bigl(A(A\trans A)\inv A\trans\bigr)\trans=A\bigl((A\trans A)\inv\bigr)\trans A\trans=A(A\trans A)\inv A\trans=P$, since $A\trans A$ is symmetric. For any $\vb$, $P\vb\in\colsp(A)$ and $\vb-P\vb\in\ker(A\trans)=\colsp(A)^\perp$ (check $A\trans(\vb-P\vb)=A\trans\vb-A\trans\vb=\vze$), so by the uniqueness in \Thm{5.4.7}, $P\vb=\proj_{\colsp(A)}\vb$. $\blacksquare$
+
+\end{enumerate}

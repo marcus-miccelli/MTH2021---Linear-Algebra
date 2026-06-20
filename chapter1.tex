@@ -1,0 +1,661 @@
+\chapter{Linear Systems and Matrices}
+\label{ch:linear-systems}
+
+\begin{roadmap}
+\noindent\textbf{What this chapter is about.}\;
+Linear algebra began as the art of solving systems of linear equations, and that is where we begin too. We develop a single mechanical procedure --- Gaussian elimination --- that decides whether \emph{any} linear system has no solution, one solution, or infinitely many, and produces those solutions when they exist. We then study \emph{matrices} as objects in their own right: how they add, multiply, transpose, and invert. The chapter culminates in a list of equivalent conditions for a square matrix to be invertible (\Thm{1.5.7}), a theorem we will extend repeatedly throughout the unit. By the end you should row-reduce fluently, justify every step, and read the structure of a solution set directly off an echelon form.
+\medskip
+
+\noindent\textbf{Reference.}\; A\&R \S\S1.1--1.6, with the graph-theory application drawn from A\&R \S10.5.
+\end{roadmap}
+
+\section{Systems of Linear Equations}
+\label{sec:1.1}
+
+A great deal of applied mathematics reduces, eventually, to solving equations in which the unknowns appear only to the first power and are never multiplied together. Such equations are called \emph{linear}; they are the simplest equations that remain genuinely useful.
+
+\begin{defns}{1.1.1}{Linear equation, linear system}
+A \emph{linear equation} in the variables $x_1,x_2,\dots,x_n$ is an equation
+\[
+a_1x_1 + a_2x_2 + \cdots + a_nx_n = b,
+\]
+in which the \emph{coefficients} $a_1,\dots,a_n$ and the \emph{constant term} $b$ are fixed real numbers. A finite collection of linear equations in the same variables is a \emph{system of linear equations}, or simply a \emph{linear system}.
+\end{defns}
+
+Geometry gives the definition meaning. In two variables, $a_1x_1+a_2x_2=b$ is the equation of a straight line (provided $a_1,a_2$ are not both zero); in three variables, $a_1x_1+a_2x_2+a_3x_3=b$ is a plane; and in general $a_1x_1+\cdots+a_nx_n=b$ describes a \emph{hyperplane} in $\R^n$. To solve a system is to find the points lying simultaneously on \emph{all} of these hyperplanes --- their common intersection.
+
+A general system of $m$ equations in $n$ variables,
+\begin{equation}\label{eq:1.1.gen}
+\begin{aligned}
+a_{11}x_1 + a_{12}x_2 + \cdots + a_{1n}x_n &= b_1,\\
+a_{21}x_1 + a_{22}x_2 + \cdots + a_{2n}x_n &= b_2,\\
+&\;\;\vdots\\
+a_{m1}x_1 + a_{m2}x_2 + \cdots + a_{mn}x_n &= b_m,
+\end{aligned}
+\end{equation}
+is unwieldy written out in full, so we package the coefficients into a rectangular array. Define the $m\times n$ \emph{coefficient matrix} $A$, the $n$-vector of unknowns $\vx$, and the $m$-vector of constants $\vb$:
+\[
+A=\begin{bmatrix} a_{11}&a_{12}&\cdots&a_{1n}\\ a_{21}&a_{22}&\cdots&a_{2n}\\ \vdots&\vdots&&\vdots\\ a_{m1}&a_{m2}&\cdots&a_{mn}\end{bmatrix},\qquad
+\vx=\begin{bmatrix}x_1\\x_2\\\vdots\\x_n\end{bmatrix},\qquad
+\vb=\begin{bmatrix}b_1\\b_2\\\vdots\\b_m\end{bmatrix}.
+\]
+System \eqref{eq:1.1.gen} then has the compact \emph{matrix form} $A\vx=\vb$. For the purpose of solving, all relevant data is captured by the \emph{augmented matrix}, obtained by adjoining the column $\vb$:
+\[
+[\,A\mid \vb\,]=\left[\begin{array}{cccc|c}
+a_{11}&a_{12}&\cdots&a_{1n}&b_1\\
+a_{21}&a_{22}&\cdots&a_{2n}&b_2\\
+\vdots&\vdots&&\vdots&\vdots\\
+a_{m1}&a_{m2}&\cdots&a_{mn}&b_m
+\end{array}\right].
+\]
+A \emph{solution} of \eqref{eq:1.1.gen} is an $n$-vector $\vx$ satisfying every equation simultaneously. The system is \emph{consistent} if it has at least one solution and \emph{inconsistent} if it has none.
+
+\begin{exmp}{1.1.2}{Matrix form}
+Write the system $x-y=1,\;x+2y=4$ in matrix form, and describe it geometrically.
+
+\smallskip
+\noindent\textit{Solution.} Here $A=\left[\begin{smallmatrix}1&-1\\1&2\end{smallmatrix}\right]$, $\vx=\left[\begin{smallmatrix}x\\y\end{smallmatrix}\right]$, $\vb=\left[\begin{smallmatrix}1\\4\end{smallmatrix}\right]$, so the system is $A\vx=\vb$. Geometrically it asks for the intersection of two lines in the plane; their slopes differ, so they meet in the single point $(x,y)=(2,1)$.
+\end{exmp}
+
+How many solutions can a linear system have? Geometric intuition in two and three variables suggests three outcomes: no intersection, a single point, or a whole line or plane of common points. The next theorem confirms these are the \emph{only} possibilities --- a linear system can never have, say, exactly two solutions.
+
+\begin{thms}{1.1.3}{The infinitely-many-solutions theorem}
+If a linear system has more than one solution, then it has infinitely many solutions.
+\end{thms}
+
+\begin{prf}
+Suppose $A\vx_1=\vb$ and $A\vx_2=\vb$ with $\vx_1\neq\vx_2$. For any scalar $\alpha\in\R$ put $\vx_\alpha = \vx_1 + \alpha(\vx_2-\vx_1)$. Using the distributive and scalar properties of matrix multiplication (\Thm{1.4.1}),
+\[
+A\vx_\alpha = A\vx_1 + \alpha\bigl(A\vx_2 - A\vx_1\bigr) = \vb + \alpha(\vb-\vb) = \vb,
+\]
+so each $\vx_\alpha$ is a solution. Since $\vx_2-\vx_1\neq\vze$, distinct values of $\alpha$ give distinct vectors $\vx_\alpha$; hence there are infinitely many solutions.
+\end{prf}
+
+\section{Gaussian Elimination}
+\label{sec:1.2}
+
+The strategy for solving $A\vx=\vb$ is to replace it by a simpler system with the \emph{same} solutions --- simple enough to solve by inspection. The replacements are made by three \emph{elementary row operations} on the augmented matrix:
+\begin{enumerate}[label=\textup{(\alph*)},leftmargin=2.2em,itemsep=1pt]
+\item multiply one row by a nonzero scalar: $R_i\mapsto cR_i$\, $(c\neq0)$;
+\item interchange two rows: $R_i\leftrightarrow R_j$;
+\item add a multiple of one row to another: $R_i\mapsto R_i+cR_j$.
+\end{enumerate}
+Each operation is \emph{reversible}: $R_i\mapsto cR_i$ is undone by $R_i\mapsto\tfrac1cR_i$; a swap is undone by repeating it; and $R_i\mapsto R_i+cR_j$ is undone by $R_i\mapsto R_i-cR_j$. This reversibility is precisely what keeps the solution set intact.
+
+\begin{defns}{1.2.1}{Row equivalence}
+Two matrices $A$ and $B$ are \emph{row equivalent}, written $A\sim B$, if either can be obtained from the other by a sequence of elementary row operations.
+\end{defns}
+
+\begin{rmks}{1.2.2}
+If two linear systems have row-equivalent augmented matrices, then they have exactly the same set of solutions. This is the entire justification of the method: row reduction neither gains nor loses solutions.
+\end{rmks}
+
+\begin{defns}{1.2.3}{Echelon and reduced echelon form}
+A matrix is in \emph{(row) echelon form} if:
+\begin{enumerate}[label=\arabic*.,leftmargin=2.2em,itemsep=1pt]
+\item all zero rows, if any, lie at the bottom; and
+\item the first nonzero entry of each nonzero row --- its \emph{pivot} --- lies strictly to the right of the pivot in the row above.
+\end{enumerate}
+It is in \emph{reduced (row) echelon form} if, in addition,
+\begin{enumerate}[label=\arabic*.,leftmargin=2.2em,start=3,itemsep=1pt]
+\item each pivot equals $1$; and
+\item each pivot is the only nonzero entry in its column.
+\end{enumerate}
+\end{defns}
+
+\begin{rmks}{1.2.4}
+Anton \& Rorres require every pivot to equal $1$ even in unreduced echelon form, and call pivots \emph{leading $1$'s}. We adopt the more common convention above, in which a pivot is merely the first nonzero entry of its row. The distinction is cosmetic and never affects the number or position of pivots.
+\end{rmks}
+
+\begin{algs}{1.2.5}{Gaussian elimination}
+To bring a matrix to echelon form:
+\begin{enumerate}[label=\textup{(\roman*)},leftmargin=2.4em,itemsep=1pt]
+\item Find the leftmost column with a nonzero entry $a$; by a row swap, bring $a$ (the pivot) to the top of the current block of rows.
+\item Subtract multiples of the pivot row from the rows below so that every entry beneath the pivot becomes $0$. (This finishes the pivot row; all further work is on the rows below it.)
+\item Repeat (i)--(ii) on the remaining rows.
+\end{enumerate}
+\end{algs}
+
+\begin{algs}{1.2.6}{Gauss--Jordan elimination}
+To reach reduced echelon form: perform Gaussian elimination; scale each nonzero row by the reciprocal of its pivot; then, starting from the last nonzero row and working upward, use type-(c) operations to clear the entries \emph{above} each pivot.
+\end{algs}
+
+\begin{rmks}{1.2.7}
+Echelon forms are \emph{not} unique: different choices of operations yield different echelon forms. However, the \emph{number} of pivots and their \emph{column positions} are the same for every echelon form of a given matrix. Consequently every matrix has a \emph{unique} reduced echelon form.
+\end{rmks}
+
+\subsection{Reading off the solutions}
+
+Let $[A\mid\vb]\sim[U\mid\vc]$ with $[U\mid\vc]$ in echelon form; the solutions of $U\vx=\vc$ coincide with those of $A\vx=\vb$ and are found by back-substitution. Variables whose columns in $U$ contain a pivot are \emph{leading variables}; for a consistent system, the variables whose columns contain no pivot are \emph{free variables}. Free variables may take arbitrary values; the leading variables are then expressed in terms of them. Three mutually exclusive cases arise:
+\begin{enumerate}[label=\textup{(\roman*)},leftmargin=2.4em,itemsep=1pt]
+\item \textbf{No solution} (inconsistent): some row of $[U\mid\vc]$ reads $[\,0\;0\;\cdots\;0\mid c\,]$ with $c\neq0$, asserting the impossibility $0=c$.
+\item \textbf{Infinitely many solutions}: the system is consistent and has at least one free variable.
+\item \textbf{Exactly one solution}: the system is consistent with no free variable.
+\end{enumerate}
+
+\begin{thms}{1.2.8}{Counting solutions}
+Consider a system of $m$ equations in $n$ variables whose echelon form has $r$ pivots.
+\begin{enumerate}[label=\textup{(\alph*)},leftmargin=2.2em,itemsep=1pt]
+\item If $r=n$, there is no solution or exactly one solution.
+\item If $r<n$, there is no solution or infinitely many solutions.
+\item If $n>m$, there is no solution or infinitely many solutions.
+\end{enumerate}
+\end{thms}
+
+\begin{prf}
+A pivot column corresponds to a leading variable, so $r$ is the number of leading variables and $n-r$ the number of free variables. If $r=n$ there are no free variables, leaving cases (i) or (iii) above --- zero or one solution --- which is (a). If $r<n$ there is at least one free variable, leaving (i) or (ii) --- zero or infinitely many --- which is (b). For (c), the number of pivots cannot exceed the number of rows, so $r\le m<n$, and (b) applies.
+\end{prf}
+
+\begin{exmp}{1.2.9}{A system depending on a parameter}
+Solve, for each real $k$,
+\[
+\begin{aligned}
+x_1+3x_2+3x_3+2x_4&=1,\\
+2x_1+6x_2+9x_3+5x_4&=1,\\
+-x_1-3x_2+3x_3\phantom{{}+5x_4}&=k.
+\end{aligned}
+\]
+
+\smallskip
+\noindent\textit{Solution.} Row-reduce the augmented matrix:
+\widedisplay{
+\left[\begin{array}{cccc|c}
+1&3&3&2&1\\ 2&6&9&5&1\\ -1&-3&3&0&k
+\end{array}\right]
+\xrightarrow[R_3\mapsto R_3+R_1]{R_2\mapsto R_2-2R_1}
+\left[\begin{array}{cccc|c}
+1&3&3&2&1\\ 0&0&3&1&-1\\ 0&0&6&2&k+1
+\end{array}\right]
+\xrightarrow{R_3\mapsto R_3-2R_2}
+\left[\begin{array}{cccc|c}
+1&3&3&2&1\\ 0&0&3&1&-1\\ 0&0&0&0&k+3
+\end{array}\right].
+}
+Pivots sit in columns $1$ and $3$, so $x_1,x_3$ are leading and $x_2,x_4$ are free. The last row reads $0=k+3$.
+\begin{itemize}[leftmargin=1.4em,itemsep=1pt]
+\item \textbf{(i) $k\neq-3$:} the last row is inconsistent --- \emph{no solution}.
+\item \textbf{(ii) $k=-3$:} the last row vanishes; two free variables remain --- \emph{infinitely many solutions}. Setting $x_2=s,\,x_4=t$, back-substitution gives $x_3=\tfrac{-1-t}{3}$ and $x_1=2-3s-t$, so
+\[
+(x_1,x_2,x_3,x_4)=\bigl(2-3s-t,\;s,\;\tfrac{-1-t}{3},\;t\bigr),\qquad s,t\in\R.
+\]
+\item \textbf{(iii)} No value of $k$ gives a unique solution, since $x_2,x_4$ are always free.
+\end{itemize}
+\end{exmp}
+
+\subsection{Homogeneous systems}
+
+\begin{defns}{1.2.10}{Homogeneous system}
+A linear system is \emph{homogeneous} if it has the form $A\vx=\vze$. Geometrically the hyperplanes all pass through the origin.
+\end{defns}
+
+\begin{thms}{1.2.11}{}
+For any homogeneous system $A\vx=\vze$:
+\begin{enumerate}[label=\textup{(\alph*)},leftmargin=2.2em,itemsep=1pt]
+\item the system is consistent; and
+\item if there are more variables than equations, it has infinitely many solutions.
+\end{enumerate}
+\end{thms}
+
+\begin{prf}
+\case{(a)} The zero vector satisfies $A\vze=\vze$ --- the \emph{trivial solution} --- so the system is consistent.
+
+\case{(b)} With $n>m$, \Thm{1.2.8}(c) allows only ``no solution'' or ``infinitely many''; part (a) rules out the former, leaving infinitely many.
+\end{prf}
+
+The trivial solution is always present; the genuine question is whether \emph{nontrivial} solutions exist, which happens precisely when a free variable is present.
+
+\begin{thms}{1.2.12}{Structure of the general solution}
+Suppose $A\vx=\vb$ is consistent with a particular solution $\vp$. Then every solution can be written $\vx=\vp+\vz$, where $\vz$ solves the associated homogeneous system $A\vz=\vze$.
+\end{thms}
+
+\begin{prf}
+If $\vx$ is any solution then $A(\vx-\vp)=\vb-\vb=\vze$, so $\vz:=\vx-\vp$ solves the homogeneous system and $\vx=\vp+\vz$. Conversely, if $A\vz=\vze$ then $A(\vp+\vz)=\vb+\vze=\vb$, so $\vp+\vz$ is a solution.
+\end{prf}
+
+This is a recurring theme: \emph{the solution set of $A\vx=\vb$ is one particular solution shifted by the entire solution set of $A\vx=\vze$.}
+
+\section{Matrix Operations}
+\label{sec:1.3}
+
+We now study matrices in their own right. An $m\times n$ matrix is a rectangular array of numbers with $m$ rows and $n$ columns; we write $(A)_{ij}$ for the entry in row $i$, column $j$ ($1\le i\le m$, $1\le j\le n$). Two matrices of the same size are \emph{equal} when they agree entrywise.
+
+\begin{defns}{1.3.1--1.3.3}{Sum, scalar multiple, product}
+Let the sizes be compatible as stated.
+\begin{itemize}[leftmargin=1.4em,itemsep=1pt]
+\item \emph{Sum} (same size): $(A+B)_{ij}=(A)_{ij}+(B)_{ij}$.
+\item \emph{Scalar multiple}: $(kA)_{ij}=k\,(A)_{ij}$.
+\item \emph{Product} ($A$ is $m\times r$, $B$ is $r\times n$, so $AB$ is $m\times n$): $\displaystyle (AB)_{ij}=\sum_{k=1}^{r}(A)_{ik}(B)_{kj}$.
+\end{itemize}
+\end{defns}
+
+The product is defined only when the number of columns of $A$ equals the number of rows of $B$; the entry $(AB)_{ij}$ is the dot product of row $i$ of $A$ with column $j$ of $B$.
+
+\begin{defns}{1.3.4--1.3.6}{Transpose, symmetric matrix, trace}
+The \emph{transpose} of an $m\times n$ matrix $A$ is the $n\times m$ matrix $A\trans$ with $(A\trans)_{ji}=(A)_{ij}$. A square matrix is \emph{symmetric} if $A\trans=A$. The \emph{trace} of a square matrix is the sum of its diagonal entries, $\tr(A)=\sum_{i=1}^n (A)_{ii}$.
+\end{defns}
+
+\begin{exmp}{1.3.8}{Multiplication is not commutative}
+With $A=\left[\begin{smallmatrix}1&2\\3&1\end{smallmatrix}\right]$ and $B=\left[\begin{smallmatrix}1&2\\3&0\end{smallmatrix}\right]$ we get $AB=\left[\begin{smallmatrix}7&2\\6&6\end{smallmatrix}\right]$ but $BA=\left[\begin{smallmatrix}7&4\\3&6\end{smallmatrix}\right]$. So in general $AB\neq BA$; one product may even be defined while the other is not.
+\end{exmp}
+
+Some named matrices recur throughout: the $n\times n$ \emph{identity} $I=I_n$ (ones on the diagonal, zeros elsewhere), satisfying $AI=IA=A$; the \emph{zero matrix} $O$, satisfying $A+O=A$; and the \emph{upper-} and \emph{lower-triangular} matrices $U$ (with $(U)_{ij}=0$ for $i>j$) and $L$ (with $(L)_{ij}=0$ for $i<j$). Triangular shape survives multiplication.
+
+\begin{thms}{1.3.9}{Products of triangular matrices}
+The product of two lower-triangular matrices is lower-triangular, and the product of two upper-triangular matrices is upper-triangular.
+\end{thms}
+
+\begin{prf}
+Let $A,B$ be lower-triangular and fix $i<j$; we show $(AB)_{ij}=0$. Split the defining sum at $k=i$:
+\begin{steps}
+\st{(AB)_{ij}=\sum_{k=1}^{n}(A)_{ik}(B)_{kj}=\underbrace{\sum_{k=1}^{i}(A)_{ik}(B)_{kj}}_{\text{(I)}}+\underbrace{\sum_{k=i+1}^{n}(A)_{ik}(B)_{kj}}_{\text{(II)}}.}{split at $k=i$}
+\end{steps}
+\begin{itemize}[leftmargin=1.5em,itemsep=2pt,topsep=2pt]
+\item In (I), $k\le i<j$, so $(B)_{kj}=0$ since $B$ is lower-triangular.
+\item In (II), $k>i$, so $(A)_{ik}=0$ since $A$ is lower-triangular.
+\end{itemize}
+Both sums vanish, so $(AB)_{ij}=0$ for all $i<j$, i.e.\ $AB$ is lower-triangular. The upper-triangular case is symmetric.
+\end{prf}
+
+The single most useful way to read $A\vx$ is as a combination of the columns of $A$ --- the bridge, in Chapter~\ref{ch:vector-spaces}, between solving $A\vx=\vb$ and asking whether $\vb$ lies in the span of those columns.
+
+\begin{thms}{1.3.10}{Column interpretation of $A\vx$}
+Let $A=[\,\vec{a}_1\;\vec{a}_2\;\cdots\;\vec{a}_n\,]$ be an $m\times n$ matrix with columns $\vec{a}_j$. For $\vx=(x_1,\dots,x_n)\trans$,
+\[
+A\vx = x_1\vec{a}_1 + x_2\vec{a}_2 + \cdots + x_n\vec{a}_n.
+\]
+\end{thms}
+
+\begin{prf}
+The $i$th entry of $A\vx$ is $\sum_{k=1}^n (A)_{ik}x_k=\sum_{k=1}^n x_k(A)_{ik}$, which is the $i$th entry of $\sum_k x_k\vec{a}_k$ by the definitions of scalar multiplication and matrix addition.
+\end{prf}
+
+\begin{cors}{1.3.11}{}
+The $i$th column of $A$ is $A\ve_i$, where $\ve_i$ is the $i$th standard basis vector.
+\end{cors}
+
+\begin{thms}{1.3.12}{}
+Let $A$ be $m\times n$. If $A\vx=\vze$ for all $\vx\in\R^n$, then $A=O$.
+\end{thms}
+
+\begin{prf}
+Taking $\vx=\ve_i$ and applying \Cors{1.3.11}, the $i$th column of $A$ is $A\ve_i=\vze$. As this holds for each $i$, every column is zero, i.e. $A=O$.
+\end{prf}
+
+A product $AB$ can also be expanded as a sum of \emph{outer products} --- column-times-row matrices --- which is occasionally the most convenient viewpoint (and reappears in the singular value expansion of Chapter~\ref{ch:orthogonalization}).
+
+\begin{thms}{1.3.13}{Outer-product expansion}
+Let $A$ have columns $\vec{a}_1,\dots,\vec{a}_n$ and let $B$ have rows $\vec{b}_1\trans,\dots,\vec{b}_n\trans$. Then
+\[
+AB = \sum_{l=1}^{n}\vec{a}_l\,\vec{b}_l\trans.
+\]
+\end{thms}
+
+\begin{rmks}{1.3.14}
+The $n\times n$ matrices $\vec{a}_l\vec{b}_l\trans$ appearing above are called \emph{outer products}.
+\end{rmks}
+
+Matrices can be multiplied in compatible blocks exactly as if the blocks were scalars --- a fact that simplifies many computations and proofs.
+
+\begin{thms}{1.3.15}{Block multiplication}
+Partition $A$ and $B$ conformably into blocks,
+\[
+A=\begin{bmatrix}A_{11}&A_{12}\\ A_{21}&A_{22}\end{bmatrix},\qquad
+B=\begin{bmatrix}B_{11}&B_{12}\\ B_{21}&B_{22}\end{bmatrix},
+\]
+where the block sizes match so that each product below is defined. Then
+\[
+AB=\begin{bmatrix} A_{11}B_{11}+A_{12}B_{21} & A_{11}B_{12}+A_{12}B_{22}\\ A_{21}B_{11}+A_{22}B_{21} & A_{21}B_{12}+A_{22}B_{22}\end{bmatrix}.
+\]
+\end{thms}
+
+\section{Algebraic Properties and Inverses}
+\label{sec:1.4}
+
+Matrix arithmetic obeys most of the familiar laws of ordinary algebra --- with the single, crucial exception that multiplication is not commutative.
+
+\begin{thms}{1.4.1}{Matrix arithmetic}
+For all matrices $A,B,C$ of compatible sizes and all scalars $a,b$:
+\begin{multicols}{2}
+\begin{enumerate}[label=\textup{(\alph*)},leftmargin=1.6em,itemsep=1pt]
+\item $A+B=B+A$;
+\item $A+(B+C)=(A+B)+C$;
+\item $A(BC)=(AB)C$;
+\item $A(B+C)=AB+AC$;
+\item $(B+C)A=BA+CA$;
+\item $a(B+C)=aB+aC$;
+\item $(a+b)C=aC+bC$;
+\item $a(bC)=(ab)C$;
+\item $a(BC)=(aB)C=B(aC)$.
+\end{enumerate}
+\end{multicols}
+\end{thms}
+
+\begin{prf}[Proof of \textup{(e)}, as a representative]
+Let $B,C$ be $m\times n$ and $A$ be $n\times p$. Fix entry $(i,j)$ with $1\le i\le m$, $1\le j\le p$:
+\begin{steps}
+\st{\bigl((B+C)A\bigr)_{ij}=\sum_{k=1}^{n}(B+C)_{ik}(A)_{kj}}{definition of product}
+\st{=\sum_{k=1}^{n}\bigl((B)_{ik}+(C)_{ik}\bigr)(A)_{kj}}{definition of matrix sum}
+\st{=\sum_{k=1}^{n}(B)_{ik}(A)_{kj}+\sum_{k=1}^{n}(C)_{ik}(A)_{kj}}{distributivity in $\R$}
+\st{=(BA)_{ij}+(CA)_{ij}.}{definition of product}
+\end{steps}
+The remaining parts are proved similarly, entrywise. The associativity of multiplication (c) is the one that genuinely uses the summation interchange, and is the reason the order of factors --- though not their grouping --- matters.
+\end{prf}
+
+\begin{defns}{1.4.2}{Invertible matrix}
+A square matrix $A$ is \emph{invertible} (or \emph{nonsingular}) if there is a matrix $B$ with $AB=BA=I$; we write $B=A\inv$. A square matrix with no inverse is \emph{singular}.
+\end{defns}
+
+\begin{thms}{1.4.3}{Properties of the inverse}
+\begin{enumerate}[label=\textup{(\alph*)},leftmargin=2.2em,itemsep=1pt]
+\item If $B$ and $C$ are both inverses of $A$, then $B=C$ \;(the inverse is unique).
+\item If $A,B$ are invertible of the same size, then $AB$ is invertible and $(AB)\inv=B\inv A\inv$.
+\item If $A$ is invertible, then so is $A\inv$, and $(A\inv)\inv=A$.
+\item If $A$ is invertible, then so is $A\trans$, and $(A\trans)\inv=(A\inv)\trans$.
+\end{enumerate}
+\end{thms}
+
+\begin{prf}
+\case{(a)} If both $B$ and $C$ invert $A$:
+\begin{steps}
+\st{B=BI=B(AC)=(BA)C=IC=C.}{associativity; $AC=I$, $BA=I$}
+\end{steps}
+
+\case{(b)} Check $B\inv A\inv$ inverts $AB$ on both sides:
+\begin{steps}
+\st{(AB)(B\inv A\inv)=A(BB\inv)A\inv=AIA\inv=I,}{$BB\inv=I$}
+\st{(B\inv A\inv)(AB)=B\inv(A\inv A)B=B\inv IB=I.}{$A\inv A=I$}
+\end{steps}
+By uniqueness (part (a)), $(AB)\inv=B\inv A\inv$.
+
+\case{(c)} Immediate from $A\inv A=AA\inv=I$, which says $A$ inverts $A\inv$; so $(A\inv)\inv=A$.
+
+\case{(d)} Transpose $AA\inv=I$ using \Lem{1.4.4}(d):
+\begin{steps}
+\st{(A\inv)\trans A\trans=(AA\inv)\trans=I\trans=I,}{\Lem{1.4.4}(d)}
+\end{steps}
+and symmetrically $A\trans(A\inv)\trans=I$. Hence $(A\trans)\inv=(A\inv)\trans$.
+\end{prf}
+
+\begin{lems}{1.4.4}{Properties of the transpose}
+Whenever the operations are defined,
+\[
+(A\trans)\trans=A,\qquad (A+B)\trans=A\trans+B\trans,\qquad (kA)\trans=kA\trans,\qquad (AB)\trans=B\trans A\trans.
+\]
+\end{lems}
+
+\begin{prf}
+The first three follow entrywise from the definition. For the reversal rule, with $A$ of size $m\times n$ and $B$ of size $n\times p$, fix entry $(i,j)$:
+\begin{steps}
+\st{\bigl((AB)\trans\bigr)_{ij}=(AB)_{ji}}{definition of transpose}
+\st{=\sum_{k}(A)_{jk}(B)_{ki}}{definition of product}
+\st{=\sum_{k}(B\trans)_{ik}(A\trans)_{kj}}{rewrite each factor as a transpose entry}
+\st{=(B\trans A\trans)_{ij}.}{definition of product}
+\end{steps}
+Since the entries agree in every position, $(AB)\trans=B\trans A\trans$.
+\end{prf}
+
+\begin{pitfall}[The order reverses]
+Both the transpose and the inverse \emph{reverse} the order of a product: $(AB)\trans=B\trans A\trans$ and $(AB)\inv=B\inv A\inv$. Writing $A\trans B\trans$ or $A\inv B\inv$ is among the most common errors in the unit.
+\end{pitfall}
+
+\begin{exmp}{1.4.5}{The Sherman--Morrison formula}
+Let $\vu,\vv\in\R^n$ be columns with $\vv\trans\vu\neq-1$. Show $I+\vu\vv\trans$ is invertible with
+$(I+\vu\vv\trans)\inv = I-\dfrac{\vu\vv\trans}{1+\vv\trans\vu}$.
+
+\smallskip
+\noindent\textit{Solution.} Write $\beta=1+\vv\trans\vu$ (a scalar). Treating $\vv\trans\vu$ as the scalar it is,
+\[
+(I+\vu\vv\trans)\Bigl(I-\tfrac{\vu\vv\trans}{\beta}\Bigr)
+= I+\vu\vv\trans-\frac{\vu\vv\trans}{\beta}-\frac{\vu(\vv\trans\vu)\vv\trans}{\beta}
+= I+\vu\vv\trans\Bigl(1-\tfrac1\beta-\tfrac{\vv\trans\vu}{\beta}\Bigr).
+\]
+The bracket is $\dfrac{\beta-1-\vv\trans\vu}{\beta}=0$, so the product is $I$. By \Thm{1.5.11} (a right inverse of a square matrix is the inverse), the formula holds.
+\end{exmp}
+
+\section{Elementary Matrices}
+\label{sec:1.5}
+
+We now tie row operations to matrix multiplication. The link is a special family of matrices.
+
+\begin{defns}{1.5.1}{Elementary matrix}
+An \emph{elementary matrix} is a matrix obtained from the identity by performing a single elementary row operation.
+\end{defns}
+
+For instance, applying $R_3\mapsto R_3+2R_1$ to $I_3$ gives $E_3=\left[\begin{smallmatrix}1&0&0\\0&1&0\\2&0&1\end{smallmatrix}\right]$.
+
+\begin{thms}{1.5.4}{Row operations are left multiplications}
+Let $\mu$ be an elementary row operation on $m$-row matrices and $E=\mu(I_m)$. Then for any $m\times n$ matrix $A$,
+\[
+\mu(A)=EA.
+\]
+\end{thms}
+
+\begin{thms}{1.5.5}{Elementary matrices are invertible}
+Every elementary matrix is invertible, and its inverse is the elementary matrix of the reverse row operation.
+\end{thms}
+
+\begin{prf}
+Let $\mu$ have reverse operation $\mu'$, so $\mu'(\mu(I))=I$ and $\mu(\mu'(I))=I$. With $E=\mu(I)$ and $F=\mu'(I)$, \Thm{1.5.4} gives $FE=\mu'(\mu(I))=I$ and $EF=\mu(\mu'(I))=I$. Hence $E\inv=F$, itself elementary.
+\end{prf}
+
+These pieces assemble into the central theorem of the chapter: a list of conditions on a square matrix, all equivalent. We extend this list in \Thm{2.2.12} and again in Chapter~\ref{ch:vector-spaces}.
+
+\begin{thms}{1.5.7}{Equivalent statements (invertibility)}
+For an $n\times n$ matrix $A$, the following are equivalent:
+\begin{enumerate}[label=\textup{(\alph*)},leftmargin=2.2em,itemsep=1pt]
+\item $A$ is invertible;
+\item $A\vx=\vze$ has only the trivial solution $\vx=\vze$;
+\item the reduced echelon form of $A$ is $I_n$;
+\item $A$ is a product of elementary matrices.
+\end{enumerate}
+\end{thms}
+
+\begin{prf}
+We prove the cycle (a)$\Rightarrow$(b)$\Rightarrow$(c)$\Rightarrow$(d)$\Rightarrow$(a).
+
+\case{(a)$\Rightarrow$(b)} If $A$ is invertible and $A\vx=\vze$, then
+\begin{steps}
+\st{\vx=I\vx=A\inv A\vx=A\inv\vze=\vze,}{multiply by $A\inv$}
+\end{steps}
+so only the trivial solution exists.
+
+\case{(b)$\Rightarrow$(c)} Only the trivial solution means no free variables, so every column has a pivot; for a square matrix this forces $\RREF(A)=I_n$.
+
+\case{(c)$\Rightarrow$(d)} If $\RREF(A)=I_n$ then $E_k\cdots E_1A=I_n$ for elementary $E_i$ (\Thm{1.5.4}). Each $E_i$ is invertible (\Thm{1.5.5}), so $A=E_1\inv\cdots E_k\inv$, a product of elementary matrices.
+
+\case{(d)$\Rightarrow$(a)} A product of elementary matrices is a product of invertible matrices (\Thm{1.5.5}), hence invertible (\Thm{1.4.3}(b)).
+\end{prf}
+
+\begin{algs}{1.5.8}{Inversion algorithm}
+For a square matrix $A$, form $[\,A\mid I\,]$ and row-reduce until the left block is in reduced echelon form.
+\begin{itemize}[leftmargin=1.4em,itemsep=1pt]
+\item If the left block becomes $I_n$, the right block is $A\inv$: \;$[\,A\mid I\,]\sim[\,I\mid A\inv\,]$.
+\item If a zero row appears on the left, $A$ is singular and the algorithm stops (\Rmk{1.5.9}).
+\end{itemize}
+The method works because the product $E_k\cdots E_1$ that reduces $A$ to $I$ simultaneously turns $I$ into $E_k\cdots E_1=A\inv$.
+\end{algs}
+
+\begin{rmks}{1.5.9}
+If $A$ is not invertible, step (ii) reveals it: a row of zeros appears on the left of the partition, and the algorithm may be halted.
+\end{rmks}
+
+\begin{exmp}{1.5.10}{Inverting a $3\times3$ matrix}
+Show $A=\left[\begin{smallmatrix}1&1&3\\0&2&0\\1&4&4\end{smallmatrix}\right]$ is invertible and find $A\inv$.
+
+\smallskip
+\noindent\textit{Solution.} Reduce $[\,A\mid I\,]$:
+\widedisplay{
+\left[\begin{array}{ccc|ccc}
+1&1&3&1&0&0\\ 0&2&0&0&1&0\\ 1&4&4&0&0&1
+\end{array}\right]
+\xrightarrow{R_3\mapsto R_3-R_1}
+\left[\begin{array}{ccc|ccc}
+1&1&3&1&0&0\\ 0&2&0&0&1&0\\ 0&3&1&-1&0&1
+\end{array}\right]
+\xrightarrow{\;\text{reduce}\;}
+\left[\begin{array}{ccc|ccc}
+1&0&0&-4&\tfrac{4}{2}&\tfrac{3}{2}\\[1pt] 0&1&0&0&\tfrac12&0\\[1pt] 0&0&1&1&-\tfrac32&-\tfrac12\end{array}\right].
+}
+The left block reached $I_3$, so $A$ is invertible (\Thm{1.5.7}) and
+$A\inv=\left[\begin{smallmatrix}-4&2&\tfrac32\\[1pt]0&\tfrac12&0\\[1pt]1&-\tfrac32&-\tfrac12\end{smallmatrix}\right]$.
+(One verifies $AA\inv=I$.)
+\end{exmp}
+
+For square matrices, a \emph{one-sided} inverse is automatically two-sided --- a convenient and frequently-used shortcut.
+
+\begin{thms}{1.5.11}{One-sided inverses suffice}
+If a square matrix $A$ has a left inverse ($BA=I$) or a right inverse ($AB=I$), then $A$ is invertible and its inverse is $B$.
+\end{thms}
+
+\begin{prf}
+Suppose $BA=I$. If $A\vx=\vze$ then $\vx=I\vx=BA\vx=B\vze=\vze$, so $A$ is invertible by \Thm{1.5.7}(b)$\Rightarrow$(a). Multiplying $BA=I$ on the right by $A\inv$ gives $B=A\inv$. If instead $AB=I$, then $A$ is a left inverse of $B$; by the case just proved $B$ is invertible with $B\inv=A$, whence $A$ is invertible with $A\inv=B$ (\Thm{1.4.3}(c)).
+\end{prf}
+
+\begin{lems}{1.5.12}{}
+If either $A$ or $B$ is not invertible, then $AB$ is not invertible.
+\end{lems}
+
+\begin{prf}
+Contrapositive. If $AB$ is invertible with inverse $C$, then $A(BC)=(AB)C=I$ shows $A$ has a right inverse, and $(CA)B=C(AB)=I$ shows $B$ has a left inverse; by \Thm{1.5.11} both $A$ and $B$ are invertible. Hence if either factor is singular, $AB$ cannot be invertible.
+\end{prf}
+
+The list of equivalences extends naturally to statements about $A\vx=\vb$.
+
+\begin{thms}{1.5.13}{Equivalent statements (consistency)}
+For an $n\times n$ matrix $A$, the following are equivalent:
+\begin{enumerate}[label=\textup{(\alph*)},leftmargin=2.2em,itemsep=1pt]
+\item $A$ is invertible;
+\item $A\vx=\vb$ is consistent for every $\vb$;
+\item $A\vx=\vb$ has exactly one solution for every $\vb$.
+\end{enumerate}
+\end{thms}
+
+\begin{prf}
+We prove (a)$\Rightarrow$(c)$\Rightarrow$(b)$\Rightarrow$(a).
+
+\case{(a)$\Rightarrow$(c)} If $A$ is invertible, then $\vx=A\inv\vb$ solves $A\vx=\vb$, and any solution satisfies $\vx=A\inv A\vx=A\inv\vb$ --- so the solution exists and is unique.
+
+\case{(c)$\Rightarrow$(b)} Exactly one solution is, in particular, at least one.
+
+\case{(b)$\Rightarrow$(a)} If $A\vx=\vb$ is consistent for every $\vb$, then $A\vx=\ve_i$ has a solution $\vec{c}_i$ for each $i$. Assembling these columns,
+\begin{steps}
+\st{AC=A[\,\vec{c}_1\;\cdots\;\vec{c}_n\,]=[\,\ve_1\;\cdots\;\ve_n\,]=I,}{column $i$ is $A\vec{c}_i=\ve_i$}
+\end{steps}
+so $A$ has a right inverse and is invertible by \Thm{1.5.11}.
+\end{prf}
+
+\section{Application: Walks in Graphs}
+\label{sec:1.6}
+
+Matrix powers count paths. We follow A\&R \S10.5.
+
+\begin{defns}{1.6.1}{Graph, digraph}
+A \emph{graph} $G=(V,E)$ consists of a set $V$ of \emph{vertices} together with a multiset $E$ of unordered pairs of vertices, called \emph{edges}. A \emph{digraph} is defined the same way except that each edge is an \emph{ordered} pair.
+\end{defns}
+
+\begin{defns}{1.6.4}{Adjacency matrix}
+If $G$ has vertices $v_1,\dots,v_n$, its \emph{adjacency matrix} $M=M(G)$ is the $n\times n$ matrix whose $(i,j)$ entry is the number of edges (or directed edges) from $v_i$ to $v_j$. For an undirected graph $M$ is symmetric.
+\end{defns}
+
+\begin{defns}{1.6.6}{Walk}
+A \emph{walk of length $m$} from $v$ to $w$ is a sequence of vertices $v_0,v_1,\dots,v_m$ with $v_0=v$, $v_m=w$, and an edge from $v_i$ to $v_{i+1}$ for each $i=0,\dots,m-1$. Vertices and edges may repeat.
+\end{defns}
+
+\begin{thms}{1.6.7}{Walk-counting}
+The number of walks of length $m$ from $v_i$ to $v_j$ in a graph or digraph $G$ is the $(i,j)$ entry of $M^m$.
+\end{thms}
+
+\begin{prf}
+By induction on $m$. \emph{Base} $m=1$: $(M^1)_{ij}=(M)_{ij}$ is by definition the number of length-$1$ walks (edges) from $v_i$ to $v_j$. \emph{Step:} assume $(M^m)_{ik}$ counts length-$m$ walks from $v_i$ to $v_k$. A length-$(m{+}1)$ walk from $v_i$ to $v_j$ is a length-$m$ walk from $v_i$ to some $v_k$ followed by one edge $v_k\to v_j$; summing over $v_k$,
+\[
+\#\{\text{walks }i\to j,\text{ length }m{+}1\}=\sum_{k=1}^n (M^m)_{ik}(M)_{kj}=(M^{m+1})_{ij}.
+\]
+\end{prf}
+
+\begin{exmp}{1.6.8}{Counting length-3 walks}
+Let $G$ have vertices $a,b,c,d$ and edges $ab,\,ac,\,ad$ (twice),\,$bd,\,cc$. Then (ordering $a,b,c,d$)
+\[
+M=\begin{bmatrix}0&1&1&2\\1&0&0&1\\1&0&1&0\\2&1&0&0\end{bmatrix},\qquad
+M^3=\begin{bmatrix}\ast&\ast&7&\ast\\ \ast&4&\ast&\ast\\ 7&\ast&\ast&\ast\\ \ast&\ast&\ast&\ast\end{bmatrix}.
+\]
+Reading off entries of $M^3$: the number of length-$3$ walks from $b$ to $b$ is $(M^3)_{bb}=4$, and the number from $a$ to $c$ is $(M^3)_{ac}=7$.
+\end{exmp}
+
+\begin{rmks}{1.6.10}
+In examinations you are typically \emph{given} a power $M^m$ and asked to read off one entry; the only work is identifying which entry answers the question.
+\end{rmks}
+
+% ===================================================================
+\section*{Chapter 1 Summary}
+\addcontentsline{toc}{section}{Chapter 1 Summary}
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+\item A linear system $A\vx=\vb$ has $0$, $1$, or infinitely many solutions (\Thm{1.1.3}); which one is decided by row-reducing $[A\mid\vb]$ and counting pivots (\Thm{1.2.8}). Row operations preserve the solution set (\Rmk{1.2.2}); the reduced echelon form is unique (\Rmk{1.2.7}).
+\item The general solution of a consistent system is one particular solution plus the homogeneous solution set (\Thm{1.2.12}).
+\item Transpose and inverse both reverse products: $(AB)\trans=B\trans A\trans$ (\Lem{1.4.4}), $(AB)\inv=B\inv A\inv$ (\Thm{1.4.3}).
+\item \textbf{Invertibility (\Thm{1.5.7}, \Thm{1.5.13}):} for square $A$, the statements ``$A$ invertible'', ``$A\vx=\vze$ only trivially'', ``$\RREF(A)=I$'', ``$A$ a product of elementary matrices'', ``$A\vx=\vb$ always consistent'', ``$A\vx=\vb$ always uniquely solvable'' are all equivalent. A one-sided inverse is a true inverse (\Thm{1.5.11}); a product with a singular factor is singular (\Lem{1.5.12}).
+\item Compute $A\inv$ by reducing $[A\mid I]\sim[I\mid A\inv]$ (\Alg{1.5.8}).
+\item Walks of length $m$ from $v_i$ to $v_j$ number $(M^m)_{ij}$ (\Thm{1.6.7}).
+\end{itemize}
+
+% ===================================================================
+\section*{Chapter 1 Exercises}
+\addcontentsline{toc}{section}{Chapter 1 Exercises}
+
+\begin{enumerate}[label=\textbf{1.\arabic*},leftmargin=2.6em,itemsep=6pt]
+\item For which value(s) of $a$ does
+$\;x+2y-3z=4,\;\;3x-y+5z=2,\;\;4x+y+(a^2-14)z=a+2\;$
+have (i) no solution, (ii) a unique solution, (iii) infinitely many solutions?
+
+\item Let $A=\left[\begin{smallmatrix}1&1\\0&1\end{smallmatrix}\right]$, $B=\left[\begin{smallmatrix}1&0\\1&1\end{smallmatrix}\right]$. Compute $AB$ and $BA$, confirm they differ, and verify $\tr(AB)=\tr(BA)$.
+
+\item Prove that if $A,B$ are symmetric $n\times n$ matrices, then $AB$ is symmetric if and only if $AB=BA$.
+
+\item Use \Alg{1.5.8} to find the inverse of $A=\left[\begin{smallmatrix}2&1&1\\1&2&1\\1&1&2\end{smallmatrix}\right]$, or show it is singular.
+
+\item Using the Sherman--Morrison formula (Example 1.4.5) with $\vu=\left[\begin{smallmatrix}1\\2\end{smallmatrix}\right]$, $\vv=\left[\begin{smallmatrix}1\\1\end{smallmatrix}\right]$, compute $(I+\vu\vv\trans)\inv$ and verify your answer.
+
+\item A graph has adjacency matrix $M=\left[\begin{smallmatrix}0&1&1\\1&0&1\\1&1&0\end{smallmatrix}\right]$. Compute $M^2$ and state the number of length-$2$ walks from $v_1$ to $v_1$ and from $v_1$ to $v_2$.
+
+\item Prove \Lem{1.4.4}(b): $(A+B)\trans=A\trans+B\trans$, directly from the definition of the transpose.
+\end{enumerate}
+
+\subsection*{Solutions to Chapter 1 Exercises}
+
+\begin{enumerate}[label=\textbf{1.\arabic*},leftmargin=2.6em,itemsep=8pt]
+
+\item Row-reduce $[A\mid\vb]$:
+\widedisplay{
+\left[\begin{array}{ccc|c}1&2&-3&4\\3&-1&5&2\\4&1&a^2-14&a+2\end{array}\right]
+\xrightarrow[R_3\mapsto R_3-4R_1]{R_2\mapsto R_2-3R_1}
+\left[\begin{array}{ccc|c}1&2&-3&4\\0&-7&14&-10\\0&-7&a^2-2&a-14\end{array}\right]
+\xrightarrow{R_3\mapsto R_3-R_2}
+\left[\begin{array}{ccc|c}1&2&-3&4\\0&-7&14&-10\\0&0&a^2-16&a-4\end{array}\right].
+}
+The bottom row reads $(a-4)(a+4)z=a-4$.
+\begin{itemize}[leftmargin=1.2em,itemsep=1pt]
+\item \textbf{(ii) Unique:} $a\neq\pm4$ --- then $z$, hence $y,x$, are determined.
+\item \textbf{(iii) Infinitely many:} $a=4$ --- the row becomes $0=0$, leaving $z$ free.
+\item \textbf{(i) No solution:} $a=-4$ --- the row becomes $0=-8$, inconsistent.
+\end{itemize}
+
+\item $AB=\left[\begin{smallmatrix}2&1\\1&1\end{smallmatrix}\right]$, $BA=\left[\begin{smallmatrix}1&1\\1&2\end{smallmatrix}\right]$; these differ (the $(1,1)$ entries are $2$ and $1$). Yet $\tr(AB)=3=\tr(BA)$, consistent with $\tr(AB)=\tr(BA)$ (Example 1.3.16).
+
+\item Since $A,B$ are symmetric, $(AB)\trans=B\trans A\trans=BA$ by \Lem{1.4.4}. Thus $AB$ is symmetric $\iff (AB)\trans=AB\iff BA=AB$. \;$\blacksquare$
+
+\item Reduce $[A\mid I]$ (details omitted) to obtain
+\[
+A\inv=\frac14\begin{bmatrix}3&-1&-1\\-1&3&-1\\-1&-1&3\end{bmatrix}.
+\]
+$A$ is invertible since the left block reaches $I_3$ (\Thm{1.5.7}).
+
+\item Here $\vv\trans\vu=3\neq-1$ and $\vu\vv\trans=\left[\begin{smallmatrix}1&1\\2&2\end{smallmatrix}\right]$, so
+\[
+(I+\vu\vv\trans)\inv=I-\tfrac14\begin{bmatrix}1&1\\2&2\end{bmatrix}=\begin{bmatrix}\tfrac34&-\tfrac14\\[2pt]-\tfrac12&\tfrac12\end{bmatrix}.
+\]
+Check: $(I+\vu\vv\trans)=\left[\begin{smallmatrix}2&1\\2&3\end{smallmatrix}\right]$ and $\left[\begin{smallmatrix}2&1\\2&3\end{smallmatrix}\right]\left[\begin{smallmatrix}3/4&-1/4\\-1/2&1/2\end{smallmatrix}\right]=I$. \checkmark
+
+\item $M^2=\left[\begin{smallmatrix}2&1&1\\1&2&1\\1&1&2\end{smallmatrix}\right]$. By \Thm{1.6.7}, the number of length-$2$ walks from $v_1$ to $v_1$ is $(M^2)_{11}=2$ (namely $v_1v_2v_1$ and $v_1v_3v_1$), and from $v_1$ to $v_2$ is $(M^2)_{12}=1$ (namely $v_1v_3v_2$).
+
+\item For all $i,j$: $\bigl((A+B)\trans\bigr)_{ji}=(A+B)_{ij}=(A)_{ij}+(B)_{ij}=(A\trans)_{ji}+(B\trans)_{ji}=(A\trans+B\trans)_{ji}$, using \Defn{1.3.4} and \Defn{1.3.1}. Since the entries agree in every position, $(A+B)\trans=A\trans+B\trans$. \;$\blacksquare$
+
+\end{enumerate}
