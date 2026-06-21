@@ -64,11 +64,15 @@ If a linear system has more than one solution, then it has infinitely many solut
 \end{thms}
 
 \begin{prf}
-Suppose $A\vx_1=\vb$ and $A\vx_2=\vb$ with $\vx_1\neq\vx_2$. For any scalar $\alpha\in\R$ put $\vx_\alpha = \vx_1 + \alpha(\vx_2-\vx_1)$. Using the distributive and scalar properties of matrix multiplication (\Thm{1.4.1}),
+Since the system has more than one solution, we can choose two \emph{distinct} solutions $\vx_1\neq\vx_2$, so $A\vx_1=\vb$ and $A\vx_2=\vb$. For each scalar $\alpha\in\R$, define
 \[
-A\vx_\alpha = A\vx_1 + \alpha\bigl(A\vx_2 - A\vx_1\bigr) = \vb + \alpha(\vb-\vb) = \vb,
+\vx_\alpha = \vx_1 + \alpha(\vx_1-\vx_2).
 \]
-so each $\vx_\alpha$ is a solution. Since $\vx_2-\vx_1\neq\vze$, distinct values of $\alpha$ give distinct vectors $\vx_\alpha$; hence there are infinitely many solutions.
+We check that every $\vx_\alpha$ is a solution. Using the distributive and scalar properties of matrix multiplication (\Thm{1.4.1}),
+\begin{steps}
+\st{A\vx_\alpha = A\vx_1 + \alpha\,A(\vx_1-\vx_2) = \vb + \alpha(\vb-\vb) = \vb.}{$A\vx_1=A\vx_2=\vb$}
+\end{steps}
+So $\vx_\alpha$ solves $A\vx=\vb$ for every $\alpha$. Finally, these solutions are all distinct: if $\vx_\alpha=\vx_\beta$ then $(\alpha-\beta)(\vx_1-\vx_2)=\vze$, and since $\vx_1-\vx_2\neq\vze$ (because $\vx_1\neq\vx_2$), this forces $\alpha=\beta$. Hence $\{\vx_\alpha:\alpha\in\R\}$ is an infinite set of distinct solutions.
 \end{prf}
 
 \section{Gaussian Elimination}
@@ -143,7 +147,13 @@ Consider a system of $m$ equations in $n$ variables whose echelon form has $r$ p
 \end{thms}
 
 \begin{prf}
-A pivot column corresponds to a leading variable, so $r$ is the number of leading variables and $n-r$ the number of free variables. If $r=n$ there are no free variables, leaving cases (i) or (iii) above --- zero or one solution --- which is (a). If $r<n$ there is at least one free variable, leaving (i) or (ii) --- zero or infinitely many --- which is (b). For (c), the number of pivots cannot exceed the number of rows, so $r\le m<n$, and (b) applies.
+A pivot column corresponds to a leading variable, so $r$ is the number of leading variables and $n-r$ is the number of free variables.
+
+\case{(a)} If $r=n$, there are no free variables. A consistent system with no free variables has its solution completely determined, so there is exactly one solution; an inconsistent system has none.
+
+\case{(b)} If $r<n$, there is at least one free variable. If the system is consistent, that free variable can take any value, yielding infinitely many solutions; otherwise there are none.
+
+\case{(c)} The number of pivots cannot exceed the number of rows, so $r\le m$. Combined with $n>m$ this gives $r\le m<n$, i.e.\ $r<n$, and case (b) applies.
 \end{prf}
 
 \begin{exmp}{1.2.9}{A system depending on a parameter}
@@ -508,7 +518,13 @@ If a square matrix $A$ has a left inverse ($BA=I$) or a right inverse ($AB=I$), 
 \end{thms}
 
 \begin{prf}
-Suppose $BA=I$. If $A\vx=\vze$ then $\vx=I\vx=BA\vx=B\vze=\vze$, so $A$ is invertible by \Thm{1.5.7}(b)$\Rightarrow$(a). Multiplying $BA=I$ on the right by $A\inv$ gives $B=A\inv$. If instead $AB=I$, then $A$ is a left inverse of $B$; by the case just proved $B$ is invertible with $B\inv=A$, whence $A$ is invertible with $A\inv=B$ (\Thm{1.4.3}(c)).
+\case{Left inverse} Suppose $BA=I$. If $A\vx=\vze$, then multiplying on the left by $B$,
+\[
+\vx=I\vx=(BA)\vx=B(A\vx)=B\vze=\vze.
+\]
+So $A\vx=\vze$ has only the trivial solution, and $A$ is invertible by \Thm{1.5.7} (b)$\Rightarrow$(a). Multiplying $BA=I$ on the right by $A\inv$ then gives $B=A\inv$.
+
+\case{Right inverse} Suppose instead $AB=I$. Then $A$ is a left inverse of $B$, so by the case just proved $B$ is invertible with $B\inv=A$. Hence $A=B\inv$ is invertible, and $A\inv=(B\inv)\inv=B$ (\Thm{1.4.3}(c)).
 \end{prf}
 
 \begin{lems}{1.5.12}{}
@@ -566,10 +582,15 @@ The number of walks of length $m$ from $v_i$ to $v_j$ in a graph or digraph $G$ 
 \end{thms}
 
 \begin{prf}
-By induction on $m$. \emph{Base} $m=1$: $(M^1)_{ij}=(M)_{ij}$ is by definition the number of length-$1$ walks (edges) from $v_i$ to $v_j$. \emph{Step:} assume $(M^m)_{ik}$ counts length-$m$ walks from $v_i$ to $v_k$. A length-$(m{+}1)$ walk from $v_i$ to $v_j$ is a length-$m$ walk from $v_i$ to some $v_k$ followed by one edge $v_k\to v_j$; summing over $v_k$,
+We argue by induction on $m$.
+
+\emph{Base case} ($m=1$): by definition of the adjacency matrix, $(M^1)_{ij}=(M)_{ij}$ is the number of edges (length-$1$ walks) from $v_i$ to $v_j$.
+
+\emph{Inductive step:} assume $(M^m)_{ik}$ counts the length-$m$ walks from $v_i$ to $v_k$, for every $k$. Any length-$(m{+}1)$ walk from $v_i$ to $v_j$ consists of a length-$m$ walk from $v_i$ to some intermediate vertex $v_k$, followed by a single edge $v_k\to v_j$. Summing over all choices of $v_k$,
 \[
-\#\{\text{walks }i\to j,\text{ length }m{+}1\}=\sum_{k=1}^n (M^m)_{ik}(M)_{kj}=(M^{m+1})_{ij}.
+\#\{\text{walks }i\to j\text{ of length }m{+}1\}=\sum_{k=1}^n (M^m)_{ik}(M)_{kj}=(M^{m+1})_{ij},
 \]
+where the last equality is the definition of the matrix product. This completes the induction.
 \end{prf}
 
 \begin{exmp}{1.6.8}{Counting length-3 walks}

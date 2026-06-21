@@ -73,13 +73,31 @@ Let $V$ be a vector space, $\vu\in V$, and $k$ a scalar. Then
 \end{thms}
 
 \begin{prf}
-\case{(a)} Since $0\vu=(0+0)\vu=0\vu+0\vu$ by \axiom{A8}, adding $-(0\vu)$ to both sides and using \axiom{A3}, \axiom{A5}, \axiom{A4} gives $\vze=0\vu$.
+\case{(a)} Starting from \axiom{A8} and cancelling:
+\begin{steps}
+\st{0\vu=(0+0)\vu=0\vu+0\vu}{\axiom{A8}}
+\st{0\vu+(-0\vu)=(0\vu+0\vu)+(-0\vu)=0\vu+\bigl(0\vu+(-0\vu)\bigr)}{\axiom{A3}}
+\st{\vze=0\vu+\vze=0\vu}{\axiom{A5}, \axiom{A4}}
+\end{steps}
 
-\case{(c)} By \axiom{A10}, \axiom{A8}, and (a), $\vu+(-1)\vu=1\vu+(-1)\vu=(1+(-1))\vu=0\vu=\vze$. By \Thm{3.1.3}(d), $(-1)\vu=-\vu$.
+\case{(b)} The same cancellation, starting from \axiom{A7}:
+\begin{steps}
+\st{k\vze=k(\vze+\vze)=k\vze+k\vze}{\axiom{A7}}
+\st{k\vze+(-k\vze)=(k\vze+k\vze)+(-k\vze)=k\vze+\bigl(k\vze+(-k\vze)\bigr)}{\axiom{A3}}
+\st{\vze=k\vze+\vze=k\vze}{\axiom{A5}, \axiom{A4}}
+\end{steps}
 
-\case{(b)} and (d) are left as exercises (Exercise 3.1);
+\case{(c)} Compute $\vu+(-1)\vu$:
+\begin{steps}
+\st{\vu+(-1)\vu=1\vu+(-1)\vu=(1+(-1))\vu=0\vu=\vze}{\axiom{A10}, \axiom{A8}, part (a)}
+\end{steps}
+So $(-1)\vu$ is the additive inverse of $\vu$; by \Thm{3.1.3}(d), $(-1)\vu=-\vu$.
 
-\case{(d)} uses that if $k\neq0$ then multiplying $k\vu=\vze$ by $k\inv$ and applying \axiom{A9}, \axiom{A10} forces $\vu=\vze$.
+\case{(d)} Suppose $k\vu=\vze$. If $k=0$ we are done. Otherwise $k\neq0$, so $k\inv$ exists, and
+\begin{steps}
+\st{\vu=1\vu=(k\inv k)\vu=k\inv(k\vu)=k\inv\vze=\vze}{\axiom{A10}, \axiom{A9}, part (b)}
+\end{steps}
+So either $k=0$ or $\vu=\vze$.
 \end{prf}
 
 \subsection{Subspaces}
@@ -99,9 +117,16 @@ A non-empty subset $W$ of a vector space $V$ is a subspace if and only if
 \end{thms}
 
 \begin{prf}
-($\Rightarrow$) If $W$ is a subspace then it is a vector space, so \axiom{A1} and \axiom{A6} --- which are exactly (i) and (ii) --- hold.
+\case{($\Rightarrow$)} If $W$ is a subspace then it is a vector space in its own right, so \axiom{A1} and \axiom{A6} hold --- and these are exactly conditions (i) and (ii).
 
-($\Leftarrow$) Suppose (i), (ii) hold. Axioms \axiom{A2}, \axiom{A3}, \axiom{A7}, \axiom{A8}, \axiom{A9}, \axiom{A10} are identities; they hold for all elements of $V$, hence in particular for all elements of $W$. It remains to supply \axiom{A4} and \axiom{A5}. Since $W\neq\varnothing$, choose $\vu\in W$. By (ii) with $k=0$, $0\vu=\vze\in W$, so \axiom{A4} holds (using \Thm{3.1.6}(a)). By (ii) with $k=-1$, $(-1)\vu=-\vu\in W$, so each element of $W$ has its inverse in $W$, giving \axiom{A5} (using \Thm{3.1.6}(c)). Thus $W$ satisfies all ten axioms.
+\case{($\Leftarrow$)} Suppose (i) and (ii) hold. The axioms \axiom{A2}, \axiom{A3}, \axiom{A7}, \axiom{A8}, \axiom{A9}, \axiom{A10} are \emph{identities}: they hold for all elements of $V$, hence in particular for all elements of $W$. So we need only supply \axiom{A4} (a zero vector) and \axiom{A5} (negatives).
+
+Since $W\neq\varnothing$, choose some $\vu\in W$.
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt,topsep=2pt]
+\item Applying (ii) with $k=0$ gives $0\vu\in W$. But $0\vu=\vze$ (\Thm{3.1.6}(a)), so $\vze\in W$ and \axiom{A4} holds.
+\item Applying (ii) with $k=-1$ gives $(-1)\vu\in W$ for each $\vu\in W$. But $(-1)\vu=-\vu$ (\Thm{3.1.6}(c)), so each element of $W$ has its negative in $W$ and \axiom{A5} holds.
+\end{itemize}
+Thus $W$ satisfies all ten axioms, so $W$ is a subspace.
 \end{prf}
 
 \begin{thms}{3.1.9}{}
@@ -138,7 +163,25 @@ Let $S=\{\vw_1,\dots,\vw_r\}\subseteq V$. For any scalars $\alpha_i,\beta_i$:
 \end{thms}
 
 \begin{prf}
-\case{(a)} By induction on $r$. For $r=1$, $\alpha_1\vw_1\in V$ by \axiom{A6}. Assume $\sum_{i=1}^{r-1}\alpha_i\vw_i\in V$; then $\sum_{i=1}^r\alpha_i\vw_i=\bigl(\sum_{i=1}^{r-1}\alpha_i\vw_i\bigr)+\alpha_r\vw_r$, a sum of two elements of $V$ (the second by \axiom{A6}), hence in $V$ by \axiom{A1}. Parts (b), (c) follow by repeated use of \axiom{A8}, \axiom{A7}, \axiom{A9} and induction.
+\case{(a)} We argue by induction on $r$.
+
+\emph{Base case} ($r=1$): $\alpha_1\vw_1\in V$ by \axiom{A6} (closure under scalar multiplication).
+
+\emph{Inductive step:} assume $\sum_{i=1}^{r-1}\alpha_i\vw_i\in V$. Then
+\[
+\sum_{i=1}^r\alpha_i\vw_i=\Bigl(\sum_{i=1}^{r-1}\alpha_i\vw_i\Bigr)+\alpha_r\vw_r,
+\]
+which is a sum of two elements of $V$: the first by the inductive hypothesis, the second by \axiom{A6}. By \axiom{A1} (closure under addition) the sum lies in $V$. So the result follows by induction.
+
+\case{(b)} Group the two sums termwise and apply \axiom{A8} (the distributive law $(\alpha_i+\beta_i)\vw_i=\alpha_i\vw_i+\beta_i\vw_i$), using \axiom{A2} and \axiom{A3} to regroup:
+\[
+\Bigl(\sum_i\alpha_i\vw_i\Bigr)+\Bigl(\sum_i\beta_i\vw_i\Bigr)=\sum_i\bigl(\alpha_i\vw_i+\beta_i\vw_i\bigr)=\sum_i(\alpha_i+\beta_i)\vw_i.
+\]
+
+\case{(c)} Distribute $k$ across the sum by \axiom{A7}, then apply \axiom{A9} to each term:
+\[
+k\Bigl(\sum_i\alpha_i\vw_i\Bigr)=\sum_i k(\alpha_i\vw_i)=\sum_i(k\alpha_i)\vw_i.
+\]
 \end{prf}
 
 \begin{thms}{3.2.3}{Span is the smallest containing subspace}
@@ -148,7 +191,13 @@ Let $S=\{\vw_1,\dots,\vw_r\}\subseteq V$, and let $W$ be the set of all linear c
 \end{thms}
 
 \begin{prf}
-\case{(a)} $W\neq\varnothing$ since $\vw_1=1\vw_1\in W$. If $\vx=\sum\alpha_i\vw_i$ and $\vy=\sum\beta_i\vw_i$ lie in $W$, then $\vx+\vy=\sum(\alpha_i+\beta_i)\vw_i\in W$ by \Thm{3.2.2}(b), and $k\vx=\sum(k\alpha_i)\vw_i\in W$ by \Thm{3.2.2}(c). By the Subspace Test, $W$ is a subspace.
+\case{(a)} We verify $W=\spn(S)$ passes the Subspace Test.
+\begin{checks}
+\chk{Nonempty} $\vw_1=1\vw_1\in W$, so $W\neq\varnothing$.
+\chk{Closure under addition} If $\vx=\sum_i\alpha_i\vw_i$ and $\vy=\sum_i\beta_i\vw_i$ lie in $W$, then $\vx+\vy=\sum_i(\alpha_i+\beta_i)\vw_i\in W$ by \Thm{3.2.2}(b).
+\chk{Closure under scalar multiplication} For a scalar $k$, $k\vx=\sum_i(k\alpha_i)\vw_i\in W$ by \Thm{3.2.2}(c).
+\end{checks}
+Therefore $W$ is a subspace of $V$.
 
 \case{(b)} Let $W'$ be any subspace containing $S$. Being closed under addition and scalar multiplication, $W'$ contains every linear combination of the $\vw_i$, that is, $W\subseteq W'$. So $W$ is contained in every subspace containing $S$ --- it is the smallest such.
 \end{prf}
@@ -180,11 +229,23 @@ A set $S$ with two or more vectors is
 \end{thms}
 
 \begin{prf}
-Statements (a), (b) are contrapositives, so we prove (b). ($\Rightarrow$) If $S=\{\vv_1,\dots,\vv_n\}$ is dependent, there is a relation $\sum k_j\vv_j=\vze$ with some $k_i\neq0$. Solving for $\vv_i$,
+Statements (a) and (b) are contrapositives of one another, so it suffices to prove (b).
+
+\case{($\Rightarrow$)} Suppose $S=\{\vv_1,\dots,\vv_n\}$ is dependent. By definition there is a relation
+\[
+k_1\vv_1+\cdots+k_n\vv_n=\vze
+\]
+in which some coefficient $k_i\neq0$. Isolating that term and dividing by $k_i$,
 \[
 \vv_i=\sum_{j\neq i}\Bigl(-\tfrac{k_j}{k_i}\Bigr)\vv_j,
 \]
-a linear combination of the others. ($\Leftarrow$) If $\vv_i=\sum_{j\neq i}c_j\vv_j$, then $(-1)\vv_i+\sum_{j\neq i}c_j\vv_j=\vze$ is a relation with the coefficient $-1\neq0$ on $\vv_i$, so $S$ is dependent.
+so $\vv_i$ is a linear combination of the other vectors.
+
+\case{($\Leftarrow$)} Conversely, suppose some $\vv_i=\sum_{j\neq i}c_j\vv_j$. Moving everything to one side,
+\[
+(-1)\vv_i+\sum_{j\neq i}c_j\vv_j=\vze,
+\]
+which is a nontrivial relation (the coefficient of $\vv_i$ is $-1\neq0$). Hence $S$ is dependent.
 \end{prf}
 
 \begin{exmp}{3.2.9}{Spanning and independence via a matrix}
@@ -228,11 +289,17 @@ Let $V$ be finite-dimensional with a basis $B=\{\vv_1,\dots,\vv_n\}$.
 \end{thms}
 
 \begin{prf}
-\case{(a)} Let $S=\{\vw_1,\dots,\vw_m\}$ with $m>n$. Since $B$ is a basis, each $\vw_j=\sum_{i=1}^n a_{ij}\vv_i$ for scalars $a_{ij}$. Consider a relation $\sum_{j=1}^m k_j\vw_j=\vze$. Substituting,
+\case{(a)} Let $S=\{\vw_1,\dots,\vw_m\}$ with $m>n$. Since $B$ is a basis, each $\vw_j$ is a combination of the $\vv_i$, say $\vw_j=\sum_{i=1}^n a_{ij}\vv_i$. Consider any relation $\sum_{j=1}^m k_j\vw_j=\vze$ and substitute:
 \[
 \sum_{j=1}^m k_j\sum_{i=1}^n a_{ij}\vv_i=\sum_{i=1}^n\Bigl(\sum_{j=1}^m a_{ij}k_j\Bigr)\vv_i=\vze.
 \]
-Because $B$ is independent, every coefficient vanishes: $\sum_{j=1}^m a_{ij}k_j=0$ for $i=1,\dots,n$. This is a homogeneous system of $n$ equations in the $m$ unknowns $k_j$ with $m>n$, so by \Thm{1.2.11} it has a nontrivial solution. Hence $S$ is dependent. Part (b) is similar and is left as an exercise.
+Because $B$ is independent, each coefficient must vanish:
+\[
+\sum_{j=1}^m a_{ij}k_j=0\qquad(i=1,\dots,n).
+\]
+This is a homogeneous linear system of $n$ equations in the $m$ unknowns $k_1,\dots,k_m$. Since $m>n$ (more unknowns than equations), \Thm{1.2.11} guarantees a \emph{nontrivial} solution $(k_1,\dots,k_m)$. That nontrivial solution is a nontrivial dependence relation, so $S$ is linearly dependent.
+
+\case{(b)} Let $S=\{\vw_1,\dots,\vw_m\}$ with $m<n$, and suppose for contradiction that $S$ spans $V$. Then each basis vector $\vv_i$ is a combination of the $\vw_j$. Reversing the roles in part (a): expressing the $n$ vectors of $B$ in terms of the $m<n$ vectors of $S$ produces a homogeneous system with more unknowns than equations, hence a nontrivial relation among $\vv_1,\dots,\vv_n$. This contradicts the independence of $B$. So $S$ cannot span $V$.
 \end{prf}
 
 \begin{thms}{3.3.9}{Dimension Theorem}
@@ -258,7 +325,18 @@ Let $S$ be a nonempty set of vectors in $V$.
 \end{thms}
 
 \begin{prf}
-\case{(a)} Let $S=\{\vv_1,\dots,\vv_m\}$ and consider $k\vv+k_1\vv_1+\cdots+k_m\vv_m=\vze$. If $k\neq0$ then $\vv=\sum(-k_i/k)\vv_i\in\spn(S)$, contradicting the hypothesis; so $k=0$. The relation reduces to $\sum k_i\vv_i=\vze$, forcing all $k_i=0$ since $S$ is independent. Thus $S\cup\{\vv\}$ is independent. Part (b) is left as an exercise.
+\case{(a)} Let $S=\{\vv_1,\dots,\vv_m\}$ be independent with $\vv\notin\spn(S)$. Consider a relation
+\[
+k\vv+k_1\vv_1+\cdots+k_m\vv_m=\vze.
+\]
+If $k\neq0$ we could solve for $\vv$, getting $\vv=\sum_i(-k_i/k)\vv_i\in\spn(S)$ --- contradicting $\vv\notin\spn(S)$. So $k=0$. The relation then reduces to $\sum_i k_i\vv_i=\vze$, and since $S$ is independent, every $k_i=0$ as well. Thus the only relation is trivial, so $S\cup\{\vv\}$ is independent.
+
+\case{(b)} Suppose $\vv\in S$ is a combination of the others, and write $S'=S\setminus\{\vv\}$ and $\vv=\sum_{\vw\in S'}c_\vw\vw$.
+Since $S'\subseteq S$, clearly $\spn(S')\subseteq\spn(S)$. For the reverse inclusion, take any $\vu\in\spn(S)$, say $\vu=a\vv+\sum_{\vw\in S'}b_\vw\vw$. Substituting the expression for $\vv$,
+\[
+\vu=a\sum_{\vw\in S'}c_\vw\vw+\sum_{\vw\in S'}b_\vw\vw=\sum_{\vw\in S'}(ac_\vw+b_\vw)\vw\in\spn(S').
+\]
+So $\spn(S)\subseteq\spn(S')$, and therefore $\spn(S\setminus\{\vv\})=\spn(S)$.
 \end{prf}
 
 \begin{thms}{3.3.13}{$n$ vectors in an $n$-space}
@@ -268,7 +346,11 @@ Let $\dim(V)=n$ and let $S\subseteq V$ contain exactly $n$ vectors.
 \end{thms}
 
 \begin{prf}
-\case{(a)} ($\Leftarrow$) Suppose $S$ is independent. If $S$ were not a basis it would fail to span, so some $\vv\notin\spn(S)$; then $S\cup\{\vv\}$ is independent (\Thm{3.3.12}(a)) with $n+1$ vectors, contradicting \Thm{3.3.8}(a). Hence $S$ spans and is a basis. ($\Rightarrow$) immediate from the definition. Part (b) is dual and left as an exercise.
+\case{(a)} ($\Rightarrow$) If $S$ is a basis it is in particular independent.
+($\Leftarrow$) Suppose $S$ is independent. If $S$ were not a basis it would fail to span, so some $\vv\notin\spn(S)$; then $S\cup\{\vv\}$ is independent (\Thm{3.3.12}(a)) with $n+1$ vectors, contradicting \Thm{3.3.8}(a). Hence $S$ spans, and being independent it is a basis.
+
+\case{(b)} ($\Rightarrow$) If $S$ is a basis it in particular spans $V$.
+($\Leftarrow$) Suppose $S$ spans $V$. If $S$ were not a basis it would fail to be independent, so by \Thm{3.2.8}(b) some $\vv\in S$ is a combination of the others; deleting it gives $S'=S\setminus\{\vv\}$ with $\spn(S')=\spn(S)=V$ (\Thm{3.3.12}(b)) and only $n-1$ vectors. But a set of fewer than $n=\dim(V)$ vectors cannot span $V$ (\Thm{3.3.8}(b)), a contradiction. Hence $S$ is independent, and being spanning it is a basis.
 \end{prf}
 
 \begin{thms}{3.3.14}{Dimension of a subspace}
@@ -278,7 +360,10 @@ If $W$ is a subspace of a finite-dimensional space $V$, then
 \end{thms}
 
 \begin{prf}
-\case{(a)} $V$ has a finite spanning set, so any independent subset of $V$ --- in particular any basis of $W$ --- has at most $\dim(V)$ vectors by \Thm{3.3.8}(a). Hence $\dim(W)\le\dim(V)$. Part (b) is left as an exercise: if $\dim(W)=\dim(V)=n$, a basis of $W$ is an independent set of $n$ vectors in $V$, hence a basis of $V$ by \Thm{3.3.13}(a), so $W=\spn(\text{basis})=V$.
+\case{(a)} $V$ is finite-dimensional, so it has a finite spanning set; hence any independent subset of $V$ has at most $\dim(V)$ vectors (\Thm{3.3.8}(a)). In particular a basis of $W$ is such an independent subset, so $\dim(W)\le\dim(V)$.
+
+\case{(b)} ($\Rightarrow$) If $W=V$ then trivially $\dim(W)=\dim(V)$.
+($\Leftarrow$) Suppose $\dim(W)=\dim(V)=n$, and let $S$ be a basis of $W$. Then $S$ is an independent set of $n$ vectors in $V$, hence a basis of $V$ by \Thm{3.3.13}(a). Therefore $V=\spn(S)=W$.
 \end{prf}
 
 \begin{thms}{3.3.15}{Bases from spanning/independent sets}
@@ -288,7 +373,14 @@ Let $S$ be a finite set in a finite-dimensional space $V$.
 \end{thms}
 
 \begin{prf}
-\case{(a)} Induct on $|S|-\dim(V)\ge0$. If $|S|=\dim(V)$, then $S$ is a spanning set of the right size, hence a basis by \Thm{3.3.13}(b). Otherwise $|S|>\dim(V)$, so $S$ is dependent (\Thm{3.3.8}(a)); by \Thm{3.2.8}(b) some $\vv\in S$ is a combination of the others, and deleting it leaves the span unchanged (\Thm{3.3.12}(b)). The smaller set still spans $V$; by induction it contains a basis, and so does $S$. Part (b) is dual.
+\case{(a)} Suppose $S$ spans $V$. Then $|S|\ge\dim(V)$ (\Thm{3.3.8}(b)), so write $|S|=\dim(V)+k$ and induct on $k$.
+
+\emph{Base case} ($k=0$): $S$ spans $V$ and has exactly $\dim(V)$ vectors, so $S$ is a basis by \Thm{3.3.13}(b), and contains a basis (itself).
+
+\emph{Inductive step:} suppose the claim holds for $k$, and let $|S|=\dim(V)+k+1$. Since $|S|>\dim(V)$, $S$ is dependent (\Thm{3.3.8}(a)), so by \Thm{3.2.8}(b) some $\vv\in S$ is a combination of the others. Deleting it, $S'=S\setminus\{\vv\}$ still spans $V$ (\Thm{3.3.12}(b)) and has $\dim(V)+k$ vectors. By the inductive hypothesis $S'$ contains a basis, and since $S'\subset S$, so does $S$.
+
+\case{(b)} Suppose $S$ is independent. If $S$ already spans $V$, then $S$ is a basis containing $S$, and we are done. Otherwise there is some $\vv_1\notin\spn(S)$; then $S\cup\{\vv_1\}$ is independent (\Thm{3.3.12}(a)).
+If this still does not span, pick $\vv_2\notin\spn(S\cup\{\vv_1\})$, and again $S\cup\{\vv_1,\vv_2\}$ is independent. Repeat. Because $V$ is finite-dimensional, an independent set cannot grow past $\dim(V)$ vectors (\Thm{3.3.8}(a)), so this process must stop --- and it stops exactly when the set spans $V$. At that point $B=S\cup\{\vv_1,\dots,\vv_m\}$ is independent and spanning, hence a basis of $V$ containing $S$.
 \end{prf}
 
 \section{Direct Sums}
@@ -307,7 +399,13 @@ If $V,W$ are subspaces of $U$, then $V+W$ is a subspace of $U$.
 \end{thms}
 
 \begin{prf}
-$V+W\neq\varnothing$ since $\vze=\vze+\vze\in V+W$. If $\vu_1=\vv_1+\vw_1$ and $\vu_2=\vv_2+\vw_2$ (with $\vv_i\in V,\vw_i\in W$), then $\vu_1+\vu_2=(\vv_1+\vv_2)+(\vw_1+\vw_2)\in V+W$ since $V,W$ are closed under addition; and $k\vu_1=k\vv_1+k\vw_1\in V+W$ similarly. The Subspace Test applies.
+We verify $V+W$ passes the Subspace Test.
+\begin{checks}
+\chk{Nonempty} $\vze=\vze+\vze\in V+W$.
+\chk{Closure under addition} If $\vu_1=\vv_1+\vw_1$ and $\vu_2=\vv_2+\vw_2$ (with $\vv_i\in V$, $\vw_i\in W$), then $\vu_1+\vu_2=(\vv_1+\vv_2)+(\vw_1+\vw_2)\in V+W$, since $V$ and $W$ are each closed under addition.
+\chk{Closure under scalar multiplication} For a scalar $k$, $k\vu_1=k\vv_1+k\vw_1\in V+W$, since $V$ and $W$ are each closed under scalar multiplication.
+\end{checks}
+Therefore $V+W$ is a subspace.
 \end{prf}
 
 \begin{thms}{3.4.3}{Uniqueness characterises directness}
@@ -315,8 +413,13 @@ The sum $V+W$ is direct if and only if every $\vu\in V+W$ has a \emph{unique} ex
 \end{thms}
 
 \begin{prf}
-($\Rightarrow$) Suppose $V\cap W=\{\vze\}$ and $\vu=\vv+\vw=\vv'+\vw'$ with $\vv,\vv'\in V$, $\vw,\vw'\in W$. Then $\vv-\vv'=\vw'-\vw$; the left side lies in $V$ and the right in $W$, so both lie in $V\cap W=\{\vze\}$. Hence $\vv=\vv'$ and $\vw=\vw'$.
-($\Leftarrow$) Suppose expressions are unique. If $\vx\in V\cap W$, then $\vx=\vx+\vze=\vze+\vx$ are two decompositions (first with $\vv=\vx,\vw=\vze$; second with $\vv=\vze,\vw=\vx$). Uniqueness forces $\vx=\vze$, so $V\cap W=\{\vze\}$.
+\case{($\Rightarrow$)} Suppose $V\cap W=\{\vze\}$, and let $\vu=\vv+\vw=\vv'+\vw'$ be two decompositions with $\vv,\vv'\in V$ and $\vw,\vw'\in W$. Rearranging, $\vv-\vv'=\vw'-\vw$. The left side lies in $V$ and the right side in $W$, so this common vector lies in $V\cap W=\{\vze\}$. Hence $\vv-\vv'=\vze$ and $\vw'-\vw=\vze$, i.e.\ $\vv=\vv'$ and $\vw=\vw'$. The decomposition is unique.
+
+\case{($\Leftarrow$)} Suppose every element has a unique decomposition. Let $\vx\in V\cap W$. Then $\vx$ has two decompositions,
+\[
+\vx=\underbrace{\vx}_{\in V}+\underbrace{\vze}_{\in W}=\underbrace{\vze}_{\in V}+\underbrace{\vx}_{\in W}.
+\]
+By uniqueness these must coincide, forcing $\vx=\vze$. Hence $V\cap W=\{\vze\}$, so the sum is direct.
 \end{prf}
 
 \begin{thms}{3.4.4}{Dimension of a direct sum}
@@ -324,7 +427,17 @@ Let $V,W$ be finite-dimensional subspaces of $U$. If $U=V\oplus W$, then $\dim(U
 \end{thms}
 
 \begin{prf}
-Let $B_V=\{\vv_1,\dots,\vv_m\}$ be a basis of $V$ and $B_W=\{\vw_1,\dots,\vw_n\}$ a basis of $W$; we show $B_V\cup B_W$ is a basis of $U$. \emph{Spanning:} any $\vu\in U=V\oplus W$ is $\vu=\vv+\vw$ with $\vv=\sum\alpha_i\vv_i$, $\vw=\sum\beta_i\vw_i$, so $\vu$ is a combination of $B_V\cup B_W$. \emph{Independence:} suppose $\sum\alpha_i\vv_i+\sum\beta_i\vw_i=\vze$. Then $\sum\alpha_i\vv_i=-\sum\beta_i\vw_i$ lies in $V\cap W=\{\vze\}$, so both sides are $\vze$. Independence of $B_V$ gives all $\alpha_i=0$; independence of $B_W$ gives all $\beta_i=0$. Hence $B_V\cup B_W$ is a basis, and $\dim(U)=m+n=\dim(V)+\dim(W)$.
+Let $B_V=\{\vv_1,\dots,\vv_m\}$ be a basis of $V$ and $B_W=\{\vw_1,\dots,\vw_n\}$ a basis of $W$. We show $B_V\cup B_W$ is a basis of $U$.
+
+\emph{Spanning:} any $\vu\in U=V\oplus W$ can be written $\vu=\vv+\vw$ with $\vv\in V$, $\vw\in W$. Expanding $\vv=\sum_i\alpha_i\vv_i$ and $\vw=\sum_i\beta_i\vw_i$ shows $\vu$ is a linear combination of $B_V\cup B_W$.
+
+\emph{Independence:} suppose $\sum_i\alpha_i\vv_i+\sum_i\beta_i\vw_i=\vze$. Then
+\[
+\sum_i\alpha_i\vv_i=-\sum_i\beta_i\vw_i,
+\]
+where the left side lies in $V$ and the right in $W$. So this common vector lies in $V\cap W=\{\vze\}$, forcing both sides to be $\vze$. Independence of $B_V$ then gives every $\alpha_i=0$, and independence of $B_W$ gives every $\beta_i=0$.
+
+Therefore $B_V\cup B_W$ is a basis of $U$ with $m+n$ vectors, so $\dim(U)=m+n=\dim(V)+\dim(W)$.
 \end{prf}
 
 \section{Coordinates and Change of Basis}
@@ -414,7 +527,13 @@ The kernel of an $m\times n$ matrix is a subspace of $\R^n$.
 \end{thms}
 
 \begin{prf}
-$\ker(A)\neq\varnothing$ since $A\vze=\vze$, so $\vze\in\ker(A)$. If $\vx,\vy\in\ker(A)$ then $A(\vx+\vy)=A\vx+A\vy=\vze+\vze=\vze$, so $\vx+\vy\in\ker(A)$; and $A(k\vx)=k(A\vx)=k\vze=\vze$, so $k\vx\in\ker(A)$. By the Subspace Test, $\ker(A)$ is a subspace of $\R^n$.
+We verify $\ker(A)$ passes the Subspace Test.
+\begin{checks}
+\chk{Nonempty} $A\vze=\vze$, so $\vze\in\ker(A)$.
+\chk{Closure under addition} If $\vx,\vy\in\ker(A)$ then $A(\vx+\vy)=A\vx+A\vy=\vze+\vze=\vze$, so $\vx+\vy\in\ker(A)$.
+\chk{Closure under scalar multiplication} If $\vx\in\ker(A)$ and $k$ is a scalar, then $A(k\vx)=k(A\vx)=k\vze=\vze$, so $k\vx\in\ker(A)$.
+\end{checks}
+Therefore $\ker(A)$ is a subspace of $\R^n$.
 \end{prf}
 
 \begin{thms}{3.6.6}{}
@@ -530,8 +649,21 @@ H=\begin{bmatrix}0&0&0&1&1&1&1\\0&1&1&0&0&1&1\\1&0&1&0&1&0&1\end{bmatrix}.
 $\rowsp(G)=\ker(H)$; consequently $\vec{c}$ is a valid codeword if and only if $H\vec{c}\trans=\vze$.
 \end{thms}
 
-\begin{prf}[Proof sketch]
-One checks $HG\trans=O$ over $\Z_2$, so every row of $G$ lies in $\ker(H)$, giving $\rowsp(G)\subseteq\ker(H)$. Counting dimensions, $\dim\rowsp(G)=4$ (the rows of $G$ are independent) and $\dim\ker(H)=7-\rank(H)=7-3=4$, so the inclusion is an equality. The final statement is then immediate: $\vec{c}\in\rowsp(G)\iff\vec{c}\in\ker(H)\iff H\vec{c}\trans=\vze$.
+\begin{prf}
+We work over $\Z_2$, with the Hamming $(7,4)$ code ($n=7$, $k=4$).
+
+\emph{One inclusion.} By construction of the parity-check matrix, each parity bit is defined so the check equations hold on every row of $G$; that is, $HG\trans=O$. Now take any codeword $\vec{c}\in\rowsp(G)$, say $\vec{c}=\vec{d}\,G$. Then
+\[
+H\vec{c}\trans=H(\vec{d}\,G)\trans=HG\trans\vec{d}\trans=O\vec{d}\trans=\vze,
+\]
+so $\vec{c}\in\ker(H)$. Hence $\rowsp(G)\subseteq\ker(H)$.
+
+\emph{Equality by dimension count.} The rows of $G$ are independent (the generator carries an identity block), so $\dim\rowsp(G)=4$. For the kernel, the three rows of $H$ are independent, so $\rank(H)=3$ and the Rank--Nullity Theorem gives $\dim\ker(H)=7-3=4$. Since $\rowsp(G)\subseteq\ker(H)$ and both have dimension $4$, \Thm{3.3.14}(b) forces $\rowsp(G)=\ker(H)$.
+
+\emph{Consequence.} Chaining the equivalences,
+\[
+\vec{c}\text{ is a valid codeword}\iff\vec{c}\in\rowsp(G)\iff\vec{c}\in\ker(H)\iff H\vec{c}\trans=\vze.
+\]
 \end{prf}
 
 \begin{defns}{3.8.5}{Linear code}
@@ -542,8 +674,16 @@ A subspace $L$ of $\Z_2^n$ is a \emph{linear code}. A matrix $G$ is a \emph{gene
 A linear code with parity-check matrix $H$ is one-bit error-correcting if and only if the columns of $H$ are all nonzero and pairwise distinct.
 \end{lems}
 
-\begin{prf}[Idea]
-A single error in position $i$ adds $\ve_i$ to the transmitted codeword; the received word $\vec{r}$ then has \emph{syndrome} $H\vec{r}\trans=H\ve_i\trans=$ the $i$th column of $H$. Distinct nonzero columns mean each single-error syndrome is nonzero and identifies its position $i$ uniquely, so the error can be located and flipped back. If two columns coincided, the corresponding single-bit errors would be indistinguishable; if a column were zero, that error would be invisible.
+\begin{prf}
+The key observation is that a single error in position $i$ adds $\ve_i$ to the transmitted codeword, so the received word $\vec{r}$ has \emph{syndrome}
+\[
+H\vec{r}\trans=H\ve_i\trans=(\text{$i$th column of }H).
+\]
+Thus single-bit errors are detectable and correctable precisely when their syndromes (the columns of $H$) tell them apart.
+
+\case{($\Leftarrow$)} Suppose the columns of $H$ are nonzero and pairwise distinct. Then a single error in position $i$ produces a nonzero syndrome equal to column $i$, and since the columns are distinct, that syndrome identifies $i$ uniquely. The decoder locates position $i$ and flips it back, correcting the error.
+
+\case{($\Rightarrow$)} Conversely, suppose the code corrects one-bit errors. If some column $i$ of $H$ were zero, an error in position $i$ would give syndrome $\vze$ --- indistinguishable from no error, so undetectable. If two columns $i\neq j$ were equal, errors in positions $i$ and $j$ would give the same syndrome --- indistinguishable, so uncorrectable. Both contradict one-bit correctability, so the columns must be nonzero and pairwise distinct.
 \end{prf}
 
 % ===================================================================

@@ -63,8 +63,14 @@ The eigenvalues are $\lambda=1$ and $\lambda=3$ (the latter matching Example 6.1
 For any $n\times n$ matrix $A$, the quantity $\det(\lambda I-A)$ is a monic polynomial in $\lambda$ of degree $n$, called the \emph{characteristic polynomial} of $A$.
 \end{lems}
 
-\begin{prf}[Idea]
-Expanding $\det(\lambda I-A)$ by cofactors, the product of diagonal entries $\prod_i(\lambda-a_{ii})$ contributes the top-degree term $\lambda^n$ with coefficient $1$; every other term in the expansion omits at least two diagonal factors and so has degree at most $n-2$ in $\lambda$. Hence the result is a monic degree-$n$ polynomial.
+\begin{prf}
+Expand $\det(\lambda I-A)$ by cofactors. The product of the diagonal entries,
+\[
+\prod_{i=1}^n(\lambda-a_{ii}),
+\]
+contributes the top-degree term: multiplying out, the highest power is $\lambda^n$ with coefficient $1$, so the polynomial is monic of degree $n$.
+
+Every other term in the cofactor expansion omits at least two of the diagonal factors $(\lambda-a_{ii})$ --- because choosing an off-diagonal entry in some row removes both that row's and that column's diagonal factor --- and so contributes a polynomial of degree at most $n-2$ in $\lambda$. These lower-degree terms cannot affect the leading behaviour. Hence $\det(\lambda I-A)$ is a monic polynomial of degree exactly $n$.
 \end{prf}
 
 \begin{exmp}{6.1.9}{The $2\times2$ case}
@@ -138,8 +144,20 @@ Let $\alpha$ be an eigenvalue of $A$. The \emph{algebraic multiplicity} of $\alp
 For every eigenvalue of a square matrix, the geometric multiplicity is at most the algebraic multiplicity.
 \end{thms}
 
-\begin{prf}[Idea]
-Let $\alpha$ have geometric multiplicity $g$, with eigenspace basis $\{\vp_1,\dots,\vp_g\}$. Extend to a basis of $\R^n$ and let $P$ be the matrix of these columns; then $B=P\inv AP$ has the block form $\left[\begin{smallmatrix}\alpha I_g&*\\0&*\end{smallmatrix}\right]$, so $(\lambda-\alpha)^g$ divides $\det(\lambda I-B)$. Since similar matrices share characteristic polynomials (\Thm{6.2.3} below), $(\lambda-\alpha)^g$ divides that of $A$, giving algebraic multiplicity $\ge g$.
+\begin{prf}
+Let $\alpha$ have geometric multiplicity $g=\dim\ker(\alpha I-A)$. Choose a basis $\{\vp_1,\dots,\vp_g\}$ of the eigenspace and extend it to a basis of $\R^n$ (\Thm{3.3.15}(b)); let $P$ be the invertible matrix with these basis vectors as its columns.
+
+Since $A\vp_i=\alpha\vp_i$ for $i\le g$, the matrix $B=P\inv AP$ sends $\ve_i\mapsto\alpha\ve_i$ for $i\le g$, so it has the block form
+\[
+B=\begin{bmatrix}\alpha I_g & *\\ O & *\end{bmatrix}.
+\]
+Computing the characteristic polynomial of this block-triangular matrix,
+\[
+\det(\lambda I-B)=\det\bigl((\lambda-\alpha)I_g\bigr)\cdot\det(\cdots)=(\lambda-\alpha)^g\,q(\lambda)
+\]
+for some polynomial $q$. So $(\lambda-\alpha)^g$ divides the characteristic polynomial of $B$.
+
+Finally, $A$ and $B=P\inv AP$ are similar, so they have the same characteristic polynomial (\Thm{6.2.3}). Hence $(\lambda-\alpha)^g$ divides the characteristic polynomial of $A$, which means $\alpha$ has algebraic multiplicity at least $g$. That is, geometric multiplicity $\le$ algebraic multiplicity.
 \end{prf}
 
 \begin{exmp}{6.1.19}{A defective matrix}
@@ -173,7 +191,11 @@ Write $B=P\inv AP$.
 \]
 by the same multiplicative computation as (a).
 
-\case{(c)} is left as an exercise: $P\inv$ maps the eigenspace of $A$ for $\lambda$ isomorphically onto that of $B$, preserving dimension.
+\case{(c)} Fix an eigenvalue $\lambda$. We show $P\inv$ maps the $\lambda$-eigenspace of $A$ bijectively onto that of $B$. If $A\vx=\lambda\vx$, then
+\[
+B(P\inv\vx)=P\inv AP P\inv\vx=P\inv A\vx=P\inv(\lambda\vx)=\lambda(P\inv\vx),
+\]
+so $P\inv\vx$ is a $\lambda$-eigenvector of $B$. Thus $\vx\mapsto P\inv\vx$ sends the $\lambda$-eigenspace of $A$ into that of $B$; it is linear and injective (as $P\inv$ is invertible), and the same argument with $P$ in place of $P\inv$ gives the inverse map. So the two eigenspaces are isomorphic and have equal dimension --- i.e.\ the geometric multiplicity of $\lambda$ is the same for $A$ and $B$.
 \end{prf}
 
 \begin{defns}{6.2.4}{Diagonalizable}
@@ -190,7 +212,15 @@ For an $n\times n$ matrix $A$, the following are equivalent:
 \end{thms}
 
 \begin{prf}
-(a)$\Rightarrow$(b): if $P\inv AP=D$ is diagonal with entries $\lambda_i$, then $AP=PD$; reading column $i$, $A\vp_i=\lambda_i\vp_i$, so the columns $\vp_i$ of $P$ are eigenvectors, and they are independent because $P$ is invertible (\Thm{5.5.7}). (b)$\Rightarrow$(a): if $\vp_1,\dots,\vp_n$ are independent eigenvectors with eigenvalues $\lambda_i$, the matrix $P=[\vp_1\;\cdots\;\vp_n]$ is invertible and $AP=[\lambda_1\vp_1\;\cdots\;\lambda_n\vp_n]=PD$ with $D=\diag(\lambda_1,\dots,\lambda_n)$, so $P\inv AP=D$. (b)$\iff$(c): a basis of $n$ eigenvectors exists iff the eigenspaces together span $\R^n$; their dimensions (geometric multiplicities) sum to $n$ iff each equals its algebraic multiplicity and the algebraic multiplicities sum to $n$, using $\sum(\text{alg. mult.})\le n$ from $\deg=n$ and \Thm{6.1.18}.
+\case{(a)$\Rightarrow$(b)} Suppose $P\inv AP=D$ is diagonal with diagonal entries $\lambda_i$, so $AP=PD$. Reading column $i$ of $AP=PD$ gives $A\vp_i=\lambda_i\vp_i$, so each column $\vp_i$ of $P$ is an eigenvector. The columns are linearly independent because $P$ is invertible (\Thm{5.5.7}). So $A$ has $n$ independent eigenvectors.
+
+\case{(b)$\Rightarrow$(a)} Suppose $\vp_1,\dots,\vp_n$ are independent eigenvectors with eigenvalues $\lambda_i$. Set $P=[\vp_1\;\cdots\;\vp_n]$, which is invertible (its columns are independent, \Thm{5.5.7}). Then
+\[
+AP=[\lambda_1\vp_1\;\cdots\;\lambda_n\vp_n]=PD,\qquad D=\diag(\lambda_1,\dots,\lambda_n),
+\]
+so $P\inv AP=D$ and $A$ is diagonalizable.
+
+\case{(b)$\iff$(c)} Eigenvectors from distinct eigenvalues are independent (\Thm{6.2.6}), so collecting a basis of each eigenspace yields $\sum_j g_j$ independent eigenvectors, where $g_j$ is the geometric multiplicity of the $j$th distinct eigenvalue --- and one can do no better. So $A$ has $n$ independent eigenvectors iff $\sum_j g_j=n$. Writing $a_j$ for the algebraic multiplicities, we always have $g_j\le a_j$ (\Thm{6.1.18}) and $\sum_j a_j\le n$ (the characteristic polynomial has degree $n$). Hence $\sum_j g_j=n$ forces $\sum_j a_j=n$ with $g_j=a_j$ for every $j$; conversely those equalities give $\sum_j g_j=n$. This is exactly condition (c).
 \end{prf}
 
 \begin{thms}{6.2.6}{Eigenvectors for distinct eigenvalues}

@@ -1,7 +1,7 @@
 % ===================================================================
 %  MTH2021 Linear Algebra with Applications  —  Shared Preamble
 % ===================================================================
-\usepackage[a4paper,margin=2.6cm,headheight=14pt]{geometry}
+\usepackage[a4paper,margin=1.5cm,headheight=14pt]{geometry}
 \usepackage{amsmath,amssymb,amsthm,mathtools}
 \usepackage{enumitem}
 \usepackage{xcolor}
@@ -181,8 +181,35 @@
 % inline text step (for prose lines inside a step list)
 \newcommand{\stt}[1]{\item #1\par}
 
-% Case header inside a proof.
-\newcommand{\case}[1]{\par\smallskip\noindent\textbf{\color{ProofBlue}#1}\enspace\ignorespaces}
+% Case header inside a proof. The label sits on its own, and the case body
+% flows after it (possibly over several lines / steps) clearly grouped.
+% \case{(a)} Body text...  -> "(a)  Body text..." with space above, hanging indent.
+\newcommand{\case}[1]{%
+  \par\addvspace{4pt}%
+  \noindent\hangindent=1.6em\hangafter=1
+  \textbf{\color{ProofBlue}#1}\hspace{0.6em}\ignorespaces}
+% Use \endcase optionally before the next \case for clarity (no-op spacing helper).
+\newcommand{\smallgap}{\par\addvspace{2pt}}
+
+% Structured "check" list: for proofs that verify a list of named conditions
+% (Subspace Test, independence checks, etc). Each item has a bold blue label
+% followed by the verification on the same logical block.
+%   \begin{checks}
+%     \chk{Nonempty} ...justification...
+%     \chk{Closure under addition} ...
+%     \chk{Closure under scalar multiplication} ...
+%   \end{checks}
+% Follow with a concluding sentence ("Therefore ... is a subspace.").
+\newenvironment{checks}{%
+  \par\addvspace{3pt}%
+  \begin{list}{}{%
+    \setlength{\leftmargin}{1.5em}\setlength{\rightmargin}{0pt}%
+    \setlength{\itemsep}{4pt}\setlength{\parsep}{2pt}%
+    \setlength{\topsep}{2pt}\setlength{\labelwidth}{0pt}%
+    \setlength{\labelsep}{0pt}\setlength{\listparindent}{0pt}}%
+  }{\end{list}\par\addvspace{2pt}}
+% \chk{Label} body...
+\newcommand{\chk}[1]{\item \textbf{\color{ProofBlue}#1:}\enspace\ignorespaces}
 
 % Deferral notice, styled like a faint proof box.
 \newtcolorbox{omitbox}{%

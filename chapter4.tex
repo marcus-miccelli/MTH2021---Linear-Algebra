@@ -119,9 +119,21 @@ If $T:V\to W$ is linear, then
 \end{thms}
 
 \begin{prf}
-\case{(a)} $\ker(T)\neq\varnothing$ since $T(\vze)=\vze$ (\Lem{4.2.2}). If $\vu,\vv\in\ker(T)$ then $T(\vu+k\vv)=T(\vu)+kT(\vv)=\vze+k\vze=\vze$, so $\vu+k\vv\in\ker(T)$; closure under both operations follows (take $k=1$ for addition, $\vu=\vze$ for scalars). By the Subspace Test, $\ker(T)$ is a subspace.
+\case{(a)} We verify $\ker(T)$ passes the Subspace Test.
+\begin{checks}
+\chk{Nonempty} $T(\vze)=\vze$ (\Lem{4.2.2}), so $\vze\in\ker(T)$.
+\chk{Closure under addition} If $\vu,\vv\in\ker(T)$ then $T(\vu+\vv)=T(\vu)+T(\vv)=\vze+\vze=\vze$, so $\vu+\vv\in\ker(T)$.
+\chk{Closure under scalar multiplication} If $\vu\in\ker(T)$ and $k$ is a scalar, then $T(k\vu)=kT(\vu)=k\vze=\vze$, so $k\vu\in\ker(T)$.
+\end{checks}
+Therefore $\ker(T)$ is a subspace of $V$.
 
-\case{(b)} $\ran(T)\neq\varnothing$ since $\vze=T(\vze)\in\ran(T)$. If $\vy_1=T(\vx_1)$ and $\vy_2=T(\vx_2)$ lie in $\ran(T)$, then $\vy_1+k\vy_2=T(\vx_1)+kT(\vx_2)=T(\vx_1+k\vx_2)\in\ran(T)$. By the Subspace Test, $\ran(T)$ is a subspace.
+\case{(b)} We verify $\ran(T)$ passes the Subspace Test.
+\begin{checks}
+\chk{Nonempty} $\vze=T(\vze)\in\ran(T)$.
+\chk{Closure under addition} If $\vy_1=T(\vx_1)$ and $\vy_2=T(\vx_2)$ are in $\ran(T)$, then $\vy_1+\vy_2=T(\vx_1)+T(\vx_2)=T(\vx_1+\vx_2)\in\ran(T)$.
+\chk{Closure under scalar multiplication} If $\vy=T(\vx)\in\ran(T)$ and $k$ is a scalar, then $k\vy=kT(\vx)=T(k\vx)\in\ran(T)$.
+\end{checks}
+Therefore $\ran(T)$ is a subspace of $W$.
 \end{prf}
 
 \begin{defns}{4.3.4}{Rank and nullity}
@@ -136,13 +148,23 @@ If $T:V\to W$ is linear and $V$ is $n$-dimensional, then
 \end{thms}
 
 \begin{prf}
-Let $k=\nullity(T)$. If $k=n$ then $\ker(T)=V$, so $T$ is the zero map, $\ran(T)=\{\vze\}$, $\rank(T)=0$, and the identity holds. Otherwise $0\le k<n$. Choose a basis $\{\vv_1,\dots,\vv_k\}$ of $\ker(T)$ and extend it to a basis $\{\vv_1,\dots,\vv_k,\vv_{k+1},\dots,\vv_n\}$ of $V$ (\Thm{3.3.15}). We claim $\{T(\vv_{k+1}),\dots,T(\vv_n)\}$ is a basis of $\ran(T)$; granting this, $\rank(T)=n-k$ and the identity follows.
+Let $k=\nullity(T)$.
+
+\emph{Edge case} ($k=n$): then $\ker(T)=V$ (a $k$-dimensional subspace of the $n$-dimensional $V$ is all of $V$, \Thm{3.3.14}(b)), so $T$ is the zero map. Thus $\ran(T)=\{\vze\}$, $\rank(T)=0$, and $\rank(T)+\nullity(T)=0+n=n$.
+
+\emph{Main case} ($0\le k<n$): choose a basis $\{\vv_1,\dots,\vv_k\}$ of $\ker(T)$ and extend it to a basis $\{\vv_1,\dots,\vv_k,\vv_{k+1},\dots,\vv_n\}$ of $V$ (\Thm{3.3.15}). We claim $\{T(\vv_{k+1}),\dots,T(\vv_n)\}$ is a basis of $\ran(T)$. Granting this, $\rank(T)=n-k$, so $\rank(T)+\nullity(T)=(n-k)+k=n$.
 
 \emph{Spanning.} Any $\vy\in\ran(T)$ is $\vy=T(\vx)$ for some $\vx=\sum_{i=1}^n c_i\vv_i$. Since $T(\vv_i)=\vze$ for $i\le k$,
 \[
-\vy=T(\vx)=\sum_{i=1}^n c_iT(\vv_i)=\sum_{i=k+1}^n c_iT(\vv_i),
+\vy=\sum_{i=1}^n c_iT(\vv_i)=\sum_{i=k+1}^n c_iT(\vv_i),
 \]
-a combination of $T(\vv_{k+1}),\dots,T(\vv_n)$. \emph{Independence.} Suppose $\sum_{i=k+1}^n d_iT(\vv_i)=\vze$. Then $T\bigl(\sum_{i=k+1}^n d_i\vv_i\bigr)=\vze$, so $\sum_{i=k+1}^n d_i\vv_i\in\ker(T)$, and is therefore a combination $\sum_{i=1}^k e_i\vv_i$ of the kernel basis. This gives a relation $\sum_{i=1}^k e_i\vv_i-\sum_{i=k+1}^n d_i\vv_i=\vze$ among the basis $\{\vv_1,\dots,\vv_n\}$ of $V$, forcing all coefficients to vanish; in particular every $d_i=0$. Hence the images are independent.
+a combination of $T(\vv_{k+1}),\dots,T(\vv_n)$.
+
+\emph{Independence.} Suppose $\sum_{i=k+1}^n d_iT(\vv_i)=\vze$. By linearity $T\bigl(\sum_{i=k+1}^n d_i\vv_i\bigr)=\vze$, so $\sum_{i=k+1}^n d_i\vv_i\in\ker(T)$ and is a combination $\sum_{i=1}^k e_i\vv_i$ of the kernel basis. Then
+\[
+\sum_{i=1}^k e_i\vv_i-\sum_{i=k+1}^n d_i\vv_i=\vze
+\]
+is a relation among the basis $\{\vv_1,\dots,\vv_n\}$ of $V$, so all its coefficients vanish; in particular every $d_i=0$. Hence the images are independent, and the claim holds.
 \end{prf}
 
 \begin{thms}{4.3.6}{Injectivity via the kernel}

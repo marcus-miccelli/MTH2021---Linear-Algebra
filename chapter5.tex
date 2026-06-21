@@ -116,15 +116,32 @@ In a real inner product space, $\abs{\inner{\vu}{\vv}}\le\norm{\vu}\,\norm{\vv}$
 \end{thms}
 
 \begin{prf}
-If $\vu=\vze$ both sides are $0$. Otherwise, for any $t\in\R$ consider
+\case{Case $\vv=\vze$} Then $\inner{\vu}{\vze}=0$ by linearity, and $\norm{\vv}=0$, so both sides are zero and the inequality holds with equality.
+
+\case{Case $\vu,\vv\neq\vze$} By positive definiteness, $\inner{\vu+\beta\vv}{\vu+\beta\vv}\ge0$ for every $\beta\in\R$. Expanding this with linearity and symmetry,
+\begin{steps}
+\st{\inner{\vu+\beta\vv}{\vu}+\beta\inner{\vu+\beta\vv}{\vv}\ge0}{linearity in 2nd argument}
+\st{\inner{\vu}{\vu}+\beta\inner{\vv}{\vu}+\beta\inner{\vu}{\vv}+\beta^2\inner{\vv}{\vv}\ge0}{linearity in 1st argument}
+\st{\inner{\vu}{\vu}+2\beta\inner{\vu}{\vv}+\beta^2\inner{\vv}{\vv}\ge0}{symmetry}
+\end{steps}
+Rearranging gives, for every $\beta\in\R$,
 \[
-0\le\inner{t\vu+\vv}{t\vu+\vv}=\norm{\vu}^2t^2+2\inner{\vu}{\vv}t+\norm{\vv}^2,
+-2\beta\inner{\vu}{\vv}\le\inner{\vu}{\vu}+\beta^2\inner{\vv}{\vv}.\tag{$*$}
 \]
-using \Lem{5.1.3} and linearity. This quadratic in $t$ is nonnegative for all $t$, so its discriminant is $\le0$:
+The right-hand side is nonnegative, so $(*)$ is only informative for one sign of $\beta$. We pick that sign in each case so that the left-hand side becomes $2\lambda\abs{\inner{\vu}{\vv}}$ for some $\lambda>0$.
+\begin{itemize}[leftmargin=1.4em,itemsep=3pt,topsep=3pt]
+\item If $\inner{\vu}{\vv}\ge0$, set $\beta=-\lambda$ with $\lambda>0$. Then $-2\beta\inner{\vu}{\vv}=2\lambda\inner{\vu}{\vv}=2\lambda\abs{\inner{\vu}{\vv}}$, and $(*)$ becomes $2\lambda\abs{\inner{\vu}{\vv}}\le\inner{\vu}{\vu}+\lambda^2\inner{\vv}{\vv}$.
+\item If $\inner{\vu}{\vv}<0$, set $\beta=\lambda$ with $\lambda>0$. Then $-2\beta\inner{\vu}{\vv}=-2\lambda\inner{\vu}{\vv}=2\lambda\abs{\inner{\vu}{\vv}}$, giving the same inequality.
+\end{itemize}
+In either case, dividing by $\lambda>0$ and writing $\inner{\vu}{\vu}=\norm{\vu}^2$, $\inner{\vv}{\vv}=\norm{\vv}^2$,
 \[
-\bigl(2\inner{\vu}{\vv}\bigr)^2-4\norm{\vu}^2\norm{\vv}^2\le0\;\Longrightarrow\;\inner{\vu}{\vv}^2\le\norm{\vu}^2\norm{\vv}^2.
+2\abs{\inner{\vu}{\vv}}\le\tfrac{1}{\lambda}\norm{\vu}^2+\lambda\norm{\vv}^2\qquad\text{for all }\lambda>0.
 \]
-Taking square roots gives $\abs{\inner{\vu}{\vv}}\le\norm{\vu}\norm{\vv}$.
+This holds for every $\lambda>0$, so we are free to choose the value that makes the bound tightest. Take $\lambda=\norm{\vu}/\norm{\vv}$ (valid since $\vv\neq\vze$):
+\[
+\tfrac{1}{\lambda}\norm{\vu}^2+\lambda\norm{\vv}^2=\tfrac{\norm{\vv}}{\norm{\vu}}\norm{\vu}^2+\tfrac{\norm{\vu}}{\norm{\vv}}\norm{\vv}^2=\norm{\vu}\norm{\vv}+\norm{\vu}\norm{\vv}=2\norm{\vu}\norm{\vv}.
+\]
+Therefore $2\abs{\inner{\vu}{\vv}}\le2\norm{\vu}\norm{\vv}$, that is, $\abs{\inner{\vu}{\vv}}\le\norm{\vu}\norm{\vv}$.
 \end{prf}
 
 \begin{prf}[Proof of the triangle inequality \textup{(\Thm{5.1.11}(c))}]
@@ -190,7 +207,13 @@ $U^\perp$ is a subspace of $V$.
 \end{lems}
 
 \begin{prf}
-$\vze\in U^\perp$ since $\inner{\vze}{\vu}=0$ for all $\vu$. If $\vx,\vy\in U^\perp$ and $k$ is a scalar, then for every $\vu\in U$, $\inner{\vx+k\vy}{\vu}=\inner{\vx}{\vu}+k\inner{\vy}{\vu}=0+0=0$ by \Lem{5.1.3}, so $\vx+k\vy\in U^\perp$. By the Subspace Test, $U^\perp$ is a subspace.
+We verify $U^\perp$ passes the Subspace Test.
+\begin{checks}
+\chk{Nonempty} $\inner{\vze}{\vu}=0$ for all $\vu\in U$, so $\vze\in U^\perp$.
+\chk{Closure under addition} If $\vx,\vy\in U^\perp$ then for every $\vu\in U$, $\inner{\vx+\vy}{\vu}=\inner{\vx}{\vu}+\inner{\vy}{\vu}=0+0=0$ (\Lem{5.1.3}), so $\vx+\vy\in U^\perp$.
+\chk{Closure under scalar multiplication} If $\vx\in U^\perp$ and $k$ is a scalar, then for every $\vu\in U$, $\inner{k\vx}{\vu}=k\inner{\vx}{\vu}=k\cdot0=0$, so $k\vx\in U^\perp$.
+\end{checks}
+Therefore $U^\perp$ is a subspace.
 \end{prf}
 
 \section{Gram--Schmidt and Orthonormal Bases}
@@ -257,7 +280,21 @@ Let $W$ be a finite-dimensional subspace of an inner product space $V$. Then eve
 \end{thms}
 
 \begin{prf}
-Take an orthonormal basis $\{\vv_1,\dots,\vv_k\}$ of $W$ (which exists by \Thm{5.4.10} below) and set $\vw=\sum_{j=1}^k\inner{\vu}{\vv_j}\vv_j\in W$ and $\vw^\perp=\vu-\vw$. For each $i$, $\inner{\vw^\perp}{\vv_i}=\inner{\vu}{\vv_i}-\sum_j\inner{\vu}{\vv_j}\inner{\vv_j}{\vv_i}=\inner{\vu}{\vv_i}-\inner{\vu}{\vv_i}=0$, so $\vw^\perp\perp W$. Uniqueness: if $\vu=\vw_1+\vw_1^\perp=\vw_2+\vw_2^\perp$, then $\vw_1-\vw_2=\vw_2^\perp-\vw_1^\perp\in W\cap W^\perp=\{\vze\}$ (\Lem{5.3.2}), so the decompositions agree.
+\emph{Existence.} Take an orthonormal basis $\{\vv_1,\dots,\vv_k\}$ of $W$ (one exists by \Thm{5.4.10}), and set
+\[
+\vw=\sum_{j=1}^k\inner{\vu}{\vv_j}\vv_j\in W,\qquad \vw^\perp=\vu-\vw.
+\]
+Then $\vu=\vw+\vw^\perp$ with $\vw\in W$. To see $\vw^\perp\in W^\perp$, it suffices to check $\vw^\perp$ is orthogonal to each basis vector $\vv_i$:
+\[
+\inner{\vw^\perp}{\vv_i}=\inner{\vu}{\vv_i}-\sum_{j=1}^k\inner{\vu}{\vv_j}\inner{\vv_j}{\vv_i}=\inner{\vu}{\vv_i}-\inner{\vu}{\vv_i}=0,
+\]
+where the middle sum collapses because $\inner{\vv_j}{\vv_i}=\delta_{ij}$ (orthonormality).
+
+\emph{Uniqueness.} Suppose $\vu=\vw_1+\vw_1^\perp=\vw_2+\vw_2^\perp$ are two such decompositions. Then
+\[
+\vw_1-\vw_2=\vw_2^\perp-\vw_1^\perp\in W\cap W^\perp=\{\vze\}
+\]
+by \Lem{5.3.2}, so $\vw_1=\vw_2$ and $\vw_1^\perp=\vw_2^\perp$.
 \end{prf}
 
 \begin{defns}{5.4.8}{Orthogonal projection}
@@ -277,7 +314,17 @@ Every nonzero finite-dimensional inner product space has an orthonormal basis.
 \end{thms}
 
 \begin{prf}
-Start from any basis $\{\vu_1,\dots,\vu_n\}$ and apply the Gram--Schmidt process (\Alg{5.4.11}) to produce an orthogonal basis $\{\vv_1,\dots,\vv_n\}$; then normalise each $\vv_j$. The construction (verified in \Alg{5.4.11}) keeps each $\vv_j$ nonzero and the spans equal, so the result is an orthonormal basis.
+Let $\{\vu_1,\dots,\vu_n\}$ be any basis of the space. We build an orthogonal basis $\{\vv_1,\dots,\vv_n\}$ step by step, then normalise.
+
+\emph{Construction.} Set $\vv_1=\vu_1$. Having built $\vv_1,\dots,\vv_{k-1}$, let $W_{k-1}=\spn\{\vv_1,\dots,\vv_{k-1}\}$ and define
+\[
+\vv_k=\vu_k-\proj_{W_{k-1}}\vu_k=\vu_k-\sum_{j=1}^{k-1}\frac{\inner{\vu_k}{\vv_j}}{\inner{\vv_j}{\vv_j}}\vv_j.
+\]
+By the Projection Theorem (\Thm{5.4.7}), $\vv_k=\vu_k-\proj_{W_{k-1}}\vu_k\in W_{k-1}^\perp$, so $\vv_k$ is orthogonal to every earlier $\vv_j$.
+
+\emph{Each $\vv_k$ is nonzero.} Expanding the projection and substituting the earlier $\vv_j$ (each itself a combination of $\vu_1,\dots,\vu_j$), we may write $\vv_k$ as a linear combination of $\vu_1,\dots,\vu_k$ in which the coefficient of $\vu_k$ is $1$. This is a \emph{nontrivial} combination of the basis vectors, so by linear independence of $\{\vu_1,\dots,\vu_n\}$ it cannot equal $\vze$.
+
+\emph{Conclusion.} After $n$ steps we have an orthogonal set $\{\vv_1,\dots,\vv_n\}$ of nonzero vectors, hence linearly independent (\Thm{5.4.3}) and therefore a basis. Normalising each, $\vw_j=\vv_j/\norm{\vv_j}$, yields an orthonormal basis $\{\vw_1,\dots,\vw_n\}$.
 \end{prf}
 
 \begin{algs}{5.4.11}{Gram--Schmidt}
@@ -357,8 +404,9 @@ For a square matrix, the Fundamental Theorem adds many further equivalent condit
 
 \begin{thms}{5.5.7}{Equivalent statements (the master list)}
 For an $n\times n$ matrix $A$, the following are equivalent:
+\setlength{\columnsep}{2.4em}
 \begin{multicols}{2}
-\begin{enumerate}[label=\textup{(\alph*)},leftmargin=1.6em,itemsep=0pt]
+\begin{enumerate}[label=\textup{(\alph*)},leftmargin=1.8em,itemsep=2pt]
 \item $A$ is invertible;
 \item $A\vx=\vze$ has only the trivial solution;
 \item $\RREF(A)=I_n$;
@@ -367,6 +415,7 @@ For an $n\times n$ matrix $A$, the following are equivalent:
 \item $A\vx=\vb$ has a unique solution for every $\vb$;
 \item $\det(A)\neq0$;
 \item the columns of $A$ are linearly independent;
+\columnbreak
 \item the rows of $A$ are linearly independent;
 \item the columns of $A$ span $\R^n$;
 \item the rows of $A$ span $\R^n$;
@@ -380,7 +429,17 @@ For an $n\times n$ matrix $A$, the following are equivalent:
 \end{thms}
 
 \begin{prf}
-Conditions (a)--(g) are \Thm{2.2.12}. For the rest, $A$ is $n\times n$, so by the Fundamental Theorem the pivot count $r$ satisfies: (n) $\rank(A)=n\iff r=n\iff\RREF(A)=I_n$, which is (c); (o) $\nullity(A)=0\iff n-r=0\iff r=n$, again (n); (h),(j),(l),(n) all say the $n$ columns are independent / spanning / a basis / rank $n$, equivalent to $r=n$ by \Thm{3.3.13}; (i),(k),(m) are the row versions, equivalent via $\det(A)=\det(A\trans)$ (\Thm{2.2.2}); (p) $\ran(T_A)=\colsp(A)=\R^n\iff$ (j). All reduce to $r=n$, i.e. to (a).
+Statements (a)--(g) are exactly \Thm{2.2.12}, so they are equivalent to one another. It remains to fold in (h)--(p). We show each is equivalent to ``$A$ has rank $n$'' (condition (n)), which is equivalent to (c) --- the reduced echelon form being $I_n$, i.e. having $n$ pivots --- by \Thm{5.5.6}.
+
+\case{(n) $\iff$ (o)} By the Fundamental Theorem (\Thm{5.5.6}), $\rank(A)+\nullity(A)=n$. Hence $\rank(A)=n$ if and only if $\nullity(A)=0$.
+
+\case{(h), (j), (l), (n)} These concern the $n$ columns of $A$, which live in $\R^n$. By \Thm{3.3.13}, $n$ vectors in an $n$-dimensional space are linearly independent $\iff$ they span $\iff$ they form a basis; and each of these holds $\iff\dim(\colsp(A))=n\iff\rank(A)=n$. So (h), (j), (l) are each equivalent to (n).
+
+\case{(i), (k), (m)} These are the same three statements for the \emph{rows} of $A$. They are equivalent to their column counterparts because $\rank(A)=\rank(A\trans)$ (row rank equals column rank, \Thm{5.5.6}); equivalently, $\det(A)=\det(A\trans)$ (\Thm{2.2.2}) ties the row conditions to (g).
+
+\case{(p)} The range of $T_A$ is the column space: $\ran(T_A)=\colsp(A)$. So $\ran(T_A)=\R^n\iff\colsp(A)=\R^n$, which is condition (j).
+
+\noindent Every one of (h)--(p) reduces to $\rank(A)=n$, and hence to (a). This completes the chain of equivalences.
 \end{prf}
 
 \section{Least Squares}
@@ -425,7 +484,19 @@ Moreover, the normal system is always consistent.
 \end{thms}
 
 \begin{prf}
-By \Thm{5.6.4}, $\vx$ is least-squares $\iff A\vx=\proj_W\vb$ ($W=\colsp(A)$) $\iff\vb-A\vx\in W^\perp$. Now $W^\perp=\colsp(A)^\perp=\ker(A\trans)$ (\Thm{5.5.1} applied to $A\trans$, since $\rowsp(A\trans)=\colsp(A)$). So the condition is $A\trans(\vb-A\vx)=\vze$, i.e. $A\trans A\vx=A\trans\vb$. Consistency: $\proj_W\vb\in W=\colsp(A)$, so some $\vx$ achieves $A\vx=\proj_W\vb$, and that $\vx$ solves the normal system.
+Let $W=\colsp(A)$. By \Thm{5.6.4}, $\vx$ is a least-squares solution if and only if $A\vx=\proj_W\vb$, which holds if and only if $\vb-A\vx\in W^\perp$.
+
+Now identify $W^\perp$. Since $\colsp(A)=\rowsp(A\trans)$, applying \Thm{5.5.1} to $A\trans$ gives
+\[
+W^\perp=\colsp(A)^\perp=\rowsp(A\trans)^\perp=\ker(A\trans).
+\]
+So the condition $\vb-A\vx\in W^\perp$ becomes $A\trans(\vb-A\vx)=\vze$, that is,
+\[
+A\trans A\,\vx=A\trans\vb.
+\]
+This is exactly the normal system, proving the equivalence.
+
+\emph{Consistency.} Since $\proj_W\vb\in W=\colsp(A)$, there is some $\vx$ with $A\vx=\proj_W\vb$; by the equivalence just proved, that $\vx$ solves the normal system. So the normal system is always consistent.
 \end{prf}
 
 \begin{exmp}{5.6.6}{Least-squares solutions}

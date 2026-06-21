@@ -82,7 +82,15 @@ If $A$ is upper-triangular or lower-triangular, then $\det(A)$ is the product of
 \end{lems}
 
 \begin{prf}
-Induct on $n$, expanding along the first column (for upper-triangular) or first row (for lower-triangular). In the upper-triangular case, the first column is $((A)_{11},0,\dots,0)\trans$, so cofactor expansion down column $1$ leaves the single term $(A)_{11}C_{11}=(A)_{11}M_{11}$. The minor $M_{11}$ is the determinant of an $(n-1)\times(n-1)$ upper-triangular matrix with diagonal $(A)_{22},\dots,(A)_{nn}$; by the inductive hypothesis it equals their product. The base case $n=1$ is immediate.
+We argue by induction on $n$, treating the upper-triangular case (the lower-triangular case is symmetric, expanding along the first row instead).
+
+\emph{Base case} ($n=1$): $A=[(A)_{11}]$, so $\det(A)=(A)_{11}$.
+
+\emph{Inductive step:} let $A$ be $n\times n$ upper-triangular. Its first column is $((A)_{11},0,\dots,0)\trans$, so cofactor expansion down column $1$ leaves only the first term,
+\[
+\det(A)=(A)_{11}C_{11}=(A)_{11}M_{11}.
+\]
+The minor $M_{11}$ is the determinant of the $(n-1)\times(n-1)$ upper-triangular matrix obtained by deleting row $1$ and column $1$, whose diagonal is $(A)_{22},\dots,(A)_{nn}$. By the inductive hypothesis $M_{11}=(A)_{22}\cdots(A)_{nn}$, so $\det(A)=(A)_{11}(A)_{22}\cdots(A)_{nn}$.
 \end{prf}
 
 \begin{thms}{2.2.2}{Transpose invariance}
@@ -135,12 +143,13 @@ Let $E$ be an $n\times n$ elementary matrix.
 \end{thms}
 
 \begin{prf}
-Each $E$ comes from $I_n$ by the named operation, and $\det(I_n)=1$ by \Lem{2.2.1}. Apply \Thm{2.2.3}:
-\begin{steps}
-\st{\text{(a) scaling a row by }k:\quad \det(E)=k\det(I_n)=k.}{\Thm{2.2.3}(a)}
-\st{\text{(b) interchanging two rows:}\quad \det(E)=-\det(I_n)=-1.}{\Thm{2.2.3}(b)}
-\st{\text{(c) adding a multiple of a row:}\quad \det(E)=\det(I_n)=1.}{\Thm{2.2.3}(c)}
-\end{steps}
+Each elementary matrix $E$ is obtained from $I_n$ by its named row operation, and $\det(I_n)=1$ by \Lem{2.2.1}. Applying the effect of that operation on determinants (\Thm{2.2.3}) to $I_n$:
+
+\case{(a)} Scaling a row by $k$ multiplies the determinant by $k$, so $\det(E)=k\det(I_n)=k$.
+
+\case{(b)} Interchanging two rows negates the determinant, so $\det(E)=-\det(I_n)=-1$.
+
+\case{(c)} Adding a multiple of one row to another leaves the determinant unchanged, so $\det(E)=\det(I_n)=1$.
 \end{prf}
 
 \begin{thms}{2.2.7}{Scaling the whole matrix}
@@ -156,7 +165,15 @@ If $A$ is $n\times n$ and $E$ is an $n\times n$ elementary matrix, then $\det(EA
 \end{thms}
 
 \begin{prf}
-By \Thm{1.5.4}, $EA$ is the result of applying $E$'s row operation to $A$. We treat the scaling case; the other two are analogous. If $E$ scales row $i$ by $k$, then $\det(EA)=k\det(A)$ by \Thm{2.2.3}(a), while $\det(E)=k$ by \Thm{2.2.6}(a); hence $\det(EA)=k\det(A)=\det(E)\det(A)$.
+By \Thm{1.5.4}, $EA$ is the matrix obtained by applying $E$'s row operation to $A$. There are three types of elementary matrix, one per row operation; we check each, using \Thm{2.2.3} for the effect on $\det(EA)$ and \Thm{2.2.6} for $\det(E)$.
+
+\case{Scaling} If $E$ scales row $i$ by $k$, then $\det(EA)=k\det(A)$ and $\det(E)=k$, so $\det(EA)=k\det(A)=\det(E)\det(A)$.
+
+\case{Interchange} If $E$ interchanges two rows, then $\det(EA)=-\det(A)$ and $\det(E)=-1$, so $\det(EA)=-\det(A)=\det(E)\det(A)$.
+
+\case{Row addition} If $E$ adds a multiple of one row to another, then $\det(EA)=\det(A)$ and $\det(E)=1$, so $\det(EA)=\det(A)=\det(E)\det(A)$.
+
+\noindent In every case $\det(EA)=\det(E)\det(A)$.
 \end{prf}
 
 We can now characterise invertibility by the determinant --- the result that gives the chapter its purpose.

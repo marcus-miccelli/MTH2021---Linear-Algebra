@@ -8,7 +8,7 @@ We combine the orthogonality of Chapter~\ref{ch:inner-products} with the diagona
 
 \noindent\textbf{Reference.}\; A\&R \S\S7.1--7.4.
 
-\noindent\textbf{Proof convention.}\; Following the seminar notes, the existence of the SVD (\Thm{7.3.8}) and the spectral decomposition (\Thm{7.2.6}) are stated with proofs deferred (MTH2025 / Problem Set); the structural results are proved in full.
+\noindent\textbf{Proof convention.}\; Following the seminar notes, the existence of the SVD (\Thm{7.3.8}) and the hard direction of the Spectral Theorem (\Thm{7.2.2}, (c)$\Rightarrow$(a)) are stated with proofs deferred to MTH2025; all other structural results are proved in full.
 \end{roadmap}
 
 \section{Orthogonal Matrices}
@@ -34,7 +34,11 @@ For an $n\times n$ matrix $A$, the following are equivalent:
 \end{thms}
 
 \begin{prf}
-The $(i,j)$ entry of $A\trans A$ is the dot product of columns $i$ and $j$ of $A$. So $A\trans A=I$ --- meaning those dot products are $\delta_{ij}$ --- says exactly that the columns are orthonormal, which for $n$ vectors in $\R^n$ means an orthonormal basis (\Thm{5.4.3}, \Thm{3.3.13}). This is (a)$\iff$(c). Applying the same to $AA\trans=I$ gives (a)$\iff$(b) for the rows.
+The key identity is that the $(i,j)$ entry of $A\trans A$ is the dot product of column $i$ and column $j$ of $A$.
+
+\case{(a)$\iff$(c)} $A$ is orthogonal means $A\trans A=I$, i.e.\ $(A\trans A)_{ij}=\delta_{ij}$ for all $i,j$. By the key identity, this says the columns of $A$ are orthonormal. For $n$ vectors in $\R^n$, being orthonormal makes them independent (\Thm{5.4.3}) and hence a basis (\Thm{3.3.13}). So $A$ orthogonal $\iff$ the columns form an orthonormal basis.
+
+\case{(a)$\iff$(b)} Apply the same argument to $AA\trans=I$, whose $(i,j)$ entry is the dot product of row $i$ and row $j$ of $A$. So $A$ orthogonal $\iff$ the rows form an orthonormal basis.
 \end{prf}
 
 \begin{lems}{7.1.5}{Product of orthogonal matrices}
@@ -61,7 +65,16 @@ For an $n\times n$ matrix $A$, the following are equivalent:
 \end{thms}
 
 \begin{prf}
-(a)$\Rightarrow$(c): $A\vx\cdot A\vy=(A\vx)\trans(A\vy)=\vx\trans A\trans A\vy=\vx\trans\vy=\vx\cdot\vy$. (c)$\Rightarrow$(b): take $\vy=\vx$ to get $\norm{A\vx}^2=\norm{\vx}^2$. (b)$\Rightarrow$(a) is left as an exercise (polarise (b) to recover (c), then $\vx\trans(A\trans A-I)\vy=0$ for all $\vx,\vy$ forces $A\trans A=I$).
+We prove (a)$\Rightarrow$(c)$\Rightarrow$(b)$\Rightarrow$(a).
+
+\case{(a)$\Rightarrow$(c)} If $A$ is orthogonal then $A\trans A=I$, so for all $\vx,\vy$,
+\[
+A\vx\cdot A\vy=(A\vx)\trans(A\vy)=\vx\trans A\trans A\vy=\vx\trans\vy=\vx\cdot\vy.
+\]
+
+\case{(c)$\Rightarrow$(b)} Take $\vy=\vx$ in (c): $\norm{A\vx}^2=A\vx\cdot A\vx=\vx\cdot\vx=\norm{\vx}^2$, so $\norm{A\vx}=\norm{\vx}$.
+
+\case{(b)$\Rightarrow$(a)} This direction needs the polarisation identity. Suppose $\norm{A\vx}=\norm{\vx}$ for all $\vx$. Then for any $\vx,\vy$, expanding $\norm{A(\vx+\vy)}^2=\norm{\vx+\vy}^2$ and cancelling the $\norm{A\vx}^2=\norm{\vx}^2$ and $\norm{A\vy}^2=\norm{\vy}^2$ terms gives $A\vx\cdot A\vy=\vx\cdot\vy$ --- that is, condition (c). Rewriting (c) as $\vx\trans(A\trans A-I)\vy=0$ for all $\vx,\vy$ and taking $\vx=\ve_i$, $\vy=\ve_j$ shows every entry of $A\trans A-I$ is zero. Hence $A\trans A=I$ and $A$ is orthogonal.
 \end{prf}
 
 \begin{exmp}{7.1.8}{}
@@ -72,8 +85,18 @@ The rotation $R_\theta$ of Example 7.1.3 satisfies $\norm{R_\theta\vx}=\norm{\vx
 Let $V$ be a finite-dimensional inner product space. If $P$ is the change-of-basis matrix from one orthonormal basis to another, then $P$ is orthogonal.
 \end{thms}
 
-\begin{prf}[Idea]
-The columns of $P$ are the coordinate vectors of one orthonormal basis relative to the other. By \Thm{5.4.5}, coordinates relative to an orthonormal basis preserve inner products, so these columns are themselves orthonormal in $\R^n$; by \Thm{7.1.4}, $P$ is orthogonal.
+\begin{prf}
+Let $B=\{\vu_1,\dots,\vu_n\}$ and $B'=\{\vv_1,\dots,\vv_n\}$ be the two orthonormal bases, and write $P=P_{B',B}$ for the change-of-basis matrix.
+
+Since $B$ is orthonormal, \Thm{5.4.5} gives $\inner{\vx}{\vx}=[\vx]_B\cdot[\vx]_B$ for every $\vx\in V$; since $B'$ is orthonormal, likewise $\inner{\vx}{\vx}=[\vx]_{B'}\cdot[\vx]_{B'}$. Equating the two,
+\[
+[\vx]_B\cdot[\vx]_B=[\vx]_{B'}\cdot[\vx]_{B'}\qquad\text{for all }\vx\in V.
+\]
+Now $[\vx]_{B'}=P[\vx]_B$, so this reads $[\vx]_B\cdot[\vx]_B=(P[\vx]_B)\cdot(P[\vx]_B)$. As $\vx$ ranges over $V$, the coordinate vector $[\vx]_B$ ranges over all of $\R^n$ (the coordinate map is an isomorphism, \Thm{4.4.8}), so
+\[
+\vy\cdot\vy=(P\vy)\cdot(P\vy)\qquad\text{for all }\vy\in\R^n,
+\]
+that is, $\norm{P\vy}=\norm{\vy}$ for all $\vy$. By \Thm{7.1.7}, $P$ is orthogonal.
 \end{prf}
 
 \section{Orthogonal Diagonalization and the Spectral Theorem}
@@ -93,9 +116,15 @@ For an $n\times n$ matrix $A$, the following are equivalent:
 \end{thms}
 
 \begin{prf}
-(a)$\iff$(b): if $P\trans AP=D$ with $P$ orthogonal, then $AP=PD$ and (reading columns) the columns of $P$ are eigenvectors; orthogonality of $P$ makes them orthonormal (\Thm{7.1.4}). Conversely $n$ orthonormal eigenvectors assembled as columns give an orthogonal $P$ with $P\trans AP$ diagonal.
+\case{(a)$\iff$(b)} If $P\trans AP=D$ with $P$ orthogonal and $D$ diagonal, then $AP=PD$; reading column $i$ shows each column of $P$ is an eigenvector, and orthogonality of $P$ makes these columns orthonormal (\Thm{7.1.4}). So $A$ has $n$ orthonormal eigenvectors. Conversely, $n$ orthonormal eigenvectors assembled as the columns of $P$ give an orthogonal matrix with $P\trans AP$ diagonal. So $A$ is orthogonally diagonalizable iff it has an orthonormal set of $n$ eigenvectors.
 
-(a)$\Rightarrow$(c): if $A=PDP\trans$ with $D$ diagonal and $P$ orthogonal, then $A\trans=(PDP\trans)\trans=PD\trans P\trans=PDP\trans=A$, so $A$ is symmetric. (c)$\Rightarrow$(a) is the substantive direction: a symmetric matrix has real eigenvalues, and (using \Thm{7.2.3} and the existence of orthonormal eigenbases, \Thm{5.4.10}) one can build an orthonormal eigenbasis; the full argument is developed in MTH2025.
+\case{(a)$\Rightarrow$(c)} If $A=PDP\trans$ with $D$ diagonal and $P$ orthogonal, then
+\[
+A\trans=(PDP\trans)\trans=PD\trans P\trans=PDP\trans=A
+\]
+(using $D\trans=D$ for a diagonal matrix), so $A$ is symmetric.
+
+\case{(c)$\Rightarrow$(a)} This is the substantive direction. A symmetric matrix has real eigenvalues, eigenvectors from distinct eigenvalues are orthogonal (\Thm{7.2.3}), and each eigenspace has an orthonormal basis (\Thm{5.4.10}); assembling these yields an orthonormal eigenbasis, giving orthogonal diagonalizability. The full argument --- in particular that the eigenspaces span all of $\R^n$ --- is developed in MTH2025.
 \end{prf}
 
 \begin{thms}{7.2.3}{Symmetric matrices: distinct eigenvalues give orthogonal eigenvectors}
@@ -133,8 +162,13 @@ A=\sum_{i=1}^n\lambda_i\,\vu_i\vu_i\trans.
 \]
 \end{thms}
 
-\begin{prf}[Idea]
-Writing $A=PDP\trans$ with $P=[\vu_1\;\cdots\;\vu_n]$ and $D=\diag(\lambda_i)$, expanding the product $PDP\trans$ column-by-column gives exactly $\sum_i\lambda_i\vu_i\vu_i\trans$. Each $\vu_i\vu_i\trans$ is the (rank-one) orthogonal projection onto the eigenline $\spn\{\vu_i\}$, so $A$ acts as $\lambda_i$ along each eigendirection.
+\begin{prf}
+Since $A$ is symmetric, the Spectral Theorem (\Thm{7.2.2}) gives $A=PDP\trans$ with $P=[\vu_1\;\cdots\;\vu_n]$ orthogonal and $D=\diag(\lambda_1,\dots,\lambda_n)$.
+Expanding this product column-by-column: $PD=[\lambda_1\vu_1\;\cdots\;\lambda_n\vu_n]$, and multiplying on the right by $P\trans$ (whose rows are $\vu_1\trans,\dots,\vu_n\trans$) gives
+\[
+A=PDP\trans=\sum_{i=1}^n(\lambda_i\vu_i)\vu_i\trans=\sum_{i=1}^n\lambda_i\,\vu_i\vu_i\trans.
+\]
+Geometrically, each $\vu_i\vu_i\trans$ is the rank-one orthogonal projection onto the eigenline $\spn\{\vu_i\}$, so the formula expresses $A$ as acting by the scalar $\lambda_i$ along each eigendirection.
 \end{prf}
 
 \begin{exmp}{7.2.7}{Building a symmetric matrix from a spectrum}
@@ -191,7 +225,15 @@ Let $A$ be $m\times n$ of rank $r>0$, with SVD $A=U\Sigma V\trans$. Then:
 \end{thms}
 
 \begin{prf}
-From $A=U\Sigma V\trans$ and orthogonality of $U$, $A\trans A=V\Sigma\trans U\trans U\Sigma V\trans=V(\Sigma\trans\Sigma)V\trans$. Since $\Sigma\trans\Sigma$ is the $n\times n$ diagonal matrix with entries $\sigma_i^2$, this exhibits $V$ as orthogonally diagonalizing $A\trans A$: its columns $\vv_i$ are eigenvectors with eigenvalues $\sigma_i^2$, proving (b), and the $\sigma_i^2$ are the eigenvalues so the $\sigma_i$ are the singular values, proving (a). For (c), comparing columns of $AV=U\Sigma$ gives $A\vv_i=\sigma_i\vu_i$ for $i\le r$, i.e. $\vu_i=\tfrac{1}{\sigma_i}A\vv_i$.
+The whole proof rests on computing $A\trans A$. Using $A=U\Sigma V\trans$ and $U\trans U=I$ (orthogonality of $U$),
+\[
+A\trans A=V\Sigma\trans U\trans U\Sigma V\trans=V(\Sigma\trans\Sigma)V\trans.
+\]
+Here $\Sigma\trans\Sigma$ is the $n\times n$ diagonal matrix with diagonal entries $\sigma_i^2$. So this equation exhibits $V$ as orthogonally diagonalizing $A\trans A$.
+
+\case{(a), (b)} Reading off the diagonalization: the columns $\vv_i$ of $V$ are eigenvectors of $A\trans A$ with eigenvalues $\sigma_i^2$, which is (b). Since the singular values are by definition the square roots of these eigenvalues, the nonzero $\sigma_i$ are exactly the nonzero diagonal entries of $\Sigma$, giving (a).
+
+\case{(c)} Multiply $A=U\Sigma V\trans$ on the right by $V$ to get $AV=U\Sigma$. Comparing column $i$ for $i\le r$ gives $A\vv_i=\sigma_i\vu_i$, hence $\vu_i=\tfrac{1}{\sigma_i}A\vv_i$.
 \end{prf}
 
 \begin{rmks}{7.3.7}
@@ -210,7 +252,13 @@ Let $T:\R^n\to\R^m$ be $T(\vx)=A\vx$, and let $A=U\Sigma V\trans$. If $B$ is the
 \end{thms}
 
 \begin{prf}
-By \Thm{7.3.6}(c), $T(\vv_i)=A\vv_i=\sigma_i\vu_i$ for $i\le r$ and $A\vv_i=\vze$ for $i>r$. The $B'$-coordinate vector of $\sigma_i\vu_i$ is $\sigma_i\ve_i$, so the $i$th column of $[T]_{B',B}$ is $\sigma_i\ve_i$ (or $\vze$), which is exactly column $i$ of $\Sigma$. Hence $[T]_{B',B}=\Sigma$ --- relative to the singular bases, $T$ is pure scaling.
+The $i$th column of $[T]_{B',B}$ is the $B'$-coordinate vector of $T(\vv_i)$, where $\vv_i$ is the $i$th column of $V$.
+
+By \Thm{7.3.6}(c), for $i\le r$ we have $T(\vv_i)=A\vv_i=\sigma_i\vu_i$, and for $i>r$ we have $A\vv_i=\vze$. Since $B'$ is the basis of columns of $U$, the $B'$-coordinate vector of $\vu_i$ is $\ve_i$. Therefore the $i$th column of $[T]_{B',B}$ is
+\[
+[\sigma_i\vu_i]_{B'}=\sigma_i\ve_i\quad(i\le r),\qquad [\,\vze\,]_{B'}=\vze\quad(i>r),
+\]
+which is exactly column $i$ of the diagonal matrix $\Sigma$. Hence $[T]_{B',B}=\Sigma$: relative to the singular bases, $T$ is pure coordinate scaling.
 \end{prf}
 
 \begin{algs}{7.3.10}{Computing an SVD}
@@ -259,7 +307,19 @@ A=\sigma_1\vu_1\vv_1\trans+\sigma_2\vu_2\vv_2\trans+\cdots+\sigma_r\vu_r\vv_r\tr
 \end{thms}
 
 \begin{prf}
-Expanding the product $U\Sigma V\trans$, only the first $r$ diagonal entries of $\Sigma$ are nonzero, so the product collapses to the sum of rank-one terms $\sigma_i\vu_i\vv_i\trans$ for $i=1,\dots,r$, as in the spectral decomposition.
+We compare entries. Fix $1\le i\le m$ and $1\le j\le n$. Expanding the product,
+\[
+(A)_{ij}=(U\Sigma V\trans)_{ij}=\sum_{k=1}^{m}\sum_{l=1}^{n}(U)_{ik}(\Sigma)_{kl}(V)_{jl}.
+\]
+Since $\Sigma$ is diagonal with only its first $r$ diagonal entries nonzero, the only surviving terms have $k=l\le r$ with $(\Sigma)_{kk}=\sigma_k$:
+\[
+(A)_{ij}=\sum_{k=1}^{r}(U)_{ik}\,\sigma_k\,(V)_{jk}=\sum_{k=1}^{r}\sigma_k\,(\vu_k)_i\,(\vv_k)_j,
+\]
+using that $(U)_{ik}=(\vu_k)_i$ and $(V)_{jk}=(\vv_k)_j$. The product $\vu_k\vv_k\trans$ has $(i,j)$ entry $(\vu_k)_i(\vv_k)_j$, so
+\[
+(A)_{ij}=\sum_{k=1}^{r}\sigma_k\,(\vu_k\vv_k\trans)_{ij}=\Bigl(\sum_{k=1}^{r}\sigma_k\,\vu_k\vv_k\trans\Bigr)_{ij}.
+\]
+As this holds for every entry, $A=\sum_{k=1}^{r}\sigma_k\,\vu_k\vv_k\trans$.
 \end{prf}
 
 \begin{defns}{7.3.15}{Singular value expansion}
@@ -324,10 +384,23 @@ For any $m\times n$ matrix $A$:
 \textup{(d)} $\coker(A^+)=\ker(A)$.
 \end{thms}
 
-\begin{prf}[Idea]
-From $A^+=V\Sigma^+U\trans$ and \Thm{7.3.6}, the first $r$ columns of $V$ span $\rowsp(A)$ and the first $r$ columns of $U$ span $\colsp(A)$. The pseudoinverse maps $\colsp(A)$ back onto $\rowsp(A)$ via the reciprocal singular values, which gives (a) and (b);
+\begin{prf}
+Let $A=\hat U\hat\Sigma\hat V\trans$ be a reduced SVD, so $A^+=\hat V\hat\Sigma\inv\hat U\trans$, where $\hat V=[\vv_1\;\cdots\;\vv_r]$ and $\hat U=[\vu_1\;\cdots\;\vu_r]$ collect the first $r$ singular vectors.
 
-\case{(c)} and (d) follow from the orthogonal-complement relations $\colsp(A)^\perp=\coker(A)$ and $\rowsp(A)^\perp=\ker(A)$ of \Thm{5.5.1}.
+\case{(a)} Take any $\vx\in\colsp(A^+)$, say $\vx=A^+\vb$. Then
+\[
+\vx=\hat V\hat\Sigma\inv\hat U\trans\vb=\hat V\vec{c},\qquad \vec{c}=\hat\Sigma\inv\hat U\trans\vb\in\R^r,
+\]
+so $\vx=\sum_{i=1}^r c_i\vv_i$ is a combination of $\vv_1,\dots,\vv_r$. These span $\rowsp(A)$ (\Thm{7.3.6}), so $\vx\in\rowsp(A)$, giving $\colsp(A^+)\subseteq\rowsp(A)$. Moreover $\rank(A^+)=\rank(A)$ (\Lem{7.4.4}), so $\dim\colsp(A^+)=\dim\rowsp(A)$; an inclusion of subspaces of equal dimension is an equality (\Thm{3.3.14}(b)), giving $\colsp(A^+)=\rowsp(A)$.
+
+\case{(b)} Apply (a) to $A^+$ in place of $A$, using $(A^+)^+=A$: this gives $\colsp(A)=\rowsp(A^+)$, i.e.\ $\rowsp(A^+)=\colsp(A)$.
+
+\case{(c)} Using \Thm{5.5.1} (applied to $A^+$) and part (b),
+\[
+\ker(A^+)=\rowsp(A^+)^\perp=\colsp(A)^\perp=\coker(A).
+\]
+
+\case{(d)} Likewise, $\coker(A^+)=\colsp(A^+)^\perp=\rowsp(A)^\perp=\ker(A)$, using part (a) and \Thm{5.5.1}.
 \end{prf}
 
 \begin{thms}{7.4.8}{The pseudoinverse inverts $A$ on the row space}
@@ -344,8 +417,22 @@ The system $A\vx=\vb$ has a unique least-squares solution of minimal length, giv
 \]
 \end{thms}
 
-\begin{prf}[Idea]
-Among all least-squares solutions (solutions of the normal equations, \Thm{5.6.5}), those differ by elements of $\ker(A)$. The vector $A^+\vb$ lies in $\rowsp(A)=\ker(A)^\perp$ (\Thm{7.4.7}(a)), so it is the unique least-squares solution orthogonal to $\ker(A)$ --- and by Pythagoras (\Thm{5.2.6}) the one of smallest norm. When $A$ has independent columns this agrees with $(A\trans A)\inv A\trans\vb$ from \Rmk{5.6.9}.
+\begin{prf}
+The least-squares solutions of $A\vx=\vb$ are exactly the solutions of the normal system $A\trans A\vx=A\trans\vb$ (\Thm{5.6.5}); any two differ by an element of $\ker(A)$. We show $\vx^*=A^+\vb$ is one of them, and is the shortest.
+
+\emph{$\vx^*$ is a least-squares solution.} Let $A=\hat U\hat\Sigma\hat V\trans$ be a reduced SVD, so $A^+=\hat V\hat\Sigma\inv\hat U\trans$. Using $\hat U\trans\hat U=I$ and $\hat V\trans\hat V=I$,
+\[
+A\trans A(A^+\vb)=(\hat U\hat\Sigma\hat V\trans)\trans(\hat U\hat\Sigma\hat V\trans)(\hat V\hat\Sigma\inv\hat U\trans)\vb
+=\hat V\hat\Sigma(\hat U\trans\hat U)\hat\Sigma(\hat V\trans\hat V)\hat\Sigma\inv\hat U\trans\vb
+=\hat V\hat\Sigma\hat U\trans\vb=A\trans\vb,
+\]
+so $\vx^*$ satisfies the normal equations.
+
+\emph{$\vx^*$ has minimal length.} By \Thm{7.4.7}(a), $\vx^*=A^+\vb\in\colsp(A^+)=\rowsp(A)=\ker(A)^\perp$ (using \Thm{5.5.1}). Any other least-squares solution has the form $\vx=\vx^*+\vz$ with $\vz\in\ker(A)$. Since $\vx^*\perp\vz$, Pythagoras (\Thm{5.2.6}) gives
+\[
+\norm{\vx}^2=\norm{\vx^*}^2+\norm{\vz}^2\ge\norm{\vx^*}^2,
+\]
+with equality only when $\vz=\vze$. So $\vx^*=A^+\vb$ is the unique least-squares solution of minimal length.
 \end{prf}
 
 % ===================================================================
